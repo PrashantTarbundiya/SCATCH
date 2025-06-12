@@ -97,7 +97,7 @@ cd SCATCH
 ### 2. Setup Backend
 
 ```bash
-cd server
+cd Backend
 npm install
 cp .env.example .env
 # Fill in your secrets in the new .env file
@@ -107,7 +107,7 @@ npm run dev
 ### 3. Setup Frontend
 
 ```bash
-cd ../client
+cd Frontend
 npm install
 cp .env.example .env
 # Add your VITE_API_BASE_URL
