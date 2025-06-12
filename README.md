@@ -86,8 +86,8 @@ Scatch is a full-stack e-commerce application featuring separate frontend and ba
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
-    cd <repository-name>
+    git clone https://github.com/PrashantTarbundiya/SCATCH.git
+    cd SCATCH
     ```
 
 2.  **Backend Setup:**
