@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Keep Link, remove useNavigate if not used elsewhere
+import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate
 import { useTheme } from '../context/ThemeContext'; // Import useTheme custom hook
 
 
 const ShopPage = () => {
   const { theme } = useTheme(); // Consume theme using the custom hook
-  // const navigate = useNavigate(); // Remove useNavigate initialization
+  const navigate = useNavigate(); // Initialize useNavigate
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,6 +26,15 @@ const ShopPage = () => {
         }
 
         if (!response.ok) {
+          if (response.status === 401) {
+            // Unauthorized, redirect to login
+            navigate('/login');
+            // It's good practice to also set an error or clear data to prevent rendering stale info
+            // For now, the redirect should prevent further rendering of this page's content.
+            // We might want to throw an error here as well so the `catch` block still runs,
+            // or return early to prevent further processing.
+            throw new Error(data?.error || data?.message || 'Unauthorized access. Please login.');
+          }
           throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
         }
         

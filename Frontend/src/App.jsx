@@ -8,6 +8,7 @@ import LoginPage from './pages/login';
 import OwnerLoginPage from './pages/OwnerLogin'; 
 import RegisterPage from './pages/register';
 import ShopPage from './pages/Shop';
+import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
 import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import OwnerProtectedRoute
 
 import Header from './components/Header';
@@ -32,6 +33,9 @@ function App() {
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
           </Route>
+          
+          {/* Catch-all route for 404 Not Found */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
       {/* <Footer /> */}
