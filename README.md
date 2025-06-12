@@ -1,50 +1,36 @@
-# Scatch - Full-Stack E-commerce Platform
+# SCATCH 🎨
 
-## Description
+SCATCH is a full-stack web application built with the MERN stack (MongoDB, Express.js, React.js, Node.js). It includes secure user authentication, email-based OTP verification, and a clean frontend interface to interact with your data.
 
-Scatch is a full-stack e-commerce application featuring separate frontend and backend services. It allows users to browse products, manage a shopping cart, and register/login. Owners can manage products through an admin panel.
+---
 
-## Key Features
+## 🚀 Features
 
-*   **User Authentication**: Secure registration and login for users.
-*   **Owner Authentication**: Separate login for administrators/owners.
-*   **Product Management (Admin)**:
-    *   Create, View, Edit, and Delete products.
-    *   Image uploads for products.
-    *   Dynamic product display customization (colors, etc.).
-*   **Product Browsing (User)**:
-    *   Shop page with product listings.
-    *   Product image display with discount badges.
-*   **Shopping Cart**:
-    *   Add products to cart.
-    *   Adjust item quantities.
-    *   Remove items from cart.
-    *   Clear entire cart.
-    *   Price breakdown (MRP, discounts, fees).
-*   **Context API**: Frontend state management for User, Owner, and Theme contexts.
-*   **Environment-based API Configuration**: Securely manages API base URLs.
-*   **Dark Mode Theme**: User-selectable theme preference.
+- ✅ User Registration & Login with JWT
+- 📩 Email-based OTP verification (using Gmail SMTP)
+- 🧾 Session support with Express
+- ⚙️ Environment-specific configuration
+- 🔐 Secure credentials handling using `.env` files
+- 📦 MongoDB Atlas integration for scalable data storage
 
-## Tech Stack
+---
 
-### Frontend
+## 🛠️ Tech Stack
 
-*   **Framework/Library**: React (with Vite)
-*   **Styling**: Tailwind CSS
-*   **State Management**: React Context API
-*   **Routing**: React Router DOM
-*   **Language**: JavaScript (JSX)
+**Frontend:**
+- React.js + Vite
+- Axios
+- Tailwind CSS
 
-### Backend
+**Backend:**
+- Node.js + Express.js
+- MongoDB (with Mongoose)
+- JWT for authentication
+- Nodemailer for email OTP
 
-*   **Framework**: Node.js with Express.js
-*   **Database**: MongoDB (with Mongoose ODM)
-*   **Authentication**: JWT (implied by `generateToken.js`), session/cookies for OTP and login.
-*   **Image Handling**: Multer for file uploads
-*   **Templating (Admin Views - if any still used)**: EJS (though primary interaction seems to be via API for React frontend)
-*   **Language**: JavaScript
+---
 
-## Folder Structure
+## 📁 Project Structure
 
 ```
 .
@@ -76,77 +62,65 @@ Scatch is a full-stack e-commerce application featuring separate frontend and ba
 └── README.md                # This file
 ```
 
-## Prerequisites
+---
 
-*   Node.js (v14.x or higher recommended)
-*   npm (or yarn)
-*   MongoDB (local instance or a cloud-hosted one like MongoDB Atlas)
+## 🔐 Environment Variables
 
-## Setup and Installation
+### 🔧 Frontend (`client/.env`)
+```env
+VITE_API_BASE_URL= backend_app_uri
+```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <your-repository-url>
-    cd <repository-name>
-    ```
-
-2.  **Backend Setup:**
-    *   Navigate to the `Backend` directory:
-        ```bash
-        cd Backend
-        ```
-    *   Create a `.env` file by copying `.env.example` (if you create one) or by creating it manually.
-        It should contain variables like:
-        ```env
-        MONGODB_URI=your_mongodb_connection_string
-        JWT_SECRET=your_jwt_secret_key
-        PORT=3000 # Or your desired backend port
-        # Add any other backend-specific environment variables
-        ```
-    *   Install dependencies:
-        ```bash
-        npm install
-        ```
-
-3.  **Frontend Setup:**
-    *   Navigate to the `Frontend` directory (from the root):
-        ```bash
-        cd ../Frontend 
-        # Or from Backend: cd ../Frontend
-        ```
-    *   Create a `.env` file. It should contain:
-        ```env
-        VITE_API_BASE_URL=http://localhost:3000 # Or the URL where your backend is running
-        ```
-        (Note: Ensure the backend port matches the `PORT` in the backend's `.env` file if running locally).
-    *   Install dependencies:
-        ```bash
-        npm install
-        ```
-
-## How to Run
-
-1.  **Start the Backend Server:**
-    *   In the `Backend` directory:
-        ```bash
-        npm start 
-        # Or your defined script, e.g., npm run dev
-        ```
-    *   The backend server should typically be running on `http://localhost:3000` (or the port specified in its `.env`).
-
-2.  **Start the Frontend Development Server:**
-    *   In the `Frontend` directory:
-        ```bash
-        npm run dev
-        ```
-    *   The frontend application will usually be available at `http://localhost:5173` (Vite's default) or another port specified in the terminal output.
-
-Open your browser and navigate to the frontend URL to use the application.
+### 🖥️ Backend (`server/.env`)
+```env
+PORT=3000
+MONGODB_URI = your_mongodb_uri 
+JWT_KEY= your_jwt_key
+EXPRESS_SESSION_SECRET= your_session_key
+FRONTEND_URI= your_frontend_uri
+GMAIL_USER= your_support_email
+GMAIL_APP_PASS= support_email_pass
+NODE_ENV=production
+```
 
 ---
 
-This README provides a good starting point. You can expand it further with sections like:
-*   **API Endpoints**: A brief list or link to API documentation.
-*   **Deployment**: Instructions or notes if you plan to deploy it.
-*   **Screenshots/GIFs**: To showcase the application.
-*   **License**: If you wish to add one.
+## 📦 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/PrashantTarbundiya/SCATCH.git
+cd SCATCH
+```
+
+### 2. Setup Backend
+
+```bash
+cd Backend
+npm install
+cp .env.example .env
+# Fill in your secrets in the new .env file
+npm run dev
+```
+
+### 3. Setup Frontend
+
+```bash
+cd Frontend
+npm install
+cp .env.example .env
+# Add your VITE_API_BASE_URL
+npm run dev
+```
+
+---
+
+
+## 📬 Contact
+
+Created with ❤️ by [Prashant Tarbundiya](https://github.com/PrashantTarbundiya)  
+Email: prashanttarbundita2@gmail.com
+
+---
+
