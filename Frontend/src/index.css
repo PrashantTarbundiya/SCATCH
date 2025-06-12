@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'helvetica_now_display', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb; /* Default light mode background, will be overridden by dark mode */
+}
+
+/* Ensure root also takes full height */
+#root {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dark mode base background if not set by components */
+.dark body {
+  background-color: #111827; /* Default dark mode background */
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}

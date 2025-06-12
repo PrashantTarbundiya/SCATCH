@@ -1,0 +1,108 @@
+<%- include('./partials/header') %>
+
+<% 
+// Calculate total bill for all items
+let totalMRP = 0;
+let totalDiscount = 0;
+let platformFee = 20;
+let shippingFee = 0;
+
+user.cart.forEach((item) => {
+    totalMRP += Number(item.price);
+    totalDiscount += Number(item.discount);
+});
+
+const finalBill = (totalMRP + platformFee) - totalDiscount;
+
+%>
+
+<div class="w-full min-h-screen flex items-start px-20 py-20 gap-10">
+    <!-- Left Section - Cart Items -->
+    <div class="w-[60%] flex flex-col gap-5">
+        <h2 class="text-2xl font-semibold mb-5">Shopping Cart</h2>
+        
+        <% user.cart.forEach((item) => { %>
+            <div class="flex gap-4 p-4 border rounded-md bg-white shadow-sm">
+                <!-- Product Image -->
+                <div class="w-32 h-32 flex justify-center items-center bg-[<%= item.bgcolor %>] rounded-md overflow-hidden">
+                    <img class="h-28 object-contain" src="data:image/jpeg;base64,<%= item.image.toString('base64') %>" alt="<%= item.name %>">
+                </div>
+                
+                <!-- Product Details -->
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium"><%= item.name %></h3>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-lg font-semibold">₹<%= item.price %></span>
+                            <% if(item.discount > 0) { %>
+                                <span class="text-sm text-gray-500 line-through">₹<%= Number(item.price) + Number(item.discount) %></span>
+                                <span class="text-sm text-green-600">(<%= item.discount %> off)</span>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity Controls -->
+                    <div class="flex items-center gap-2 mt-3">
+                        <button class="w-8 h-8 bg-gray-200 flex rounded-full items-center justify-center hover:bg-gray-300">
+                            <i class="ri-subtract-line"></i>
+                        </button>
+                        <div class="px-3 py-1 bg-gray-100 rounded-md">01</div>
+                        <button class="w-8 h-8 bg-gray-200 flex rounded-full items-center justify-center hover:bg-gray-300">
+                            <i class="ri-add-line"></i>
+                        </button>
+                        <button class="ml-4 text-red-500 hover:text-red-700">
+                            <i class="ri-delete-bin-line"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    
+    <!-- Right Section - Price Breakdown -->
+    <div class="w-[40%] bg-gray-50 p-6 rounded-md h-fit sticky top-20">
+        <h3 class="text-xl font-semibold mb-5">Price Breakdown</h3>
+        
+        <div class="space-y-3">
+            <div class="flex justify-between">
+                <span>Total MRP (<%= user.cart.length %> items)</span>
+                <span>₹<%= totalMRP %></span>
+            </div>
+            
+            <div class="flex justify-between text-green-600">
+                <span>Discount on MRP</span>
+                <span>-₹<%= totalDiscount %></span>
+            </div>
+            
+            <div class="flex justify-between">
+                <span>Platform Fee</span>
+                <span>₹<%= platformFee %></span>
+            </div>
+            
+            <div class="flex justify-between">
+                <span>Shipping Fee</span>
+                <span class="text-green-600">FREE</span>
+            </div>
+        </div>
+        
+        <div class="border-t border-gray-300 my-4"></div>
+        
+        <div class="flex justify-between text-lg font-semibold">
+            <span>Total Amount</span>
+            <span class="text-green-600">₹<%= finalBill %></span>
+        </div>
+        
+        <button class="w-full bg-blue-600 text-white py-3 rounded-md mt-5 hover:bg-blue-700 transition-colors">
+            Proceed to Checkout
+        </button>
+        
+
+        <div class="mt-4 space-y-2">
+            <button class="w-full border border-gray-300 py-2 rounded-md hover:bg-gray-100 transition-colors">
+                <a href="/shop">Continue Shopping</a>
+            </button>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>
