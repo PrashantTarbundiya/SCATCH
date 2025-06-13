@@ -78,18 +78,8 @@ const ShopPage = () => {
     }
   };
 
-  // Function to convert buffer to base64 string for image display
-  const BufferToBase64 = (buffer) => {
-    if (!buffer || !buffer.data) return '';
-    let binary = '';
-    const bytes = new Uint8Array(buffer.data);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  };
-
+  // BufferToBase64 function is no longer needed for product images from Cloudinary URLs
+  // and can be removed if not used elsewhere.
 
   if (isLoading) {
     return <div className="text-center py-10 dark:text-gray-300">Loading products...</div>;
@@ -162,10 +152,10 @@ const ShopPage = () => {
                   className="w-full h-52 flex items-center justify-center relative" // Added relative positioning
                   style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }} // Dynamic default bgcolor for dark/light
                 >
-                  {product.image && product.image.data ? ( // Added product.image.data check
+                  {product.image && typeof product.image === 'string' ? (
                      <img
-                        className="h-[12rem] object-contain"
-                        src={`data:image/jpeg;base64,${BufferToBase64(product.image)}`}
+                        className="h-[12rem] w-full object-contain" // Added w-full for better layout
+                        src={product.image} // Directly use the Cloudinary URL
                         alt={product.name || "Product Image"}
                      />
                   ) : (

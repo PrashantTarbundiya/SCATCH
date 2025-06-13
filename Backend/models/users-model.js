@@ -1,17 +1,17 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
 const userSchema = mongoose.Schema({
-    fullname :{
+    fullname: {
         type: String,
         minLength: 3,
         trim: true,
     },
-    email : String,
-    password : String,
-    cart : [{
+    email: String,
+    password: String,
+    cart: [{
         product: {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "product",
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "product",
         },
         quantity: {
             type: Number,
@@ -20,13 +20,12 @@ const userSchema = mongoose.Schema({
             default: 1
         }
     }],
-    orders : {
-        type : Array,
-        default : []
+    orders: {
+        type: Array, // Consider a more structured schema for orders if needed
+        default: []
     },
-    contact : Number, // Restoring 'contact'
-    picture : String
+    contact: Number, // Restoring 'contact'
+    picture: String // This could also be a Cloudinary URL if users have profile pictures
+});
 
-})
-
-module.exports = mongoose.model("user",userSchema);
+export default mongoose.model("user", userSchema);

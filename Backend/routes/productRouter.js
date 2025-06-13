@@ -1,30 +1,42 @@
-const express = require('express')
+import express from 'express';
 const router = express.Router();
-const upload = require('../config/multer-config')
-const productModel = require('../models/product-model');
-const isOwner = require('../middleware/isOwner'); // Import isOwner middleware
+import { upload } from '../config/multer-config.js'; // Assuming multer-config exports 'upload'
+import productModel from '../models/product-model.js';
+import isOwner from '../middleware/isOwner.js'; // Import isOwner middleware
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
-router.post('/create', isOwner, upload.single("image"),async (req,res, next)=>{ // Added isOwner
-   try{
-     const {name,price,discount,bgcolor,panelcolor,textcolor} = req.body;
+router.post('/create', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
+    try {
+        const { name, price, discount, bgcolor, panelcolor, textcolor } = req.body;
 
-     if (!req.file) {
-        const err = new Error("Image is required");
-        err.status = 400;
-        return next(err); // Pass error to central handler
-     }
+        if (!req.file) {
+            const err = new Error("Image is required");
+            err.status = 400;
+            return next(err); // Pass error to central handler
+        }
 
-    const product = await productModel.create(({
-        image:req.file.buffer, // Storing buffer directly, consider storing path/URL for React
-        name,price,discount,bgcolor,panelcolor,textcolor
-    }))
-    res.status(201).json({ success: "Product created successfully", product });
-   }catch(err){
-    err.message = `Product creation failed: ${err.message}`; // Add context to error
-    next(err); // Pass error to central handler
-   }
-    
-})
+        const localFilePath = req.file.path;
+        const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
+
+        if (!cloudinaryResponse || !cloudinaryResponse.secure_url) {
+            // fs.unlinkSync(localFilePath); // Already handled in uploadOnCloudinary
+            const err = new Error("Failed to upload image to Cloudinary");
+            err.status = 500;
+            return next(err);
+        }
+
+        const product = await productModel.create(({
+            image: cloudinaryResponse.secure_url, // Store Cloudinary URL
+            name, price, discount, bgcolor, panelcolor, textcolor
+        }));
+        res.status(201).json({ success: "Product created successfully", product });
+    } catch (err) {
+        // If req.file.path exists, it means multer saved it but something else failed.
+        // The unlink is handled in uploadOnCloudinary's catch or finally block.
+        err.message = `Product creation failed: ${err.message}`; // Add context to error
+        next(err); // Pass error to central handler
+    }
+});
 
 // Route to get all products
 router.get('/', async (req, res, next) => { // Added next
@@ -74,7 +86,17 @@ router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { 
         let updateData = { name, price, discount, bgcolor, panelcolor, textcolor };
 
         if (req.file) {
-            updateData.image = req.file.buffer;
+            const localFilePath = req.file.path;
+            const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
+
+            if (!cloudinaryResponse || !cloudinaryResponse.secure_url) {
+                // fs.unlinkSync(localFilePath); // Already handled in uploadOnCloudinary
+                const err = new Error("Failed to upload image to Cloudinary for update");
+                err.status = 500;
+                return next(err);
+            }
+            updateData.image = cloudinaryResponse.secure_url; // Store Cloudinary URL
+            // TODO: Optionally, delete the old image from Cloudinary if it exists
         }
 
         const product = await productModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
@@ -86,6 +108,8 @@ router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { 
         }
         res.status(200).json({ success: "Product updated successfully", product });
     } catch (err) {
+        // If req.file.path exists, it means multer saved it but something else failed.
+        // The unlink is handled in uploadOnCloudinary's catch or finally block.
         err.message = `Product update failed for ID ${req.params.id}: ${err.message}`;
         next(err);
     }
@@ -107,4 +131,4 @@ router.delete('/:id', isOwner, async (req, res, next) => { // Added isOwner
     }
 });
 
-module.exports = router;
+export default router;

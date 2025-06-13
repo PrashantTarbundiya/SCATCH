@@ -1,9 +1,9 @@
-const userModel = require('../models/users-model');
-const ownerModel = require('../models/owner-model');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto'); // Added for OTP generation
-const nodemailer = require('nodemailer'); // Added for sending emails
-const { generateToken } = require('../utils/generateToken');
+import userModel from '../models/users-model.js';
+import ownerModel from '../models/owner-model.js';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto'; // Added for OTP generation
+import nodemailer from 'nodemailer'; // Added for sending emails
+import { generateToken } from '../utils/generateToken.js';
 
 // In-memory store for OTPs. In production, use Redis or a similar persistent store.
 let otpStore = {}; // Format: { email: { otp: '123456', expires: timestamp, attempts: 0 } }
@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const sendRegistrationOtp = async (req, res) => {
+export const sendRegistrationOtp = async (req, res) => {
     try {
         const { email } = req.body;
 
@@ -82,7 +82,7 @@ const sendRegistrationOtp = async (req, res) => {
 };
 
 
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { email, fullname, password, otp } = req.body; // Added otp
 
@@ -177,7 +177,7 @@ const registerUser = async (req, res) => {
     }
 }
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -231,13 +231,13 @@ const loginUser = async (req, res) => {
     }
 }
 
-const logout = (req, res) => {
+export const logout = (req, res) => {
     res.cookie("token", "", { httpOnly: true, secure: process.env.NODE_ENV === 'production', expires: new Date(0) }); // Clears cookie properly
     // res.redirect("/register");
     return res.status(200).json({ success: true, message: "Logout successful" });
 };
 
-const getUserCart = async (req, res) => {
+export const getUserCart = async (req, res) => {
     try {
         // Assuming req.user is populated by an authentication middleware (e.g., isLoggedIn)
         // and contains the user's ID.
@@ -297,7 +297,7 @@ const getUserCart = async (req, res) => {
 };
 
 
-const validateEmail = (email) => {
+export const validateEmail = (email) => {
     if (!email || email.trim() === '') {
         return { isValid: false, message: "Email is required" };
     }
@@ -310,7 +310,7 @@ const validateEmail = (email) => {
     return { isValid: true, message: "Email is valid" };
 };
 
-const validatePassword = (password) => {
+export const validatePassword = (password) => {
     if (!password || password.trim() === '') {
         return { isValid: false, message: "Password is required" };
     }
@@ -334,7 +334,7 @@ const validatePassword = (password) => {
     return { isValid: true, message: "Password is valid" };
 };
 
-const loginOwner = async (req, res) => {
+export const loginOwner = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -397,11 +397,11 @@ const loginOwner = async (req, res) => {
     }
 };
 
-const logoutOwner = (req, res) => {
+export const logoutOwner = (req, res) => {
     // The token is HttpOnly, so client-side cannot remove it directly.
     // Clearing the cookie on the server side is the correct approach.
     res.cookie("token", "", { httpOnly: true, secure: process.env.NODE_ENV === 'production', expires: new Date(0) });
     return res.status(200).json({ success: true, message: "Owner logout successful" });
 };
 
-module.exports = { sendRegistrationOtp, registerUser, loginUser, logout, validateEmail, validatePassword, getUserCart, loginOwner, logoutOwner };
+// Removed module.exports as we are using named exports now

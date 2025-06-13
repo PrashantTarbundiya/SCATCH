@@ -1,23 +1,28 @@
-const express = require('express');
+import express from 'express';
 const app = express();
 
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const cors = require('cors'); // Add cors
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import cors from 'cors'; // Add cors
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url'; // For ES module __dirname equivalent
 
-const dotenv = require('dotenv')
+// ES module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const expressSession = require('express-session');
-const flash = require('connect-flash');
+import expressSession from 'express-session';
+import flash from 'connect-flash';
 
-const connectDB = require('./config/mongoose-connection')
-connectDB()
+import connectDB from './config/mongoose-connection.js';
+connectDB();
 
-const ownerRouter = require('./routes/ownerRouter');
-const productRouter = require('./routes/productRouter');
-const userRouter = require('./routes/userRouter');
-const indexRouter = require('./routes/index')
+import ownerRouter from './routes/ownerRouter.js';
+import productRouter from './routes/productRouter.js';
+import userRouter from './routes/userRouter.js';
+import indexRouter from './routes/index.js';
 
 app.use(cors({
   origin: process.env.FRONTEND_URI, // Allow your frontend origin
@@ -28,15 +33,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
    expressSession({
-      resave:false,
-      saveUninitialized :false,
-      secret:process.env.EXPRESS_SESSION_SECRET
+      resave: false,
+      saveUninitialized: false,
+      secret: process.env.EXPRESS_SESSION_SECRET
    })
-)
+);
 app.use(flash());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/',indexRouter);
+app.use('/', indexRouter);
 app.use('/owners', ownerRouter);
 app.use('/users', userRouter);
 app.use('/products', productRouter);

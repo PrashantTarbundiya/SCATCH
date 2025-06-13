@@ -1,19 +1,23 @@
-const mongoose = require('mongoose')
-const dotenv = require('dotenv');
-const dbgr = require('debug')("development:mongoose") 
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import debug from 'debug';
 
-dotenv.config();
+const dbgr = debug("development:mongoose");
+
+dotenv.config(); // This will load .env from the root of the project by default
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-    });
+    // useNewUrlParser, useUnifiedTopology, useCreateIndex, and useFindAndModify
+    // are no longer supported options. Mongoose 6 always behaves as if
+    // useNewUrlParser, useUnifiedTopology, and useCreateIndex are true,
+    // and useFindAndModify is false.
+    await mongoose.connect(process.env.MONGODB_URI);
     dbgr('MongoDB Connected');
   } catch (error) {
-    console.error(error.message);
+    console.error("MongoDB Connection Error:", error.message);
     process.exit(1);
   }
-}
+};
 
-
-module.exports = connectDB;
+export default connectDB;

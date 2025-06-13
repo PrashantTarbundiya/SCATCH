@@ -3,18 +3,8 @@ import { Link } from 'react-router-dom'; // Import Link
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
 
 
-// Helper function to convert buffer to base64 string for image display
-const bufferToImage = (buffer) => {
-  if (!buffer || !buffer.data) return null; // Handle cases where buffer or buffer.data is undefined
-  let binary = '';
-  const bytes = new Uint8Array(buffer.data);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return `data:image/jpeg;base64,${window.btoa(binary)}`; // Assuming jpeg, adjust if other types
-};
-
+// The bufferToImage function is no longer needed for product images from Cloudinary URLs
+// and can be removed if not used elsewhere for other buffer-to-image conversions.
 
 const AllProductsPage = () => {
   const { theme } = useTheme(); // Consume theme
@@ -162,11 +152,11 @@ const AllProductsPage = () => {
                 className="w-full h-52 flex items-center justify-center relative" // Added relative for discount badge positioning
                 style={{ backgroundColor: product.bgcolor ||(theme === 'dark' ? '#374151' : '#f0f0f0') }} // Default BG based on theme or product.bgcolor
               >
-                {product.image && product.image.data ? (
+                {product.image && typeof product.image === 'string' ? (
                   <img
-                    src={bufferToImage(product.image)}
+                    src={product.image} // Directly use the Cloudinary URL
                     alt={product.name || "Product Image"}
-                    className="h-[12rem] object-contain" // Matched Shop page image style
+                    className="h-[12rem] w-full object-contain" // Matched Shop page image style, added w-full
                   />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500">No Image</span>

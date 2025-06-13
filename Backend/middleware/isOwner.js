@@ -1,14 +1,14 @@
-const jwt = require('jsonwebtoken');
-const ownerModel = require('../models/owner-model');
+import jwt from 'jsonwebtoken';
+import ownerModel from '../models/owner-model.js';
 
-module.exports = async (req, res, next) => {
+const isOwner = async (req, res, next) => {
     if (!req.cookies.token) {
         return res.status(401).json({ error: "Unauthorized: You need to login as an owner first." });
     }
 
     try {
         const decoded = jwt.verify(req.cookies.token, process.env.JWT_KEY);
-        
+
         // Find owner specifically in ownerModel
         const owner = await ownerModel
             .findOne({ email: decoded.email }) // or use decoded.id if preferred: { _id: decoded.id }
@@ -30,3 +30,5 @@ module.exports = async (req, res, next) => {
         return res.status(500).json({ error: "Something went wrong during owner authentication.", details: err.message });
     }
 };
+
+export default isOwner;
