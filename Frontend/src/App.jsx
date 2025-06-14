@@ -9,6 +9,8 @@ import OwnerLoginPage from './pages/OwnerLogin';
 import RegisterPage from './pages/register';
 import ShopPage from './pages/Shop';
 import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
+import ProfilePage from './pages/Profile'; // Import ProfilePage
+import EditProfilePage from './pages/EditProfile'; // Import EditProfilePage
 import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import OwnerProtectedRoute
 
 import Header from './components/Header';
@@ -26,6 +28,8 @@ function App() {
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/owner-login" element={<OwnerLoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/edit" element={<EditProfilePage />} />
 
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>

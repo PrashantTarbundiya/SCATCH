@@ -60,6 +60,7 @@ const Header = () => {
             <span className="text-gray-700 dark:text-gray-300">Hi, {currentUser.fullname || currentUser.email}!</span>
             <Link to="/shop" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Shop</Link>
             <Link to="/cart" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Cart</Link>
+            <Link to="/profile" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Profile</Link>
             <button
               onClick={handleUserLogout}
               className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 transition-colors cursor-pointer"
