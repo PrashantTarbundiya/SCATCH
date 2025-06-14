@@ -6,6 +6,7 @@ const UserContext = createContext(null);
 // Create a provider component
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null); // Or load from localStorage if you want persistence
+  const [authLoading, setAuthLoading] = useState(true); // To track initial auth loading
 
   // Function to update user, could also include login/logout logic here or keep it separate
   const loginUser = (userData) => {
@@ -45,6 +46,7 @@ export const UserProvider = ({ children }) => {
     setCurrentUser: loginUser, // Expose loginUser as setCurrentUser for clarity in login page
     logoutUser,
     isAuthenticated: !!currentUser, // Helper to easily check if user is logged in
+    authLoading, // Expose authLoading state
   };
 
   // Optional: Load user from localStorage on initial render for persistence
@@ -54,12 +56,13 @@ export const UserProvider = ({ children }) => {
       try {
         const parsedUser = JSON.parse(storedUser);
         // console.log('User data loaded from localStorage in UserContext:', parsedUser); // DEBUG LOG
-        setCurrentUser(parsedUser);
+        loginUser(parsedUser); // Use loginUser to set current user
       } catch (error) {
         console.error("Failed to parse stored user:", error);
         sessionStorage.removeItem('currentUser'); // Clear corrupted data
       }
     }
+    setAuthLoading(false); // Finished attempting to load user
   }, []);
 
   return (

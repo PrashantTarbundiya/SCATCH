@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto'; // Added for OTP generation
 import nodemailer from 'nodemailer'; // Added for sending emails
 import { generateToken } from '../utils/generateToken.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js'; // Corrected import
+// userModel is already imported at the top of the file
 
 // In-memory store for OTPs. In production, use Redis or a similar persistent store.
 let otpStore = {}; // Format: { email: { otp: '123456', expires: timestamp, attempts: 0 } }
@@ -162,7 +164,16 @@ export const registerUser = async (req, res) => {
                             success: true,
                             message: "User registered successfully",
                             token,
-                            user: { id: newUser._id, email: newUser.email, fullname: newUser.fullname }
+                            user: {
+                                _id: newUser._id, // Use _id
+                                email: newUser.email,
+                                fullname: newUser.fullname,
+                                phone: newUser.phone || '', // Include new fields
+                                address: newUser.address || '',
+                                profilePhoto: newUser.profilePhoto || '',
+                                orders: newUser.orders || [],
+                                cart: newUser.cart || [] // Also include cart if needed by context
+                            }
                         });
                     } catch (processingError) {
                         // console.error("REGISTER_USER: Error during user creation or token generation:", processingError);
@@ -216,7 +227,19 @@ export const loginUser = async (req, res) => {
                     // console.log("LOGIN_USER: Attempting to set token cookie. Token exists:", !!token, "Options:", cookieOptions);
                     res.cookie("token", token, cookieOptions);
                     
-                    return res.status(200).json({ success: true, message: "Login successful", token, user: { id: user._id, email: user.email, fullname: user.fullname } });
+                    // Return the full user object or necessary fields
+                    const userToReturn = {
+                        _id: user._id, // Use _id
+                        email: user.email,
+                        fullname: user.fullname,
+                        phone: user.phone || '',
+                        address: user.address || '',
+                        profilePhoto: user.profilePhoto || '',
+                        orders: user.orders || [],
+                        cart: user.cart || [] // Also include cart if needed by context
+                    };
+
+                    return res.status(200).json({ success: true, message: "Login successful", token, user: userToReturn });
                 } catch (tokenError) {
                     console.error("LOGIN_USER: Error generating token:", tokenError);
                     return res.status(500).json({ error: "Login token generation failed.", details: tokenError.message });
@@ -402,6 +425,117 @@ export const logoutOwner = (req, res) => {
     // Clearing the cookie on the server side is the correct approach.
     res.cookie("token", "", { httpOnly: true, secure: process.env.NODE_ENV === 'production', expires: new Date(0) });
     return res.status(200).json({ success: true, message: "Owner logout successful" });
+};
+
+export const updateUserProfilePhoto = async (req, res) => {
+    try {
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ error: "User not authenticated." });
+        }
+        if (!req.file) {
+            return res.status(400).json({ error: "No profile photo file uploaded." });
+        }
+
+        const localFilePath = req.file.path;
+        const userId = req.user._id;
+
+        // Upload to Cloudinary - uploadOnCloudinary handles temp file deletion
+        // The second argument for folder is not directly supported by the current uploadOnCloudinary,
+        // but Cloudinary's uploader.upload can take a `folder` option.
+        // For now, we'll assume the default behavior of uploadOnCloudinary is sufficient,
+        // or that it's configured to place files in a desired location.
+        // If specific folder naming like `profile_photos/${userId}` is needed,
+        // uploadOnCloudinary would need to be modified to accept and use a folder option.
+        const cloudinaryResult = await uploadOnCloudinary(localFilePath);
+        // No need to call deleteTempFile explicitly, as uploadOnCloudinary handles it.
+
+        if (!cloudinaryResult || !cloudinaryResult.secure_url) {
+            return res.status(500).json({ error: "Failed to upload image to Cloudinary." });
+        }
+
+        // Update user model
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            { profilePhoto: cloudinaryResult.secure_url },
+            { new: true, runValidators: true }
+        ).select('-password'); // Exclude password from the returned user object
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found after update." });
+        }
+        
+        // Return the updated user (or just the new photo URL)
+        return res.status(200).json({
+            success: true,
+            message: "Profile photo updated successfully.",
+            profilePhotoUrl: updatedUser.profilePhoto,
+            user: { // Return relevant user fields for context update on frontend
+                _id: updatedUser._id,
+                email: updatedUser.email,
+                fullname: updatedUser.fullname,
+                phone: updatedUser.phone,
+                address: updatedUser.address,
+                profilePhoto: updatedUser.profilePhoto,
+                orders: updatedUser.orders,
+                cart: updatedUser.cart
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating profile photo:", error);
+        // If an error occurred, uploadOnCloudinary should have attempted to delete the temp file.
+        // No explicit deletion needed here unless uploadOnCloudinary failed before attempting deletion.
+        res.status(500).json({ error: "Server error while updating profile photo.", details: error.message });
+    }
+};
+
+export const updateUserProfile = async (req, res) => {
+    try {
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ error: "User not authenticated." });
+        }
+
+        const { fullname, phone, address } = req.body;
+        const userId = req.user._id;
+
+        const updateData = {};
+        if (fullname !== undefined) updateData.fullname = fullname;
+        if (phone !== undefined) updateData.phone = phone;
+        if (address !== undefined) updateData.address = address;
+
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ error: "No update data provided." });
+        }
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile updated successfully.",
+            user: {
+                _id: updatedUser._id,
+                email: updatedUser.email,
+                fullname: updatedUser.fullname,
+                phone: updatedUser.phone,
+                address: updatedUser.address,
+                profilePhoto: updatedUser.profilePhoto,
+                orders: updatedUser.orders,
+                cart: updatedUser.cart
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ error: "Server error while updating profile.", details: error.message });
+    }
 };
 
 // Removed module.exports as we are using named exports now

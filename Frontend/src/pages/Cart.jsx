@@ -13,7 +13,50 @@ const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const [shippingAddress, setShippingAddress] = useState({
+    street: '',
+    city: '',
+    postalCode: '',
+    country: '',
+  });
   const debounceTimers = useRef({}); // To store debounce timers for each product ID
+
+  useEffect(() => {
+    if (currentUser?.address && !shippingAddress.street) { // Pre-fill street if available and not already set
+      setShippingAddress(prev => ({ ...prev, street: currentUser.address }));
+    }
+    // We could also pre-fill other fields if currentUser had them structured, e.g.,
+    // if (currentUser?.city && !shippingAddress.city) {
+    //   setShippingAddress(prev => ({ ...prev, city: currentUser.city }));
+    // }
+    // etc. for postalCode and country
+  }, [currentUser]); // Rerun when currentUser data is available
+
+  const handleShippingChange = (e) => {
+    const { name, value } = e.target;
+    setShippingAddress(prev => ({ ...prev, [name]: value }));
+  };
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -222,7 +265,136 @@ const handleClearCart = async () => {
 
   const finalBill = (totalMRP - totalDiscount) + platformFee;
 
-  if (isLoading) {
+  const handlePlaceOrder = async () => {
+    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.postalCode || !shippingAddress.country) {
+      setPaymentError("Please fill in all shipping address fields.");
+      return;
+    }
+    if (cartItems.length === 0) {
+      setPaymentError("Your cart is empty.");
+      return;
+    }
+
+    setPaymentLoading(true);
+    setPaymentError(null);
+
+    const scriptLoaded = await loadRazorpayScript();
+    if (!scriptLoaded) {
+      setPaymentError("Failed to load payment gateway. Please try again.");
+      setPaymentLoading(false);
+      return;
+    }
+
+    try {
+      // 1. Create Razorpay Order ID from backend
+      const orderCreationResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          amount: finalBill.toFixed(2), // Send final bill amount
+          currency: 'INR',
+          items: cartItems.map(item => ({ // Send items for context if needed by backend before creating order
+            productId: item._id,
+            quantity: item.quantity,
+            priceAtPurchase: (Number(item.price) || 0) - (Number(item.discount) || 0),
+            nameAtPurchase: item.name || 'Unnamed Product'
+          })),
+          // notes: { address: 'User address note' } // Optional notes
+        }),
+      });
+
+      const orderCreationData = await orderCreationResponse.json();
+
+      if (!orderCreationResponse.ok || !orderCreationData.success) {
+        throw new Error(orderCreationData.message || 'Failed to create Razorpay order.');
+      }
+
+      const { orderId, amount: razorpayAmount, currency, keyId } = orderCreationData;
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: keyId,
+        amount: razorpayAmount, // Amount is in currency subunits. Hence, 50000 refers to 50000 paise or ₹500.
+        currency: currency,
+        name: 'Your App Name', // Replace with your app name
+        description: 'Test Transaction', // Replace with a relevant description
+        order_id: orderId,
+        handler: async function (response) {
+          // 3. Verify Payment on Backend
+          try {
+            const verificationResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/verify-payment`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                items: cartItems.map(item => ({
+                  productId: item._id,
+                  quantity: item.quantity,
+                  priceAtPurchase: (Number(item.price) || 0) - (Number(item.discount) || 0),
+                  nameAtPurchase: item.name || 'Unnamed Product'
+                })),
+                totalAmount: finalBill.toFixed(2),
+                shippingAddress: shippingAddress,
+              }),
+            });
+
+            const verificationData = await verificationResponse.json();
+
+            if (!verificationResponse.ok || !verificationData.success) {
+              throw new Error(verificationData.message || 'Payment verification failed.');
+            }
+
+            // Payment successful and order placed
+            setPaymentLoading(false);
+            alert('Order placed successfully! Invoice sent to your email.'); // Replace with a better notification
+            setCartItems([]); // Clear cart on frontend
+            // navigate('/order-success'); // Navigate to an order success page
+          } catch (verifyError) {
+            console.error("Payment verification error:", verifyError);
+            setPaymentError(verifyError.message || 'An error occurred during payment verification.');
+            setPaymentLoading(false);
+            // alert(`Payment verification failed: ${verifyError.message}`); // Replace with better UI
+          }
+        },
+        prefill: {
+          name: currentUser?.fullname || currentUser?.username || '',
+          email: currentUser?.email || '',
+          // contact: '9999999999' // Optional
+        },
+        notes: {
+          address: `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.postalCode}, ${shippingAddress.country}`
+        },
+        theme: {
+          color: '#3399cc' // Customize theme color
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        console.error("Razorpay payment failed:", response.error);
+        setPaymentError(`Payment Failed: ${response.error.description} (Reason: ${response.error.reason})`);
+        setPaymentLoading(false);
+        // alert(`Payment Failed: ${response.error.description}`); // Replace with better UI
+      });
+      rzp.open();
+
+    } catch (err) {
+      console.error("Error during order placement:", err);
+      setPaymentError(err.message || 'An error occurred while placing the order.');
+      setPaymentLoading(false);
+    }
+  };
+
+
+  if (isLoading && !paymentLoading) { // Ensure payment loading doesn't show main loading
     return <div className="w-full min-h-screen flex items-center justify-center py-20 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300"><p>Loading cart...</p></div>;
   }
 
@@ -348,6 +520,29 @@ const handleClearCart = async () => {
       {/* Right Section - Price Breakdown */}
       <div className="w-full lg:w-[40%] bg-white dark:bg-gray-800 p-6 rounded-md h-fit sticky top-10 md:top-28 shadow-sm transition-colors duration-300"> {/* Adjusted top, theme bg */}
         <h3 className="text-xl font-semibold mb-5 text-gray-900 dark:text-white">Price Breakdown</h3>
+
+        {/* Shipping Address Form */}
+        <div className="mb-6">
+          <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">Shipping Address</h4>
+          <div className="space-y-3">
+            <div>
+              <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Street Address</label>
+              <input type="text" name="street" id="street" value={shippingAddress.street} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+            </div>
+            <div>
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
+              <input type="text" name="city" id="city" value={shippingAddress.city} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+            </div>
+            <div>
+              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Postal Code</label>
+              <input type="text" name="postalCode" id="postalCode" value={shippingAddress.postalCode} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+            </div>
+            <div>
+              <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
+              <input type="text" name="country" id="country" value={shippingAddress.country} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+            </div>
+          </div>
+        </div>
         
         <div className="space-y-3 text-gray-700 dark:text-gray-300">
           <div className="flex justify-between">
@@ -378,8 +573,16 @@ const handleClearCart = async () => {
           <span className="text-green-600 dark:text-green-400">₹{finalBill.toFixed(2)}</span>
         </div>
         
-        <button className="w-full bg-blue-600 text-white py-3 rounded-md mt-5 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors">
-          Proceed to Checkout
+        {paymentError && (
+          <p className="text-red-500 dark:text-red-400 text-sm mt-3">{paymentError}</p>
+        )}
+
+        <button
+          onClick={handlePlaceOrder}
+          disabled={isLoading || paymentLoading || cartItems.length === 0}
+          className="w-full bg-green-600 text-white py-3 rounded-md mt-5 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {paymentLoading ? 'Processing Payment...' : 'Place Order & Pay'}
         </button>
         
         <div className="mt-4 space-y-2">
