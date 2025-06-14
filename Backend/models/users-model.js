@@ -24,8 +24,17 @@ const userSchema = mongoose.Schema({
         type: Array, // Consider a more structured schema for orders if needed
         default: []
     },
-    contact: Number, // Restoring 'contact'
-    picture: String // This could also be a Cloudinary URL if users have profile pictures
+    phone: {
+        type: String,
+        trim: true,
+    },
+    address: {
+        type: String,
+        trim: true,
+    },
+    profilePhoto: { // Renamed from picture
+        type: String // This could also be a Cloudinary URL
+    }
 });
 
 export default mongoose.model("user", userSchema);

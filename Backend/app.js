@@ -23,6 +23,7 @@ import ownerRouter from './routes/ownerRouter.js';
 import productRouter from './routes/productRouter.js';
 import userRouter from './routes/userRouter.js';
 import indexRouter from './routes/index.js';
+import orderRouter from './routes/orderRouter.js';
 
 app.use(cors({
   origin: process.env.FRONTEND_URI, // Allow your frontend origin
@@ -45,6 +46,7 @@ app.use('/', indexRouter);
 app.use('/owners', ownerRouter);
 app.use('/users', userRouter);
 app.use('/products', productRouter);
+app.use('/orders', orderRouter);
 
 
 // Optional: Basic error handler (catches errors from synchronous code or explicitly passed via next(err))
