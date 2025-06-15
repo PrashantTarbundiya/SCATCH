@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { useUser } from '../context/UserContext'; // Import useUser
+import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
 
 
 // Renamed component to RegisterPage to match App.jsx import
@@ -254,78 +255,92 @@ const RegisterPage = () => {
         </div>
       )}
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-28"> {/* Added pt-28 for fixed header, theme bg */}
-        <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 shadow-xl rounded-lg transition-colors duration-300">
-          <h3 className="text-3xl md:text-4xl text-center mb-2 font-light text-gray-900 dark:text-gray-100">
-            Welcome to <span className="text-blue-500 dark:text-blue-400 font-semibold">Scatch</span>
-          </h3>
-          <h4 className="text-xl md:text-2xl mb-6 text-center text-gray-600 dark:text-gray-400">Create your account</h4>
-          
-          {/* Main Registration Form */}
-          <form onSubmit={handleInitialRegisterSubmit}>
-            <div className="mb-4">
-              <label htmlFor="fullname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
-              <input
-                id="fullname"
-                className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                type="text"
-                placeholder="John Doe"
-                name="fullname"
-                value={formData.fullname}
-                onChange={handleInputChange}
-                required
-                disabled={isOtpSending || showOtpModal} // Disable if OTP is being sent or modal is shown
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
-              <input
-                id="email"
-                className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                type="email"
-                placeholder="you@example.com"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                disabled={isOtpSending || showOtpModal}
-              />
-            </div>
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-              <input
-                id="password"
-                className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                type="password"
-                placeholder="••••••••"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                disabled={isOtpSending || showOtpModal}
-              />
-            </div>
-            <button
-              type="submit" // This button now triggers OTP sending
-              className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
-              disabled={isOtpSending || showOtpModal || !formData.email || !formData.fullname || !formData.password}
+      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
+        <CardContainer containerClassName="py-0" className="w-full max-w-md"> {/* Reverted to max-w-md */}
+          <CardBody className="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
+            <CardItem
+              as="h3"
+              translateZ="60"
+              className="text-3xl md:text-4xl text-center mb-2 font-light text-gray-900 dark:text-gray-100 w-full"
             >
-              {isOtpSending ? 'Sending OTP...' : 'Register'}
-            </button>
-          </form>
-          
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Already have an account?
-              <Link
-                to="/login"
-                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium ml-1"
-              >
-                Login here
-              </Link>
-            </p>
-          </div>
-        </div>
+              Welcome to <span className="text-blue-500 dark:text-blue-400 font-semibold">Scatch</span>
+            </CardItem>
+            <CardItem
+              as="h4"
+              translateZ="50"
+              className="text-xl md:text-2xl mb-6 text-center text-gray-600 dark:text-gray-400 w-full"
+            >
+              Create your account
+            </CardItem>
+            
+            {/* Main Registration Form */}
+            <form onSubmit={handleInitialRegisterSubmit} className="w-full">
+              <CardItem translateZ="40" className="mb-4 w-full">
+                <label htmlFor="fullname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                <input
+                  id="fullname"
+                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  type="text"
+                  placeholder="John Doe"
+                  name="fullname"
+                  value={formData.fullname}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isOtpSending || showOtpModal} // Disable if OTP is being sent or modal is shown
+                />
+              </CardItem>
+              <CardItem translateZ="30" className="mb-4 w-full">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <input
+                  id="email"
+                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  type="email"
+                  placeholder="you@example.com"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isOtpSending || showOtpModal}
+                />
+              </CardItem>
+              <CardItem translateZ="20" className="mb-6 w-full">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input
+                  id="password"
+                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  type="password"
+                  placeholder="••••••••"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  disabled={isOtpSending || showOtpModal}
+                />
+              </CardItem>
+              <CardItem translateZ="10" className="w-full">
+                <button
+                  type="submit" // This button now triggers OTP sending
+                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+                  disabled={isOtpSending || showOtpModal || !formData.email || !formData.fullname || !formData.password}
+                >
+                  {isOtpSending ? 'Sending OTP...' : 'Register'}
+                </button>
+              </CardItem>
+            </form>
+            
+            <CardItem translateZ="5" className="text-center mt-6 w-full">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Already have an account?
+                <Link
+                  to="/login"
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium ml-1"
+                >
+                  Login here
+                </Link>
+              </p>
+            </CardItem>
+          </CardBody>
+        </CardContainer>
       </div>
 
       {/* OTP Verification Modal */}

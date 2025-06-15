@@ -98,7 +98,7 @@ function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 pt-20 pb-12">
-      <div className="container mx-auto px-4">
+      <div className="w-[85%] mx-auto px-4">
         {/* Profile Header */}
         <div className="relative bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-700 dark:to-indigo-800 p-8 rounded-lg shadow-xl mb-10 text-white">
           <div className="flex flex-col md:flex-row items-center">
