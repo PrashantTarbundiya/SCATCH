@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate
-import { useTheme } from '../context/ThemeContext'; // Import useTheme custom hook
+import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+// cn and motion imports are no longer needed here as they are in HoverEffect.jsx
+import { HoverEffect } from '../components/ui/HoverEffect'; // Import the external HoverEffect
 
+// ProductCard component is now defined in HoverEffect.jsx and exported from there if needed separately,
+// but HoverEffect itself uses it internally. So, no need to define ProductCard here.
 
 const ShopPage = () => {
-  const { theme } = useTheme(); // Consume theme using the custom hook
-  const navigate = useNavigate(); // Initialize useNavigate
+  // const { theme } = useTheme(); // theme is used by ProductCard, which is now in HoverEffect.jsx
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState(null); // Page level error for fetching products
+  const [successMessage, setSuccessMessage] = useState(''); // Page level success message
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,28 +26,27 @@ const ShopPage = () => {
 
         let data;
         if (response.headers.get("content-type")?.includes("application/json")) {
-            data = await response.json();
+          data = await response.json();
         }
 
         if (!response.ok) {
           if (response.status === 401) {
-            // Unauthorized, redirect to login
             navigate('/login');
-            // It's good practice to also set an error or clear data to prevent rendering stale info
-            // For now, the redirect should prevent further rendering of this page's content.
-            // We might want to throw an error here as well so the `catch` block still runs,
-            // or return early to prevent further processing.
             throw new Error(data?.error || data?.message || 'Unauthorized access. Please login.');
           }
           throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
         }
         
         setProducts(data?.products || []);
-        if (data?.success && data?.success.length > 0) {
-          setSuccessMessage(data.success[0]);
-        } else if (data?.message && !data?.products) {
-          setSuccessMessage(data.message);
+        // Global success message for fetch, if needed.
+        // The ProductCard's add to cart success/error is handled within ProductCard itself.
+        if (data?.message && !data?.products) { // Example: "No products found but request was ok"
+            setSuccessMessage(data.message);
+        } else if (data?.products?.length > 0 && data?.success?.[0]) { // If products and a success message
+            setSuccessMessage(data.success[0]);
         }
+
+
       } catch (err) {
         setError(err.message || 'Failed to fetch products.');
       } finally {
@@ -52,10 +55,11 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [navigate]);
 
   const handleAddToCart = async (productId) => {
-    setSuccessMessage('');
+    // This function is passed to ProductCard via HoverEffect's items prop
+    setSuccessMessage(''); // Clear global messages
     setError(null);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/addtocart/${productId}`, {
@@ -65,39 +69,55 @@ const ShopPage = () => {
       
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          data = await response.json();
+        data = await response.json();
       }
 
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
       
+      // Set global success message for add to cart
       setSuccessMessage(data?.message || 'Product added to cart!');
+      setTimeout(() => setSuccessMessage(''), 3000); // Clear after 3s
+
     } catch (err) {
+      // Set global error message for add to cart
       setError(err.message || 'Failed to add product to cart.');
+      setTimeout(() => setError(null), 3000); // Clear after 3s
     }
   };
 
-  // BufferToBase64 function is no longer needed for product images from Cloudinary URLs
-  // and can be removed if not used elsewhere.
-
   if (isLoading) {
-    return <div className="text-center py-10 dark:text-gray-300">Loading products...</div>;
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="text-center py-10 dark:text-gray-300">
+          {/* <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div> */}
+          Loading products...
+        </div>
+      </div>
+    );
   }
+
+  // Prepare products for HoverEffect component
+  // The item structure for HoverEffect now expects `_id` and `onAddToCart` directly on the item.
+  const productsWithHandler = products.map(product => ({
+    ...product, // Spread all product properties
+    _id: product._id, // Ensure _id is present for key in HoverEffect
+    onAddToCart: handleAddToCart // Pass the ShopPage's handler
+  }));
 
   return (
     <>
-      {/* Header is rendered in App.jsx */}
-
+      {/* Notification Banner for page-level messages */}
       {(successMessage || error) && (
-        <div className={`fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-md shadow-lg z-50 ${successMessage ? 'bg-blue-500 dark:bg-blue-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}> {/* Reverted to top-20 */}
+        <div className={`fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-md shadow-lg z-[100] ${successMessage ? 'bg-blue-500 dark:bg-blue-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}>
           <span className="inline-block">{successMessage || error}</span>
         </div>
       )}
 
-      <div className="w-full min-h-screen flex items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8"> {/* Added px for horizontal padding, Added pt for header, dark mode bg */}
+      <div className="w-full min-h-screen flex items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
         {/* Sidebar */}
-        <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300"> {/* Dark mode for sidebar */}
+        <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300">
           <div className="flex items-center gap-2 mb-4">
             <h3 className="text-gray-800 dark:text-gray-200">Sort by</h3>
             <form>
@@ -133,74 +153,24 @@ const ShopPage = () => {
           </div>
         </div>
 
-        {/* Products Grid */}
+        {/* Products Grid with Hover Effect */}
         <div className="w-full md:w-[75%] flex flex-col gap-5 md:pl-5">
-          {error && !isLoading && <div className="text-red-500 dark:text-red-400 text-center col-span-full">Error fetching products: {error}</div>}
+          {/* Error message for product fetching is handled by the global banner */}
           {!isLoading && !error && products.length === 0 && (
-            <div className="text-center col-span-full py-10 text-gray-600 dark:text-gray-400">No products found.</div>
+            <div className="text-center col-span-full py-10 text-gray-600 dark:text-gray-400">
+              No products found.
+            </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"> {/* Changed to lg:grid-cols-4 */}
-            {products.map((product) => {
-              const originalPrice = parseFloat(product.price) || 0;
-              const discountAmount = parseFloat(product.discount) || 0;
-              const finalPrice = originalPrice - discountAmount;
-              const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
-
-              return (
-              <div className="w-full border border-gray-200 dark:border-gray-700 rounded-lg shadow-md dark:shadow-lg overflow-hidden bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl" key={product._id}>
-                <div
-                  className="w-full h-52 flex items-center justify-center relative" // Added relative positioning
-                  style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }} // Dynamic default bgcolor for dark/light
-                >
-                  {product.image && typeof product.image === 'string' ? (
-                     <img
-                        className="h-[12rem] w-full object-contain" // Added w-full for better layout
-                        src={product.image} // Directly use the Cloudinary URL
-                        alt={product.name || "Product Image"}
-                     />
-                  ) : (
-                    <span className="text-gray-400 dark:text-gray-500">No Image</span>
-                  )}
-                  {/* Discount Badge - Show only if discount > 0 */}
-                  {discountPercentage > 0 && (
-                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
-                      {`${discountPercentage}% OFF`}
-                    </div>
-                  )}
-                </div>
-
-                <div
-                  className="flex justify-between items-center px-4 py-4"
-                  style={{
-                    // For panelcolor and textcolor, if they are set, they override dark mode.
-                    // If not set, we can apply dark mode defaults.
-                    backgroundColor: product.panelcolor || (theme === 'dark' ? '#1f2937' : '#ffffff'),
-                    color: product.textcolor || (theme === 'dark' ? '#e5e7eb' : '#111827'),
-                  }}
-                >
-                  <div>
-                    <h3 className="font-semibold text-lg">{product.name}</h3>
-                    <div className="flex items-baseline gap-2"> {/* items-baseline for better alignment if font sizes differ */}
-                      <h4 className="text-md font-bold">₹ {finalPrice.toFixed(2)}</h4>
-                      {discountAmount > 0 && (
-                        <h4 className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                          {originalPrice.toFixed(2)}
-                        </h4>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleAddToCart(product._id)}
-                    title="Add to cart"
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    <i className="ri-add-line text-xl"></i>
-                  </button>
-                </div>
-              </div>
-              );
-            })}
-          </div>
+          {products.length > 0 && (
+            // The HoverEffect component itself defines the grid structure (grid, grid-cols, gap)
+            // So we pass the items and any additional className for the container if needed,
+            // but the grid layout classes are part of HoverEffect's definition now.
+            // The className prop on HoverEffect in Shop.jsx was "py-0" in your example.
+            // The HoverEffect component itself has "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+            // If you want to override these, you pass them in the className here.
+            // For now, I'll use the "py-0" as per your example, assuming HoverEffect's defaults are fine.
+            <HoverEffect items={productsWithHandler} className="py-0" /> 
+          )}
         </div>
       </div>
     </>
