@@ -11,10 +11,11 @@ import ShopPage from './pages/Shop';
 import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
 import ProfilePage from './pages/Profile'; // Import ProfilePage
 import EditProfilePage from './pages/EditProfile'; // Import EditProfilePage
+import ContactPage from './pages/ContactPage'; // Import ContactPage
 import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import OwnerProtectedRoute
 
 import Header from './components/Header';
-// import Footer from './components/Footer';
+import Footer from './components/Footer'; // Import Footer
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/owner-login" element={<OwnerLoginPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>
@@ -42,7 +44,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-      {/* <Footer /> */}
+      <Footer />
     </BrowserRouter>
   );
 }

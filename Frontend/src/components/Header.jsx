@@ -357,10 +357,12 @@ const Header = () => {
     desktopNavLinks.push({ name: "Shop", link: "/shop" });
     desktopNavLinks.push({ name: "Cart", link: "/cart" });
     desktopNavLinks.push({ name: "Profile", link: "/profile" });
+    desktopNavLinks.push({ name: "Contact", link: "/contact" }); // Added Contact link for desktop
     // mobileNavLinks.push({ name: `Hi, ${currentUser.fullname || currentUser.email}!`, link: "#" });
     mobileNavLinks.push({ name: "Shop", link: "/shop" });
     mobileNavLinks.push({ name: "Cart", link: "/cart" });
     mobileNavLinks.push({ name: "Profile", link: "/profile" });
+    mobileNavLinks.push({ name: "Contact", link: "/contact" }); // Added Contact link for mobile
   } else {
     // No specific nav links for logged-out users, buttons will handle login/register
   }
