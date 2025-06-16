@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // ProductCard uses Link
 import { useTheme } from '../../context/ThemeContext'; // ProductCard uses useTheme
 import { AnimatePresence, motion } from 'framer-motion'; // Corrected import
 import { cn } from '../../utils/cn'; // Adjusted path for cn utility
@@ -16,7 +15,6 @@ export const ProductCard = ({ product, onAddToCart }) => {
   return (
     <div className="rounded-2xl h-full overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:border-slate-700 dark:group-hover:border-slate-500 relative z-20 transition-all duration-300 shadow-md hover:shadow-xl" style={{ width: 'calc(100% + 2px)' }}>
       <div className="relative z-50">
-        <Link to={`/product/${product._id}`}>
           <div
             className="w-full h-52 flex items-center justify-center relative"
             style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }}
@@ -36,7 +34,6 @@ export const ProductCard = ({ product, onAddToCart }) => {
               </div>
             )}
           </div>
-        </Link>
         <div
           className="flex justify-between items-start px-4 py-4"
           style={{
@@ -45,9 +42,7 @@ export const ProductCard = ({ product, onAddToCart }) => {
           }}
         >
           <div className="flex-1 min-w-0 pr-2">
-            <Link to={`/product/${product._id}`}>
-              <h3 className="font-semibold text-lg truncate hover:underline">{product.name}</h3>
-            </Link>
+              <h3 className="font-semibold text-lg truncate">{product.name}</h3>
             <div className="flex items-center gap-2 whitespace-nowrap mt-1"> {/* Added mt-1 for slight spacing */}
               <h4 className="text-md font-bold">₹ {finalPrice.toFixed(2)}</h4>
               {discountAmount > 0 && (
