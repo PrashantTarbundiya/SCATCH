@@ -272,13 +272,53 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
     });
 
     const savedOrder = await newOrder.save();
-    await savedOrder.populate('user', 'email fullname username'); // Populate user details for email/invoice
-    await savedOrder.populate('items.product', 'name'); // Populate product names if needed elsewhere, though nameAtPurchase is primary
+    
+    // 3. Update product stock and purchase count
+    for (const item of savedOrder.items) {
+      const product = await Product.findById(item.product);
+      if (!product) {
+        // This should ideally not happen if product IDs are validated before order creation
+        console.error(`Product with ID ${item.product} not found during stock update for order ${savedOrder._id}`);
+        // Decide on error handling: rollback order? mark as issue?
+        // For now, we'll log and continue, but this is a critical point.
+        continue;
+      }
 
-    // 3. (Optional) Update product stock if you manage inventory
-    // for (const item of savedOrder.items) {
-    //   await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
-    // }
+      if (product.quantity < item.quantity) {
+        // VERY CRITICAL: Stock is insufficient. This indicates a race condition or earlier check failure.
+        // This order should ideally be invalidated or put on hold.
+        // This is a simplified handling. A robust system would use transactions or more complex checks.
+        console.error(`CRITICAL: Insufficient stock for product ${product.name} (ID: ${item.product}) for order ${savedOrder._id}. Required: ${item.quantity}, Available: ${product.quantity}`);
+        // TODO: Implement rollback logic or alert system.
+        // For now, we'll throw an error to prevent further processing of this order as fully successful.
+        // This will be caught by the main try-catch block.
+        // Before throwing, consider if the order should be marked as 'failed' or 'pending_stock_check'.
+        await Order.findByIdAndUpdate(savedOrder._id, { paymentStatus: 'failed_stock_issue', status: 'Failed - Stock Issue' });
+        throw new Error(`Insufficient stock for product ${product.name}. Please contact support regarding order ${savedOrder._id}.`);
+      }
+
+      // Atomic update to decrement quantity and increment purchaseCount
+      const updateResult = await Product.updateOne(
+        { _id: item.product, quantity: { $gte: item.quantity } }, // Ensure stock is still available
+        {
+          $inc: {
+            quantity: -item.quantity,
+            purchaseCount: item.quantity // Increment purchase count by quantity sold
+          }
+        }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        // This means the stock was not sufficient at the exact moment of update (race condition)
+        console.error(`CRITICAL: Failed to update stock for product ${product.name} (ID: ${item.product}) due to race condition or insufficient stock for order ${savedOrder._id}.`);
+        // TODO: Implement rollback logic for the entire order or for this item.
+        await Order.findByIdAndUpdate(savedOrder._id, { paymentStatus: 'failed_stock_issue', status: 'Failed - Stock Issue' });
+        throw new Error(`Could not reserve stock for product ${product.name}. Please contact support regarding order ${savedOrder._id}.`);
+      }
+    }
+
+    await savedOrder.populate('user', 'email fullname username');
+    await savedOrder.populate('items.product', 'name');
 
     // 4. Generate PDF Invoice
     const pdfBuffer = await generateInvoicePDF(savedOrder);
@@ -328,5 +368,34 @@ export const getUserOrders = async (req, res) => {
   } catch (error) {
     console.error('Error fetching user orders:', error);
     res.status(500).json({ success: false, message: 'Internal server error while fetching orders.', error: error.message });
+  }
+};
+
+export const checkIfUserPurchasedProduct = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { productId } = req.params;
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated.' });
+    }
+    if (!productId) {
+      return res.status(400).json({ success: false, message: 'Product ID is required.' });
+    }
+
+    const orders = await Order.find({
+      user: userId,
+      'items.product': productId,
+      paymentStatus: 'paid', // Ensure the order was actually paid for
+    });
+
+    if (orders.length > 0) {
+      res.status(200).json({ success: true, hasPurchased: true });
+    } else {
+      res.status(200).json({ success: true, hasPurchased: false });
+    }
+  } catch (error) {
+    console.error('Error checking if user purchased product:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.', error: error.message });
   }
 };

@@ -12,6 +12,7 @@ const CreateProductPage = () => {
     bgcolor: '',
     panelcolor: '',
     textcolor: '',
+    quantity: '', // Added quantity
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // For showing existing image in edit mode
@@ -40,14 +41,15 @@ const CreateProductPage = () => {
           }
           
           if (data.product) {
-            const { name, price, discount, bgcolor, panelcolor, textcolor, image } = data.product;
+            const { name, price, discount, bgcolor, panelcolor, textcolor, image, quantity } = data.product; // Added quantity
             setFormData({
               name: name || '',
               price: price || '',
               discount: discount || '',
               bgcolor: bgcolor || '',
               panelcolor: panelcolor || '',
-              textcolor: textcolor || ''
+              textcolor: textcolor || '',
+              quantity: quantity || '' // Added quantity
             });
             if (image && image.data) {
                 let binary = '';
@@ -96,6 +98,7 @@ const CreateProductPage = () => {
     productPayload.append('bgcolor', formData.bgcolor);
     productPayload.append('panelcolor', formData.panelcolor);
     productPayload.append('textcolor', formData.textcolor);
+    productPayload.append('quantity', formData.quantity || 0); // Added quantity
     if (imageFile) {
       productPayload.append('image', imageFile);
     } else if (!isEditMode && !imagePreview) {
@@ -126,7 +129,7 @@ const CreateProductPage = () => {
       setApiSuccess(result.message || (isEditMode ? 'Product updated successfully!' : 'Product created successfully!'));
       
       if (!isEditMode) {
-        setFormData({ name: '', price: '', discount: '', bgcolor: '', panelcolor: '', textcolor: '' });
+        setFormData({ name: '', price: '', discount: '', bgcolor: '', panelcolor: '', textcolor: '', quantity: '' }); // Reset quantity
         setImageFile(null);
         setImagePreview(null);
         if (document.getElementById('image')) {
@@ -223,18 +226,35 @@ const CreateProductPage = () => {
                   />
                 </div>
               </div>
-              <div>
-                <label htmlFor="discount" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Discount (%)</label>
-                <input
-                  id="discount"
-                  name="discount"
-                  type="number"
-                  placeholder="e.g., 10 for 10%"
-                  value={formData.discount}
-                  onChange={handleInputChange}
-                  className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
-                  disabled={isLoading}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> {/* New row for discount and quantity */}
+                <div>
+                  <label htmlFor="discount" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Discount (%)</label>
+                  <input
+                    id="discount"
+                    name="discount"
+                    type="number"
+                    placeholder="e.g., 10 for 10%"
+                    value={formData.discount}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="quantity" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Quantity*</label>
+                  <input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    placeholder="e.g., 100"
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+                    required
+                    min="0"
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
             </div>
 

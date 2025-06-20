@@ -1,26 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
-// cn and motion imports are no longer needed here as they are in HoverEffect.jsx
-import { HoverEffect } from '../components/ui/HoverEffect'; // Import the external HoverEffect
-
-// ProductCard component is now defined in HoverEffect.jsx and exported from there if needed separately,
-// but HoverEffect itself uses it internally. So, no need to define ProductCard here.
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
+import { HoverEffect } from '../components/ui/HoverEffect';
 
 const ShopPage = () => {
-  // const { theme } = useTheme(); // theme is used by ProductCard, which is now in HoverEffect.jsx
   const navigate = useNavigate();
+  const location = useLocation(); // To read URL query parameters
+
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null); // Page level error for fetching products
-  const [successMessage, setSuccessMessage] = useState(''); // Page level success message
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [currentSort, setCurrentSort] = useState('newest'); // Default sort
+  const [currentFilter, setCurrentFilter] = useState('all'); // Default filter
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const sortBy = params.get('sortBy') || 'newest'; // Default to newest if not present
+    const filterBy = params.get('filter') || 'all'; // Default to all
+
+    setCurrentSort(sortBy);
+    setCurrentFilter(filterBy);
+
     const fetchProducts = async () => {
       setIsLoading(true);
       setError(null);
+      let apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products?sortBy=${sortBy}&filter=${filterBy}`;
+      // The backend now handles 'discounted' directly via filter or discounted query param.
+      // We can simplify frontend logic if backend handles 'filter=discounted'
+      // For now, let's assume backend handles 'filter=discounted' and 'filter=availability'
+
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/shop`, {
+        const response = await fetch(apiUrl, { // Use apiUrl with query params
           credentials: 'include',
         });
 
@@ -31,35 +41,41 @@ const ShopPage = () => {
 
         if (!response.ok) {
           if (response.status === 401) {
-            navigate('/login');
+            navigate('/login'); // Redirect to login if unauthorized
             throw new Error(data?.error || data?.message || 'Unauthorized access. Please login.');
           }
           throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
         }
         
         setProducts(data?.products || []);
-        // Global success message for fetch, if needed.
-        // The ProductCard's add to cart success/error is handled within ProductCard itself.
-        if (data?.message && !data?.products) { // Example: "No products found but request was ok"
+        if (data?.message && !data?.products) {
             setSuccessMessage(data.message);
-        } else if (data?.products?.length > 0 && data?.success?.[0]) { // If products and a success message
+        } else if (data?.products?.length > 0 && data?.success?.[0]) {
             setSuccessMessage(data.success[0]);
         }
 
-
       } catch (err) {
         setError(err.message || 'Failed to fetch products.');
+        console.error("Fetch products error:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProducts();
-  }, [navigate]);
+  }, [location.search, navigate]); // Re-fetch when URL search params change
+
+  const handleSortChange = (e) => {
+    const newSortBy = e.target.value;
+    const params = new URLSearchParams(location.search);
+    params.set('sortBy', newSortBy);
+    navigate(`?${params.toString()}`);
+  };
+
+  // No need for handleFilterChange if using Link components to set URL params directly
 
   const handleAddToCart = async (productId) => {
-    // This function is passed to ProductCard via HoverEffect's items prop
-    setSuccessMessage(''); // Clear global messages
+    setSuccessMessage('');
     setError(null);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/addtocart/${productId}`, {
@@ -76,34 +92,31 @@ const ShopPage = () => {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
       
-      // Set global success message for add to cart
       setSuccessMessage(data?.message || 'Product added to cart!');
-      setTimeout(() => setSuccessMessage(''), 3000); // Clear after 3s
+      setTimeout(() => setSuccessMessage(''), 3000);
 
     } catch (err) {
-      // Set global error message for add to cart
       setError(err.message || 'Failed to add product to cart.');
-      setTimeout(() => setError(null), 3000); // Clear after 3s
+      setTimeout(() => setError(null), 3000);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <div className="text-center py-10 dark:text-gray-300">
-          {/* <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div> */}
           Loading products...
         </div>
       </div>
     );
   }
-
+  
   // Prepare products for HoverEffect component
-  // The item structure for HoverEffect now expects `_id` and `onAddToCart` directly on the item.
-  const productsWithHandler = products.map(product => ({
-    ...product, // Spread all product properties
-    _id: product._id, // Ensure _id is present for key in HoverEffect
-    onAddToCart: handleAddToCart // Pass the ShopPage's handler
+  // ProductCard will handle navigation to detail page
+  const productsForHoverEffect = products.map(product => ({
+    ...product,
+    onAddToCart: handleAddToCart, // Pass the ShopPage's add to cart handler
+    // No onViewDetails needed here, ProductCard will navigate
   }));
 
   return (
@@ -120,59 +133,66 @@ const ShopPage = () => {
         <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300">
           <div className="flex items-center gap-2 mb-4">
             <h3 className="text-gray-800 dark:text-gray-200">Sort by</h3>
-            <form>
-              <select className="border-[1px] border-gray-300 dark:border-gray-600 px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                <option value="popular">Popular</option>
-                <option value="newest">Newest</option>
-              </select>
-            </form>
+            {/* Form removed, select directly updates URL via navigate */}
+            <select
+              value={currentSort}
+              onChange={handleSortChange}
+              className="border-[1px] border-gray-300 dark:border-gray-600 px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="newest">Newest</option>
+              <option value="popular">Popular</option>
+              {/* Add other sort options like price_asc, price_desc if backend supports */}
+            </select>
           </div>
 
           <div className="flex flex-col mt-10">
-            <Link className="block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/shop?filter=new">
+            <h4 className="block w-fit mb-2 font-semibold text-gray-800 dark:text-gray-200">
+              Collections:
+            </h4>
+            <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'newCollection' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=newCollection&sortBy=newest">
               New Collection
             </Link>
-            <Link className="block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/shop?filter=all">
+            <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'all' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=all&sortBy=newest">
               All Products
             </Link>
-            <Link className="block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/shop?filter=discounted">
+            <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'discounted' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=discounted&sortBy=popular">
               Discounted Products
             </Link>
           </div>
 
-          <div className="mt-16">
+          <div className="mt-10"> {/* Adjusted margin */}
             <h4 className="block w-fit mb-2 font-semibold text-gray-800 dark:text-gray-200">
               Filter by:
             </h4>
-            <Link className="block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/shop?filter=availability">
-              Availability
+            <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'availability' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=availability&sortBy=newest">
+              In Stock
             </Link>
-            <Link className="block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/shop?filter=discount">
+            {/* The "Discount" filter link is covered by "Discounted Products" above, or can be a separate filter if backend logic differs */}
+            {/* For example, if "Discounted Products" is a collection and "Discount" is a general filter */}
+            {/* <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'discount' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=discount&sortBy=popular">
               Discount
-            </Link>
+            </Link> */}
           </div>
         </div>
 
         {/* Products Grid with Hover Effect */}
         <div className="w-full md:w-[75%] flex flex-col gap-5 md:pl-5">
-          {/* Error message for product fetching is handled by the global banner */}
+          {error && !isLoading && ( // Display error if product fetching failed
+            <div className="text-center col-span-full py-10 text-red-500 dark:text-red-400">
+              Error: {error}
+            </div>
+          )}
           {!isLoading && !error && products.length === 0 && (
             <div className="text-center col-span-full py-10 text-gray-600 dark:text-gray-400">
               No products found.
             </div>
           )}
           {products.length > 0 && (
-            // The HoverEffect component itself defines the grid structure (grid, grid-cols, gap)
-            // So we pass the items and any additional className for the container if needed,
-            // but the grid layout classes are part of HoverEffect's definition now.
-            // The className prop on HoverEffect in Shop.jsx was "py-0" in your example.
-            // The HoverEffect component itself has "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
-            // If you want to override these, you pass them in the className here.
-            // For now, I'll use the "py-0" as per your example, assuming HoverEffect's defaults are fine.
-            <HoverEffect items={productsWithHandler} className="py-0" /> 
+            <HoverEffect items={productsForHoverEffect} className="py-0" />
           )}
         </div>
       </div>
+      {/* Modal and its related style tag have been removed */}
     </>
   );
 };

@@ -3,11 +3,19 @@ const router = express.Router();
 import { upload } from '../config/multer-config.js'; // Assuming multer-config exports 'upload'
 import productModel from '../models/product-model.js';
 import isOwner from '../middleware/isOwner.js'; // Import isOwner middleware
+import isLoggedin from '../middleware/isLoggedin.js'; // Import isLoggedin middleware
+import { rateProduct, updateReview, deleteReview } from '../controllers/productController.js'; // Import new controllers
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 router.post('/create', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
     try {
-        const { name, price, discount, bgcolor, panelcolor, textcolor } = req.body;
+        const { name, price, discount, bgcolor, panelcolor, textcolor, quantity } = req.body; // Added quantity
+
+        if (!quantity || isNaN(parseInt(quantity, 10)) || parseInt(quantity, 10) < 0) {
+            const err = new Error("Valid quantity is required.");
+            err.status = 400;
+            return next(err);
+        }
 
         if (!req.file) {
             const err = new Error("Image is required");
@@ -27,7 +35,7 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
 
         const product = await productModel.create(({
             image: cloudinaryResponse.secure_url, // Store Cloudinary URL
-            name, price, discount, bgcolor, panelcolor, textcolor
+            name, price, discount, bgcolor, panelcolor, textcolor, quantity: parseInt(quantity, 10) // Added quantity
         }));
         res.status(201).json({ success: "Product created successfully", product });
     } catch (err) {
@@ -38,10 +46,39 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
     }
 });
 
-// Route to get all products
-router.get('/', async (req, res, next) => { // Added next
+// Route to get all products (with filtering and sorting)
+router.get('/', async (req, res, next) => {
     try {
-        const products = await productModel.find();
+        let query = {};
+        let sortOptions = {};
+
+        const { sortBy, filter, discounted } = req.query;
+
+        // Filtering
+        if (filter === 'discounted' || discounted === 'true') {
+            query.discount = { $gt: 0 };
+        }
+        // Add other specific filters if needed, e.g., based on category, availability (quantity > 0)
+        if (filter === 'availability') {
+            query.quantity = { $gt: 0 };
+        }
+
+
+        // Sorting
+        if (sortBy === 'popular') {
+            sortOptions.purchaseCount = -1; // Descending
+        } else if (sortBy === 'newest' || filter === 'new' || filter === 'newCollection') {
+            sortOptions.createdAt = -1; // Descending
+        } else {
+            // Default sort if no specific sortBy is provided, or add more options
+            sortOptions.createdAt = -1; // Default to newest
+        }
+
+        const products = await productModel.find(query).sort(sortOptions).populate({
+            path: 'ratings.user', // Keep population for averageRating virtual
+            select: 'username fullname'
+        });
+        
         res.status(200).json({ success: true, products });
     } catch (err) {
         err.message = `Failed to fetch products: ${err.message}`;
@@ -66,7 +103,11 @@ router.delete('/all', isOwner, async (req, res, next) => { // Added isOwner
 // Route to get a single product by ID
 router.get('/:id', async (req, res, next) => { // Added next
     try {
-        const product = await productModel.findById(req.params.id);
+        const product = await productModel.findById(req.params.id).populate({
+            path: 'ratings.user',
+            select: 'username fullname email' // Select fields you want to show
+        });
+
         if (!product) {
             const err = new Error("Product not found");
             err.status = 404;
@@ -82,8 +123,13 @@ router.get('/:id', async (req, res, next) => { // Added next
 // Route to update a product by ID
 router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
     try {
-        const { name, price, discount, bgcolor, panelcolor, textcolor } = req.body;
+        const { name, price, discount, bgcolor, panelcolor, textcolor, quantity } = req.body; // Added quantity
         let updateData = { name, price, discount, bgcolor, panelcolor, textcolor };
+
+        if (quantity !== undefined && !isNaN(parseInt(quantity, 10)) && parseInt(quantity, 10) >= 0) {
+            updateData.quantity = parseInt(quantity, 10);
+        }
+
 
         if (req.file) {
             const localFilePath = req.file.path;
@@ -127,6 +173,38 @@ router.delete('/:id', isOwner, async (req, res, next) => { // Added isOwner
         res.status(200).json({ success: true, message: "Product deleted successfully" });
     } catch (err) {
         err.message = `Product deletion failed for ID ${req.params.id}: ${err.message}`;
+        next(err);
+    }
+});
+
+// Route to add or update a product rating/review (handles both create and update of user's own review)
+router.post('/:productId/rate', isLoggedin, upload.array('reviewImages', 5), rateProduct); // Changed to upload.array
+
+// Route to specifically update a review (text, rating, image)
+router.put('/:productId/reviews/:reviewId', isLoggedin, upload.array('reviewImages', 5), updateReview); // Changed to upload.array
+
+// Route to delete a review
+router.delete('/:productId/reviews/:reviewId', isLoggedin, deleteReview);
+
+// TEMPORARY ROUTE: Update existing products with default quantity and purchaseCount
+router.post('/temp/update-all-quantities', isOwner, async (req, res, next) => {
+    try {
+        const result = await productModel.updateMany(
+            {}, // An empty filter object to match all documents
+            {
+                $set: {
+                    quantity: 20,
+                    purchaseCount: 0
+                }
+            }
+        );
+        res.status(200).json({
+            success: true,
+            message: `Updated ${result.matchedCount} products. ${result.modifiedCount} products were modified.`,
+            result
+        });
+    } catch (err) {
+        err.message = `Failed to update product quantities: ${err.message}`;
         next(err);
     }
 });

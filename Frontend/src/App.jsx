@@ -12,6 +12,7 @@ import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
 import ProfilePage from './pages/Profile'; // Import ProfilePage
 import EditProfilePage from './pages/EditProfile'; // Import EditProfilePage
 import ContactPage from './pages/ContactPage'; // Import ContactPage
+import ProductDetailPage from './pages/ProductDetailPage'; // Import ProductDetailPage
 import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import OwnerProtectedRoute
 
 import Header from './components/Header';
@@ -32,6 +33,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/product/:productId" element={<ProductDetailPage />} />
 
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>

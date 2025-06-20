@@ -12,4 +12,7 @@ router.post('/verify-payment', isLoggedIn, orderController.verifyPaymentAndPlace
 // You might want an endpoint to get a user's order history
 router.get('/my-orders', isLoggedIn, orderController.getUserOrders);
 
+// Route to check if the current user has purchased a specific product
+router.get('/has-purchased/:productId', isLoggedIn, orderController.checkIfUserPurchasedProduct);
+
 export default router;
