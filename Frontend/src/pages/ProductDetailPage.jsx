@@ -98,15 +98,31 @@ const ProductDetailPage = () => {
     const method = editingReview ? 'PUT' : 'POST';
     try {
       const response = await fetch(url, { method, credentials: 'include', body: formData });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        // If not JSON, try to get text for better error reporting
+        const textResponse = await response.text();
+        // Throw an error with the text response if not ok, or a generic error if ok but not JSON
+        if (!response.ok) throw new Error(textResponse || `HTTP error! status: ${response.status}`);
+        throw new Error("Received non-JSON response from server."); // Should ideally be JSON
+      }
+
+      if (!response.ok) {
+        // data should be populated here if it was JSON
+        throw new Error(data?.error || data?.message || `HTTP error! status: ${response.status}`);
+      }
+      
       setSuccessMessage(data.success || (editingReview ? "Review updated!" : "Review submitted!"));
-      setProduct(data.product);
+      setProduct(data.product); // Ensure data.product is valid and expected structure
       setUserRating(0); setReviewText(''); setReviewImages([]); setReviewImagePreviews([]); setEditingReview(null);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.message || "Failed to submit review.");
-      setTimeout(() => setError(null), 3000);
+      console.error("Review submission error:", err); // Log the full error for debugging
+      setError(err.message || "Failed to submit review. Please try again.");
+      setTimeout(() => setError(null), 5000); // Increased timeout for error visibility
     } finally {
       setIsSubmittingReview(false);
     }
