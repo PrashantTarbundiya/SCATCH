@@ -9,6 +9,8 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js'; // Corrected import
 
 // In-memory store for OTPs. In production, use Redis or a similar persistent store.
 let otpStore = {}; // Format: { email: { otp: '123456', expires: timestamp, attempts: 0 } }
+// In-memory store for password reset OTPs
+let passwordResetOtpStore = {}; // Format: { email: { otp: '123456', expires: timestamp, attempts: 0, resendCooldown: timestamp } }
 
 // Nodemailer transporter setup for Gmail
 const transporter = nodemailer.createTransport({
@@ -538,4 +540,117 @@ export const updateUserProfile = async (req, res) => {
     }
 };
 
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        const existingOtpData = passwordResetOtpStore[email];
+        if (existingOtpData && existingOtpData.resendCooldown && Date.now() < existingOtpData.resendCooldown) {
+            const timeLeft = Math.ceil((existingOtpData.resendCooldown - Date.now()) / 1000);
+            return res.status(429).json({ error: `Please wait ${timeLeft} seconds before requesting a new OTP.` });
+        }
+
+        const otp = crypto.randomInt(100000, 999999).toString();
+        const expires = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+        const resendCooldown = Date.now() + 1 * 60 * 1000; // 1 minute cooldown for resend
+
+        passwordResetOtpStore[email] = {
+            otp,
+            expires,
+            attempts: 0,
+            resendCooldown
+        };
+        // console.log("Password Reset OTP Store after sending:", passwordResetOtpStore);
+
+
+        const mailOptions = {
+            from: `"Scatch App" <${process.env.GMAIL_USER}>`,
+            to: email,
+            subject: 'Your Password Reset OTP for Scatch',
+            html: `
+                <p>Hello ${user.fullname},</p>
+                <p>Your One-Time Password (OTP) to reset your Scatch account password is: <strong>${otp}</strong></p>
+                <p>This OTP is valid for 10 minutes.</p>
+                <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
+                <br>
+                <p>Thanks,</p>
+                <p>The Scatch Team</p>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ success: true, message: "OTP sent to your email for password reset." });
+
+    } catch (err) {
+        console.error("Error in forgotPassword:", err);
+        res.status(500).json({ error: "Server error while processing forgot password request.", details: err.message });
+    }
+};
+
+export const verifyOtpAndResetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ error: "Email, OTP, and new password are required." });
+        }
+
+        const passwordValidation = validatePassword(newPassword);
+        if (!passwordValidation.isValid) {
+            return res.status(400).json({ error: passwordValidation.message });
+        }
+
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        const storedOtpData = passwordResetOtpStore[email];
+
+        if (!storedOtpData || !storedOtpData.otp) {
+            return res.status(400).json({ error: "No OTP found for this user or OTP might have been cleared. Please request a new one." });
+        }
+
+        if (Date.now() > storedOtpData.expires) {
+            delete passwordResetOtpStore[email]; // Clean up expired OTP
+            return res.status(400).json({ error: "OTP has expired. Please request a new one." });
+        }
+
+        if (storedOtpData.attempts >= 3) {
+            delete passwordResetOtpStore[email]; 
+            return res.status(429).json({ error: "Maximum OTP attempts reached. Please request a new OTP." });
+        }
+
+        if (storedOtpData.otp !== otp) {
+            storedOtpData.attempts += 1;
+            const attemptsLeft = 3 - storedOtpData.attempts;
+            // console.log("Password Reset OTP Store after failed attempt:", passwordResetOtpStore);
+            return res.status(400).json({ error: `Invalid OTP. ${attemptsLeft} attempts remaining.` });
+        }
+
+        // OTP is correct, reset password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        user.password = hashedPassword;
+        await user.save(); // Save the new password to the user model
+
+        delete passwordResetOtpStore[email]; // Clean up used OTP from the store
+        // console.log("Password Reset OTP Store after successful reset:", passwordResetOtpStore);
+
+
+        // Optionally, log the user in directly or send a confirmation email
+        res.status(200).json({ success: true, message: "Password has been reset successfully." });
+
+    } catch (err) {
+        console.error("Error in verifyOtpAndResetPassword:", err);
+        res.status(500).json({ error: "Server error while resetting password.", details: err.message });
+    }
+};
 // Removed module.exports as we are using named exports now

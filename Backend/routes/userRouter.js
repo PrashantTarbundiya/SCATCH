@@ -7,7 +7,9 @@ import {
     logout,
     getUserCart,
     updateUserProfilePhoto, // Import the new controller function
-    updateUserProfile // Import the new controller function for general profile updates
+    updateUserProfile, // Import the new controller function for general profile updates
+    forgotPassword,
+    verifyOtpAndResetPassword
 } from '../controllers/authController.js';
 import isLoggedIn from '../middleware/isLoggedin.js'; // Assuming this is your auth middleware
 import { upload } from '../config/multer-config.js'; // Import multer upload middleware
@@ -35,5 +37,9 @@ router.post(
 
 // Route to update user's general profile information (fullname, phone, address)
 router.put('/profile/update', isLoggedIn, updateUserProfile);
+
+// Forgot password routes
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', verifyOtpAndResetPassword);
 
 export default router;

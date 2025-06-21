@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema({
         }
     }],
     orders: {
-        type: Array, // Consider a more structured schema for orders if needed
+        type: Array, 
         default: []
     },
     phone: {
@@ -32,8 +32,8 @@ const userSchema = mongoose.Schema({
         type: String,
         trim: true,
     },
-    profilePhoto: { // Renamed from picture
-        type: String // This could also be a Cloudinary URL
+    profilePhoto: { 
+        type: String 
     }
 });
 
