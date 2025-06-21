@@ -2,10 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import Admin from './pages/Admin';
+import AdminSalesPage from './pages/AdminSalesPage'; // Import the new sales page
 import Cart from './pages/Cart';
 import CreateProduct from './pages/CreateProduct';
 import LoginPage from './pages/login'; 
-import OwnerLoginPage from './pages/OwnerLogin'; 
+import OwnerLoginPage from './pages/OwnerLogin';
 import RegisterPage from './pages/register';
 import ShopPage from './pages/Shop';
 import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
@@ -38,6 +39,7 @@ function App() {
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/sales" element={<AdminSalesPage />} /> {/* New route for sales page */}
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
           </Route>

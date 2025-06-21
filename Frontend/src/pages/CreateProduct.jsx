@@ -156,14 +156,25 @@ const CreateProductPage = () => {
         {/* Sidebar */}
         <aside className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300 h-fit sticky top-28"> {/* Styled like Admin/Shop sidebar */}
           <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Admin Menu</h3>
-          <nav className="flex flex-col space-y-2">
-            <Link to="/admin" className="text-blue-600 dark:text-blue-400 hover:underline">
-              Dashboard / View Products
+          <nav className="flex flex-col space-y-1"> {/* Reduced space-y for tighter links */}
+            <Link
+              to="/admin"
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-sm"
+            >
+              All Products
             </Link>
-            <Link to="/create-product" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            <Link
+              to="/admin/sales"
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-sm"
+            >
+              Sales Analytics
+            </Link>
+            <Link
+              to="/create-product"
+              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-sm font-semibold" // Keep font-semibold for active page
+            >
               Create New Product
             </Link>
-            {/* Add other admin links here */}
           </nav>
         </aside>
 

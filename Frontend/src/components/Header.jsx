@@ -349,9 +349,11 @@ const Header = () => {
 
   if (isOwnerAuthenticated && currentOwner) {
     desktopNavLinks.push({ name: "Admin Panel", link: "/admin" });
+    desktopNavLinks.push({ name: "Sales Analytics", link: "/admin/sales" }); // Added Sales Analytics for desktop
     desktopNavLinks.push({ name: "Create Product", link: "/create-product" });
     // mobileNavLinks.push({ name: `Owner: ${currentOwner.fullname || currentOwner.email}`, link: "#" });
     mobileNavLinks.push({ name: "Admin Panel", link: "/admin" });
+    mobileNavLinks.push({ name: "Sales Analytics", link: "/admin/sales" }); // Added Sales Analytics link
     mobileNavLinks.push({ name: "Create Product", link: "/create-product" });
   } else if (isAuthenticated && currentUser) {
     desktopNavLinks.push({ name: "Shop", link: "/shop" });
@@ -456,7 +458,7 @@ const Header = () => {
               key={item.name}
               to={item.link}
               onClick={closeMobileMenu}
-              className="block w-full px-4 py-2 text-lg text-neutral-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md"
+              className="block w-full px-4 py-2 text-lg text-neutral-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-md text-center"
             >
               {item.name}
             </Link>

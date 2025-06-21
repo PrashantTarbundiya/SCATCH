@@ -14,6 +14,7 @@ const AllProductsPage = () => {
   const [error, setError] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [showOutOfStockOnly, setShowOutOfStockOnly] = useState(false); // New state for filter
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -109,27 +110,35 @@ const AllProductsPage = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex items-start py-20 pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"> {/* Removed px, Added theme bg, pt-28 for fixed header */}
-      {/* Sidebar */}
-      <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300 h-screen sticky top-28"> {/* Styled like Shop sidebar, sticky */}
-        <div className="flex flex-col">
-          <Link className="block w-fit mb-2 text-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/admin">
-            All Products
-          </Link>
-          <Link className="block w-fit mb-2 text-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400" to="/create-product">
-            Create New Product
-          </Link>
-        </div>
-      </div>
+    <div className="w-full min-h-screen flex flex-col items-start py-20 pt-28 px-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"> {/* Added px-6 for horizontal padding, changed flex to flex-col */}
+      {/* Sidebar REMOVED */}
 
       {/* Main content */}
-      <div className="w-full md:w-[75%] flex flex-col gap-5 md:pl-5"> {/* Removed md:h-screen md:overflow-y-auto, Added pl-5 for spacing from sidebar */}
-        <button
-          onClick={handleDeleteAll}
-          className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 self-start mb-4 px-3 py-1 border border-red-500 dark:border-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900 transition-colors"
-        >
-          Delete All Products
-        </button>
+      <div className="w-full flex flex-col gap-6"> {/* Adjusted width to full, removed padding, increased gap */}
+        {/* Action Bar */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200">Product Management</h1>
+          <div className="flex gap-3 items-center"> {/* Added items-center */}
+            <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer">
+              <input
+                id="outOfStockFilter"
+                type="checkbox"
+                checked={showOutOfStockOnly}
+                onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
+                className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Show Out of Stock Only
+              </span>
+            </label>
+            <button
+              onClick={handleDeleteAll}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md shadow-sm transition-colors text-sm font-medium"
+            >
+              Delete All Products
+            </button>
+          </div>
+        </div>
 
         {products.length === 0 && !loading && (
           <p className="text-gray-600 dark:text-gray-400">No products found.</p>
@@ -137,7 +146,9 @@ const AllProductsPage = () => {
 
         {/* Product List */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"> {/* Reverted to Shop page grid */}
-          {products.map((product) => {
+          {products
+            .filter(product => !showOutOfStockOnly || product.quantity === 0)
+            .map((product) => {
             const originalPrice = parseFloat(product.price) || 0;
             const discountAmount = parseFloat(product.discount) || 0;
             const finalPrice = originalPrice - discountAmount;
@@ -185,6 +196,9 @@ const AllProductsPage = () => {
                       </h4>
                     )}
                   </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Quantity Left: {product.quantity !== undefined ? product.quantity : 'N/A'}
+                  </p>
                 </div>
                 {/* Buttons container - initially hidden, shown on hover */}
                 <div className="absolute bottom-4 right-4 mt-auto pt-2 flex justify-end gap-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
@@ -207,6 +221,8 @@ const AllProductsPage = () => {
           })}
         </div>
       </div>
+
+      {/* Sales Data Section REMOVED */}
 
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

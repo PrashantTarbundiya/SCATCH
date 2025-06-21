@@ -399,3 +399,24 @@ export const checkIfUserPurchasedProduct = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error.', error: error.message });
   }
 };
+
+export const getAllOrdersForAdmin = async (req, res) => {
+  try {
+    // Assuming an admin check middleware has already run if this is a protected route
+    const orders = await Order.find({})
+      .populate({
+        path: 'user',
+        select: 'fullname email', // Select specific fields from the user
+      })
+      .populate({
+        path: 'items.product',
+        select: 'name price', // Select specific fields from the product
+      })
+      .sort({ orderDate: -1 });
+
+    res.status(200).json({ success: true, orders });
+  } catch (error) {
+    console.error('Error fetching all orders for admin:', error);
+    res.status(500).json({ success: false, message: 'Internal server error while fetching all orders.', error: error.message });
+  }
+};

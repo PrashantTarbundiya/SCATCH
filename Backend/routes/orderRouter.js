@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import isLoggedIn from '../middleware/isLoggedin.js'; // Assuming isLoggedin.js uses ES module exports
+import isOwner from '../middleware/isOwner.js'; // Import isOwner middleware
 import * as orderController from '../controllers/orderController.js'; // Import all exports
 
 // Route to create a Razorpay order ID
@@ -14,5 +15,8 @@ router.get('/my-orders', isLoggedIn, orderController.getUserOrders);
 
 // Route to check if the current user has purchased a specific product
 router.get('/has-purchased/:productId', isLoggedIn, orderController.checkIfUserPurchasedProduct);
+
+// Route for admin to get all orders
+router.get('/admin/all-orders', isOwner, orderController.getAllOrdersForAdmin); // Removed isLoggedIn
 
 export default router;
