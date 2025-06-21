@@ -23,7 +23,7 @@ const orderEmailTransporter = nodemailer.createTransport({
 // --- Helper function placeholders (to be implemented) ---
 async function generateInvoicePDF(order) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ margin: 30, size: 'A4' }); // Reduced margin
     let buffers = [];
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
@@ -34,19 +34,19 @@ async function generateInvoicePDF(order) {
 
     // Invoice Header
     doc
-      .fontSize(20)
+      .fontSize(18) // Reduced font size
       .text('INVOICE', { align: 'center' })
-      .moveDown(0.5);
+      .moveDown(0.3); // Reduced spacing
 
     // Company & Client Details (Example)
-    doc.fontSize(10);
+    doc.fontSize(9); // Reduced font size
     doc.text('Scatch', { align: 'left' }); // Changed company name
     // Removed company address line
-    doc.moveDown(0.5);
+    doc.moveDown(0.3); // Reduced spacing
     doc.text(`Invoice ID: ${order._id}`, { align: 'left' });
     doc.text(`Order Date: ${order.orderDate.toLocaleDateString()}`, { align: 'left' });
     doc.text(`Razorpay Order ID: ${order.razorpayOrderId}`, { align: 'left' });
-    doc.moveDown(1);
+    doc.moveDown(0.5); // Reduced spacing
 
     doc.text('Bill To:', { align: 'left' });
     doc.text(order.user.fullname || order.user.username, { align: 'left' }); // Assuming user has fullname or username
@@ -56,56 +56,54 @@ async function generateInvoicePDF(order) {
       doc.text(`${order.shippingAddress.city || ''}, ${order.shippingAddress.postalCode || ''}`, { align: 'left' });
       doc.text(`${order.shippingAddress.country || ''}`, { align: 'left' });
     }
-    doc.moveDown(2);
+    doc.moveDown(1); // Reduced spacing
 
     // Table Header
     const tableTop = doc.y;
-    doc.font('Helvetica-Bold');
-    doc.text('Item', 50, tableTop);
-    doc.text('Quantity', 250, tableTop, { width: 90, align: 'right' });
-    doc.text('Price', 350, tableTop, { width: 90, align: 'right' });
-    doc.text('Total', 450, tableTop, { width: 90, align: 'right' });
-    doc.font('Helvetica');
-    doc.moveDown(1);
+    doc.font('Helvetica-Bold').fontSize(10); // Kept font size for table header
+    doc.text('Item', 30, tableTop); // Adjusted X for reduced margin
+    doc.text('Quantity', 230, tableTop, { width: 90, align: 'right' }); // Adjusted X
+    doc.text('Price', 330, tableTop, { width: 90, align: 'right' }); // Adjusted X
+    doc.text('Total', 430, tableTop, { width: 90, align: 'right' }); // Adjusted X
+    doc.font('Helvetica').fontSize(9); // Set font size for table rows
+    doc.moveDown(0.5); // Reduced spacing
     const headerBottom = doc.y;
-    doc.lineCap('butt').moveTo(50, headerBottom).lineTo(550, headerBottom).stroke();
+    doc.lineCap('butt').moveTo(30, headerBottom).lineTo(doc.page.width - 30, headerBottom).stroke(); // Adjusted X for reduced margin
 
 
     // Table Rows
-    let yPosition = headerBottom + 10;
+    let yPosition = headerBottom + 5; // Reduced spacing
     order.items.forEach(item => {
-      doc.text(item.nameAtPurchase, 50, yPosition);
-      doc.text(item.quantity.toString(), 250, yPosition, { width: 90, align: 'right' });
-      doc.text(item.priceAtPurchase.toFixed(2), 350, yPosition, { width: 90, align: 'right' });
-      doc.text((item.quantity * item.priceAtPurchase).toFixed(2), 450, yPosition, { width: 90, align: 'right' });
-      yPosition += 20;
-      if (yPosition > 700) { // Basic pagination
-        doc.addPage();
-        yPosition = 50;
-      }
+      doc.text(item.nameAtPurchase, 30, yPosition, { width: 190 }); // Adjusted X and width
+      doc.text(item.quantity.toString(), 230, yPosition, { width: 90, align: 'right' }); // Adjusted X
+      doc.text(item.priceAtPurchase.toFixed(2), 330, yPosition, { width: 90, align: 'right' }); // Adjusted X
+      doc.text((item.quantity * item.priceAtPurchase).toFixed(2), 430, yPosition, { width: 90, align: 'right' }); // Adjusted X
+      yPosition += 15; // Reduced spacing
+      // Removed pagination logic: if (yPosition > 700) ...
     });
-    const itemsBottom = doc.y;
-    doc.lineCap('butt').moveTo(50, itemsBottom).lineTo(550, itemsBottom).stroke();
-    doc.moveDown(1);
+    const itemsBottom = yPosition - 5; // Adjusted itemsBottom based on new yPosition logic
+    doc.lineCap('butt').moveTo(30, itemsBottom).lineTo(doc.page.width - 30, itemsBottom).stroke(); // Adjusted X
+    doc.moveDown(0.5); // Reduced spacing
 
 
     // Total
-    doc.font('Helvetica-Bold');
-    const yPosForTotal = doc.y + 10; // Position for the total line, with some space from items line
+    doc.font('Helvetica-Bold').fontSize(10); // Set font size for Total
+    const yPosForTotal = doc.y + 5; // Reduced spacing
 
     // "Total Amount:" label on the left
-    doc.text('Total Amount:', 50, yPosForTotal, { width: 380, align: 'left' });
+    doc.text('Total Amount:', 30, yPosForTotal, { width: 380, align: 'left' }); // Adjusted X
 
     // "INR XXX.XX" value on the right, aligned with the item totals column
-    doc.text(`INR ${order.totalAmount.toFixed(2)}`, 450, yPosForTotal, { width: 90, align: 'right' });
+    doc.text(`INR ${order.totalAmount.toFixed(2)}`, 430, yPosForTotal, { width: 90, align: 'right' }); // Adjusted X
     
-    doc.font('Helvetica');
+    doc.font('Helvetica').fontSize(9); // Reset font size
     // doc.y is automatically advanced by the text calls. Add extra space if needed.
-    doc.y = yPosForTotal + doc.heightOfString('Total Amount:') + 5; // Ensure subsequent content is below
-    doc.moveDown(1); // Add a bit more space
+    doc.y = yPosForTotal + doc.heightOfString('Total Amount:') + 2; // Reduced spacing
+    doc.moveDown(0.5); // Reduced spacing
 
-    // Footer
-    doc.fontSize(8).text('Thank you for your business!', 50, 750, { align: 'center', width: 500 });
+    // Footer - Positioned dynamically at the bottom
+    const footerY = doc.page.height - doc.page.margins.bottom - 10; // 10 for font size + small buffer
+    doc.fontSize(7).text('Thank you for your business!', 30, footerY, { align: 'center', width: doc.page.width - 60 }); // Adjusted X and width
 
     doc.end();
   });
