@@ -66,6 +66,22 @@ export const NavBody = ({
   const [isHovering, setIsHovering] = useState(false); // For overall NavBody blur
   const [hoveredKey, setHoveredKey] = useState(null); // For unified item hover animation
 
+  // --- Dynamically adjust items for navLinks and actions based on 'visible' and logged-out state ---
+  let currentNavLinks = unifiedDesktopItems.filter(item => item.section === 'navLinks');
+  let currentActions = unifiedDesktopItems.filter(item => item.section === 'actions');
+
+  // Infer logged-out state by checking if 'User Login' is an action item
+  const isLoggedOutForConditionalRendering = currentActions.some(item => item.label === 'User Login');
+
+  if (visible && isLoggedOutForConditionalRendering) {
+    const authActionLabels = ['User Login', 'Owner Login', 'Register'];
+    
+    const authActionsToMove = currentActions.filter(item => authActionLabels.includes(item.label));
+    currentNavLinks = [...currentNavLinks, ...authActionsToMove]; // Add them to nav links
+    currentActions = currentActions.filter(item => !authActionLabels.includes(item.label)); // Remove them from actions
+  }
+  // --- End dynamic adjustment ---
+
   return (
     <motion.div
       onMouseEnter={() => setIsHovering(true)} // For NavBody's own blur
@@ -106,14 +122,14 @@ export const NavBody = ({
 
       {/* Render Unified NavLinks (center) */}
       <div className="flex flex-1 items-center justify-center space-x-1">
-        {unifiedDesktopItems.filter(item => item.section === 'navLinks').map((item) => (
+        {currentNavLinks.map((item) => (
           <NavbarButton
             key={item.key}
-            as={Link}
+            as={Link} // Items in navLinks (original or moved auth links) use Link
             to={item.to}
-            onClick={onItemClick} // from Header's closeMobileMenu
-            variant="secondary" // Links are typically secondary looking
-            className="px-3 py-2 text-neutral-600 dark:text-neutral-300" // Adjusted padding/text color
+            onClick={onItemClick}
+            variant="secondary"
+            className="px-3 py-2 text-neutral-600 dark:text-neutral-300"
             onMouseEnterHandler={() => setHoveredKey(item.key)}
             isHoveredForAnimation={hoveredKey === item.key}
             animationLayoutId="desktop-unified-hover"
@@ -125,14 +141,14 @@ export const NavBody = ({
 
       {/* Render Unified Action Buttons (right) */}
       <div className="flex items-center gap-x-1">
-        {unifiedDesktopItems.filter(item => item.section === 'actions').map((item) => (
+        {currentActions.map((item) => (
           <NavbarButton
             key={item.key}
-            as={item.type === 'link' ? Link : 'button'}
+            as={item.type === 'link' ? Link : (item.type === 'themeToggle' ? 'button' : 'button')} // Handle different action types
             to={item.to}
             onClick={item.onClick}
             variant={item.variant || 'secondary'}
-            className={cn("p-2", item.className)} // Ensure p-2 for icon button, allow other classes
+            className={cn("p-2", item.className)}
             aria-label={item.ariaLabel}
             onMouseEnterHandler={() => setHoveredKey(item.key)}
             isHoveredForAnimation={hoveredKey === item.key}
