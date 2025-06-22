@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext'; // Corrected import
+import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useUser(); // Correctly use the hook
+  const { addToWishlist, removeFromWishlist, isProductInWishlist, loading: wishlistLoading } = useWishlist();
 
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -178,6 +180,36 @@ const ProductDetailPage = () => {
     }
   };
 
+  const handleToggleWishlist = async (currentProductId) => {
+    if (!currentProductId) return;
+    setSuccessMessage('');
+    setError(null);
+    try {
+      let result;
+      if (isProductInWishlist(currentProductId)) {
+        result = await removeFromWishlist(currentProductId);
+        if (result) {
+          setSuccessMessage('Product removed from wishlist!');
+        } else {
+          throw new Error('Failed to remove product from wishlist.');
+        }
+      } else {
+        result = await addToWishlist(currentProductId);
+        if (result) {
+          setSuccessMessage('Product added to wishlist!');
+        } else {
+          // Error might be set by context, or throw specific error
+          throw new Error('Failed to add product to wishlist. User might not be logged in.');
+        }
+      }
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Wishlist operation failed.');
+      console.error("Wishlist toggle error on detail page:", err);
+      setTimeout(() => setError(null), 3000);
+    }
+  };
+
   if (isLoading) return <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900"><p className="text-gray-700 dark:text-gray-300 text-lg">Loading product details...</p></div>;
   if (error && !product) return <div className="w-full min-h-screen flex flex-col items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900"><p className="text-red-600 dark:text-red-400 text-xl mb-4">Error: {error}</p><button onClick={() => navigate('/shop')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Back to Shop</button></div>;
   if (!product) return <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900"><p className="text-gray-700 dark:text-gray-300 text-lg">Product not found.</p></div>;
@@ -207,14 +239,29 @@ const ProductDetailPage = () => {
               </div>
               {/* Removed Out of Stock text from here, button indicates it */}
             </div>
-            <button
-              onClick={() => product.quantity > 0 && handleAddToCart(product._id)}
-              className={`w-full text-white font-semibold py-2 px-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 mt-auto ${product.quantity > 0 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'}`}
-              disabled={product.quantity === 0}
-            >
-              <i className="ri-shopping-cart-line"></i>
-              {product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
-            </button>
+            <div className="flex items-center gap-2 mt-auto">
+              <button
+                onClick={() => product && product.quantity > 0 && handleToggleWishlist(product._id)}
+                title={product && isProductInWishlist(product._id) ? "Remove from wishlist" : "Add to wishlist"}
+                className={`p-2 rounded-lg transition-colors duration-300
+                            ${product && product.quantity > 0
+                              ? isProductInWishlist(product._id)
+                                ? 'bg-red-100 dark:bg-red-800 text-red-500 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-700'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`}
+                disabled={!product || product.quantity === 0 || wishlistLoading}
+              >
+                <i className={`${product && isProductInWishlist(product._id) ? 'ri-heart-fill' : 'ri-heart-line'} text-xl`}></i>
+              </button>
+              <button
+                onClick={() => product && product.quantity > 0 && handleAddToCart(product._id)}
+                className={`flex-grow text-white font-semibold py-2 px-3 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 ${product && product.quantity > 0 ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'}`}
+                disabled={!product || product.quantity === 0}
+              >
+                <i className="ri-shopping-cart-line"></i>
+                {product && product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
+              </button>
+            </div>
           </div>
           {hasPurchasedProduct && currentUser ? (
             <div id="review-form-section-detailpage" className="border dark:border-gray-700 p-4 rounded-lg flex flex-col justify-between">

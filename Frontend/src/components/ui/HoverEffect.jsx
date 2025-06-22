@@ -5,7 +5,7 @@ import { cn } from '../../utils/cn';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 // ProductCard Component
-export const ProductCard = ({ product, onAddToCart }) => { // Removed onViewDetails from props
+export const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishlist, wishlistLoading }) => { // Added wishlist props
   const { theme } = useTheme();
   const navigate = useNavigate(); // Initialize useNavigate
   
@@ -17,13 +17,38 @@ export const ProductCard = ({ product, onAddToCart }) => { // Removed onViewDeta
   return (
     <div className="rounded-2xl h-full overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:border-slate-700 dark:group-hover:border-slate-500 relative z-20 transition-all duration-300 shadow-md hover:shadow-xl" style={{ width: 'calc(100% + 2px)' }}>
       <div className="relative z-50 group"> {/* Added group class here for the overlay */}
-          <div
-            className={`w-full h-52 flex items-center justify-center relative cursor-pointer`} // Removed blur from container
+          <div // This is the image container, ensure it's relative for the wishlist icon
+            className={`w-full h-52 flex items-center justify-center relative cursor-pointer`}
             style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }}
-            onClick={() => product.quantity > 0 && navigate(`/product/${product._id}`)}
+            // onClick for image navigation is fine, but wishlist button will have its own click
           >
+            {/* Wishlist button moved here, positioned absolutely */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card click when clicking wishlist
+                onToggleWishlist && (product.quantity > 0 || product.quantity === undefined) && onToggleWishlist();
+              }}
+              title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              className={`absolute top-2 left-2 z-30 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ease-in-out
+                          ${(product.quantity > 0 || product.quantity === undefined)
+                            ? isInWishlist
+                              ? 'hover:bg-red-100 dark:hover:bg-red-900/30' // In wishlist: light red background on hover
+                              : 'hover:bg-gray-200/70 dark:hover:bg-gray-700/70' // Default (not in wishlist): gray background on hover
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed' // Disabled state
+                          }`}
+              disabled={(product.quantity === 0 && product.quantity !== undefined) || wishlistLoading}
+            >
+              <i className={`text-xl transition-all duration-200 ease-in-out ${
+                (product.quantity > 0 || product.quantity === undefined)
+                  ? isInWishlist
+                    ? 'ri-heart-fill text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:scale-110' // In wishlist: filled heart with hover effects
+                    : 'ri-heart-line text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:scale-110' // Default: outline heart that turns red on hover
+                  : 'ri-heart-line text-gray-400 dark:text-gray-500' // Disabled state
+                }`}></i>
+            </button>
             {product.image && typeof product.image === 'string' ? (
               <img
+                onClick={() => product.quantity > 0 && navigate(`/product/${product._id}`)} // Keep navigation on image click
                 className={`h-[12rem] w-full object-contain transition-all duration-300 ${product.quantity === 0 ? 'group-hover:filter group-hover:blur-sm' : ''}`} // Apply blur directly to image on hover if out of stock
                 src={product.image}
                 alt={product.name || "Product Image"}
@@ -66,14 +91,18 @@ export const ProductCard = ({ product, onAddToCart }) => { // Removed onViewDeta
             </div>
             {/* Removed the text "Out of Stock" message from here */}
           </div>
+          {/* Add to Cart button remains here */}
           <button
-            onClick={() => product.quantity > 0 && onAddToCart(product._id)}
-            title={product.quantity > 0 ? "Add to cart" : "Out of stock"}
+            onClick={(e) => {
+                e.stopPropagation(); // Prevent card click
+                (product.quantity > 0 || product.quantity === undefined) && onAddToCart(product._id);
+            }}
+            title={(product.quantity > 0 || product.quantity === undefined) ? "Add to cart" : "Out of stock"}
             className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors flex-shrink-0
-                        ${product.quantity > 0
+                        ${(product.quantity > 0 || product.quantity === undefined)
                           ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`} // Button remains, but disabled
-            disabled={product.quantity === 0}
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`}
+            disabled={product.quantity === 0 && product.quantity !== undefined}
           >
             <i className="ri-add-line text-xl"></i>
           </button>
@@ -98,7 +127,7 @@ export const HoverEffect = ({ items, className }) => {
           <AnimatePresence>
             {hoveredIndex === idx && (
               <motion.span
-                className="absolute inset-0 h-full w-full bg-neutral-200 dark:bg-slate-800/[0.8] block rounded-3xl"
+                className="absolute inset-0 h-full w-full bg-neutral-200/80 dark:bg-slate-800/80 block rounded-3xl"
                 layoutId="hoverBackground" // This layoutId should ideally be unique if multiple HoverEffects are on one page.
                                           // For now, assuming one instance or careful usage.
                 initial={{ opacity: 0 }}
@@ -110,11 +139,21 @@ export const HoverEffect = ({ items, className }) => {
                   opacity: 0,
                   transition: { duration: 0.15, delay: 0.2 },
                 }}
+                style={{
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
+                }}
               />
             )}
           </AnimatePresence>
           {/* Pass only necessary props to ProductCard */}
-          <ProductCard product={item} onAddToCart={item.onAddToCart} />
+          <ProductCard
+            product={item}
+            onAddToCart={item.onAddToCart}
+            onToggleWishlist={item.onToggleWishlist}
+            isInWishlist={item.isInWishlist}
+            wishlistLoading={item.wishlistLoading}
+          />
         </div>
       ))}
     </div>

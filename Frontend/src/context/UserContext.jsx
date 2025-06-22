@@ -62,11 +62,13 @@ export const UserProvider = ({ children }) => {
         sessionStorage.removeItem('currentUser'); // Clear corrupted data
       }
     }
+    // console.log('[UserContext] Finished initial auth check. authLoading: false, currentUser:', currentUser); // DEBUG LOG REMOVED
     setAuthLoading(false); // Finished attempting to load user
-  }, []);
+  }, []); // currentUser should not be in dependency array here to avoid re-running on every currentUser change by loginUser
 
   return (
     <UserContext.Provider value={value}>
+      {/* {console.log('[UserContext] Rendering Provider. currentUser:', value.currentUser, 'authLoading:', value.authLoading)} // DEBUG LOG REMOVED */}
       {children}
     </UserContext.Provider>
   );
