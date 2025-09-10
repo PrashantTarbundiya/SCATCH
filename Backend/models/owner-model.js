@@ -8,12 +8,11 @@ const ownerSchema = mongoose.Schema({
     },
     email: String,
     password: String,
-    product: { // Consider changing 'product' to 'products' if it's an array of product IDs
-        type: Array, // Or [mongoose.Schema.Types.ObjectId] if these are product refs
+    product: { 
+        type: Array, 
         default: []
     },
-    picture: String, // This could also be a Cloudinary URL if owners have profile pictures
-    gstin: String
+    picture: String
 });
 
 export default mongoose.model("owner", ownerSchema);

@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'; // Added useL
 import { HoverEffect } from '../components/ui/HoverEffect';
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
 import { useUser } from '../context/UserContext'; // Import useUser
+import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 const ShopPage = () => {
   const navigate = useNavigate();
@@ -180,9 +181,28 @@ const ShopPage = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <div className="text-center py-10 dark:text-gray-300">
-          Loading products...
+      <div className="w-full min-h-screen flex items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
+        {/* Sidebar Skeleton */}
+        <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300">
+          <div className="space-y-4">
+            <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-6 w-20 rounded"></div>
+            <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-8 w-full rounded"></div>
+            <div className="space-y-2 mt-8">
+              <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-5 w-24 rounded"></div>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-32 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Main Content Skeleton */}
+        <div className="w-full md:w-[75%] flex flex-col gap-5 md:pl-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CardSkeleton key={i} showImage={true} lines={3} />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -303,7 +323,6 @@ const ShopPage = () => {
           ) : null}
         </div>
       </div>
-      {/* Modal and its related style tag have been removed */}
     </>
   );
 };

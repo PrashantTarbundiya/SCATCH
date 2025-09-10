@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import UserContext from '../context/UserContext'; // Assuming you have a UserContext
 import { useUser } from '../context/UserContext'; // Import useUser to get user and setUser
+import { ProfileSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 function ProfilePage() {
   const { currentUser: user, setCurrentUser: setUser, isAuthenticated, authLoading } = useUser();
@@ -85,7 +86,11 @@ function ProfilePage() {
   }, [user, isAuthenticated, authLoading]);
 
   if (authLoading || pageLoading) { // Check authLoading as well
-    return <div className="container mx-auto p-4 pt-20 text-center text-gray-700 dark:text-gray-300">Loading profile...</div>;
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 pt-20 pb-12">
+        <ProfileSkeleton />
+      </div>
+    );
   }
 
   if (error) {
@@ -160,7 +165,23 @@ function ProfilePage() {
               <i className="ri-shopping-bag-3-line mr-2 text-green-500 dark:text-green-400"></i>My Orders
             </h2>
             {ordersLoading ? (
-              <p className="text-center text-gray-500 dark:text-gray-400">Loading orders...</p>
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-5 w-32 rounded"></div>
+                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-6 w-16 rounded-full"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-full rounded"></div>
+                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-3/4 rounded"></div>
+                    </div>
+                    <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 text-right">
+                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-5 w-20 rounded ml-auto"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : ordersError ? (
               <p className="text-center text-red-500 dark:text-red-400">{ordersError}</p>
             ) : orders.length > 0 ? (

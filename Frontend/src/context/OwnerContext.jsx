@@ -1,16 +1,13 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 
-// Create the context
 const OwnerContext = createContext(null);
 
-// Create a provider component
 export const OwnerProvider = ({ children }) => {
   const [currentOwner, setCurrentOwnerState] = useState(null);
-  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(false); // More explicit state
-  const [isLoading, setIsLoading] = useState(true); // New loading state
+  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(false); 
+  const [isLoading, setIsLoading] = useState(true); 
 
-  // Function to set owner data upon login
   const loginOwnerContext = (ownerData) => {
     setCurrentOwnerState(ownerData);
     setIsOwnerAuthenticated(true);
@@ -20,7 +17,7 @@ export const OwnerProvider = ({ children }) => {
     }
   };
 
-  // Function to clear owner data upon logout
+
   const logoutOwnerContext = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/owners/logout`, {
@@ -32,7 +29,7 @@ export const OwnerProvider = ({ children }) => {
       localStorage.removeItem('currentOwnerSessionActive');
       localStorage.removeItem('currentOwnerDetails');
       if (response.ok) {
-        const data = await response.json().catch(() => ({})); // Catch if no JSON body
+        const data = await response.json().catch(() => ({})); 
         return { success: true, message: data?.message || "Owner logout successful" };
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -72,7 +69,7 @@ export const OwnerProvider = ({ children }) => {
   const value = {
     currentOwner,
     isOwnerAuthenticated,
-    isLoading, // Expose isLoading
+    isLoading, 
     loginOwnerContext,
     logoutOwnerContext,
   };

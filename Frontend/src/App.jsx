@@ -1,11 +1,12 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 
 import Admin from './pages/Admin';
 import AdminSalesPage from './pages/AdminSalesPage'; // Import the new sales page
 import Cart from './pages/Cart';
 import CreateProduct from './pages/CreateProduct';
-import LoginPage from './pages/login'; 
+import AdminCouponsPage from './pages/AdminCouponsPage'; // Import Admin Coupons Page
+import LoginPage from './pages/login';
 import OwnerLoginPage from './pages/OwnerLogin';
 import RegisterPage from './pages/register';
 import ShopPage from './pages/Shop';
@@ -19,13 +20,21 @@ import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import Ow
 import Header from './components/Header';
 import Footer from './components/Footer'; // Import Footer
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  
+  // Check if current route is an admin route
+  const isAdminRoute = location.pathname.startsWith('/admin') ||
+                      location.pathname.startsWith('/create-product');
+
   return (
-    <BrowserRouter>
-      <Header />
-      <main className="py-8 w-full"> 
+    <>
+      {/* Conditionally render Header - exclude from admin routes */}
+      {!isAdminRoute && <Header />}
+      
+      <main className={isAdminRoute ? "w-full" : "py-8 w-full"}>
         <Routes>
-          <Route path="/" element={<RegisterPage />} />
+          <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/shop" element={<ShopPage />} />
@@ -39,16 +48,27 @@ function App() {
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>
             <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/sales" element={<AdminSalesPage />} /> {/* New route for sales page */}
+            <Route path="/admin/sales" element={<AdminSalesPage />} />
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
+            <Route path="/admin/coupons" element={<AdminCouponsPage />} />
           </Route>
           
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
-      <Footer />
+      
+      {/* Conditionally render Footer - exclude from admin routes */}
+      {!isAdminRoute && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

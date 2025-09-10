@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Import Link
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
+import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 
 // The bufferToImage function is no longer needed for product images from Cloudinary URLs
@@ -102,7 +103,25 @@ const AllProductsPage = () => {
   };
 
   if (loading) {
-    return <div className="w-full min-h-screen flex items-center justify-center py-20 dark:text-gray-300">Loading products...</div>;
+    return (
+      <div className="w-full">
+        <div className="w-full flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-8 w-64 rounded"></div>
+            <div className="flex gap-3 items-center">
+              <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-10 w-48 rounded"></div>
+              <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-10 w-32 rounded"></div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <CardSkeleton key={i} showImage={true} lines={2} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -110,33 +129,40 @@ const AllProductsPage = () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-start py-20 pt-28 px-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300"> {/* Added px-6 for horizontal padding, changed flex to flex-col */}
-      {/* Sidebar REMOVED */}
+    // The parent div with padding and margin for sidebar is now in OwnerProtectedRoute.jsx
+    // This div should just be a fragment or a simple container for its own content.
+    <div className="w-full"> {/* Removed min-h-screen, py, pt, px, bg colors - handled by parent */}
+      {/* Admin Navigation REMOVED - Now handled by AdminSidebar */}
 
-      {/* Main content */}
-      <div className="w-full flex flex-col gap-6"> {/* Adjusted width to full, removed padding, increased gap */}
-        {/* Action Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200">Product Management</h1>
-          <div className="flex gap-3 items-center"> {/* Added items-center */}
-            <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer">
-              <input
-                id="outOfStockFilter"
-                type="checkbox"
-                checked={showOutOfStockOnly}
-                onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
-                className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Show Out of Stock Only
-              </span>
-            </label>
-            <button
-              onClick={handleDeleteAll}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md shadow-sm transition-colors text-sm font-medium"
-            >
-              Delete All Products
-            </button>
+      {/* Main content for Product Management */}
+      <div className="w-full flex flex-col gap-6">
+        {/* Action Bar - Specific to Product Management */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">Product Management</h1>
+              <p className="text-slate-600 dark:text-slate-400">Manage your product inventory and settings</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full lg:w-auto">
+              <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer bg-slate-50 dark:bg-slate-700 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-all duration-200">
+                <input
+                  id="outOfStockFilter"
+                  type="checkbox"
+                  checked={showOutOfStockOnly}
+                  onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
+                  className="h-5 w-5 text-blue-600 border-slate-300 rounded-lg focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-slate-800 dark:bg-slate-700 dark:border-slate-600"
+                />
+                <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Show Out of Stock Only
+                </span>
+              </label>
+              <button
+                onClick={handleDeleteAll}
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg transition-all duration-200 hover:scale-105 text-sm font-semibold w-full sm:w-auto"
+              >
+                Delete All Products
+              </button>
+            </div>
           </div>
         </div>
 
@@ -145,7 +171,7 @@ const AllProductsPage = () => {
         )}
 
         {/* Product List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"> {/* Reverted to Shop page grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
           {products
             .filter(product => !showOutOfStockOnly || product.quantity === 0)
             .map((product) => {
@@ -157,7 +183,7 @@ const AllProductsPage = () => {
             return (
             <div
               key={product._id}
-              className="w-full border border-gray-200 dark:border-gray-700 rounded-lg shadow-md dark:shadow-lg overflow-hidden bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl flex flex-col group relative" // Added group and relative
+              className="w-full border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg dark:shadow-xl overflow-hidden bg-white dark:bg-slate-800 transition-all duration-300 hover:shadow-2xl md:hover:scale-105 flex flex-col group relative"
             >
               <div
                 className="w-full h-52 flex items-center justify-center relative" // Added relative for discount badge positioning
@@ -200,17 +226,17 @@ const AllProductsPage = () => {
                     Quantity Left: {product.quantity !== undefined ? product.quantity : 'N/A'}
                   </p>
                 </div>
-                {/* Buttons container - initially hidden, shown on hover */}
-                <div className="absolute bottom-4 right-4 mt-auto pt-2 flex justify-end gap-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                {/* Buttons container - always visible on mobile, hover on desktop */}
+                <div className="absolute bottom-4 right-4 mt-auto pt-2 flex justify-end gap-2 opacity-100 visible md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible transition-all duration-300">
                     <Link
                         to={`/admin/edit-product/${product._id}`}
-                        className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded shadow"
+                        className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl shadow-lg transition-all duration-200 md:hover:scale-105 font-medium"
                     >
                         Edit
                     </Link>
                     <button
                         onClick={() => initiateDeleteProduct(product._id)}
-                        className="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded shadow"
+                        className="text-xs bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-xl shadow-lg transition-all duration-200 md:hover:scale-105 font-medium"
                     >
                         Delete
                     </button>

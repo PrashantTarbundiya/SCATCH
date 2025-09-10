@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext'; // Corrected import
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
+import { ProductDetailSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -210,7 +211,7 @@ const ProductDetailPage = () => {
     }
   };
 
-  if (isLoading) return <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900"><p className="text-gray-700 dark:text-gray-300 text-lg">Loading product details...</p></div>;
+  if (isLoading) return <ProductDetailSkeleton />;
   if (error && !product) return <div className="w-full min-h-screen flex flex-col items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900"><p className="text-red-600 dark:text-red-400 text-xl mb-4">Error: {error}</p><button onClick={() => navigate('/shop')} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Back to Shop</button></div>;
   if (!product) return <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900"><p className="text-gray-700 dark:text-gray-300 text-lg">Product not found.</p></div>;
 

@@ -32,47 +32,71 @@ const AdminSalesPage = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-start py-20 pt-28 px-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="w-full">
+      {/* Header Section */}
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+        <div>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">Sales Analytics</h1>
+          <p className="text-slate-600 dark:text-slate-400">Track and analyze your sales performance</p>
+        </div>
+      </div>
+
       <div className="w-full flex flex-col gap-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-6">Sales Analytics</h1>
-        {ordersLoading && <p className="dark:text-gray-300">Loading sales data...</p>}
-        {ordersError && <p className="text-red-500 dark:text-red-400">Error fetching sales data: {ordersError}</p>}
+        {ordersLoading && (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-slate-200 dark:border-slate-700">
+            <p className="text-slate-600 dark:text-slate-300 text-center">Loading sales data...</p>
+          </div>
+        )}
+        
+        {ordersError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6">
+            <p className="text-red-600 dark:text-red-400">Error fetching sales data: {ordersError}</p>
+          </div>
+        )}
+        
         {!ordersLoading && !ordersError && (
-          <div className="overflow-x-auto bg-white dark:bg-gray-800 shadow-md rounded-lg">
+          <div className="overflow-x-auto bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
             {orders.length === 0 ? (
-              <p className="p-4 text-gray-600 dark:text-gray-400">No sales data found.</p>
+              <div className="p-8 text-center">
+                <p className="text-slate-600 dark:text-slate-400">No sales data found.</p>
+              </div>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+              <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                <thead className="bg-slate-50 dark:bg-slate-700">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order ID</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Status</th>
+                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Order ID</th>
+                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider hidden sm:table-cell">Date</th>
+                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Customer</th>
+                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider hidden lg:table-cell">Items</th>
+                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Total</th>
+                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Status</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                   {orders.map((order) => (
-                    <tr key={order._id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{order._id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{new Date(order.orderDate).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        {order.user ? `${order.user.fullname} (${order.user.email})` : 'N/A'}
+                    <tr key={order._id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">{order._id.slice(-8)}</td>
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 hidden sm:table-cell">{new Date(order.orderDate).toLocaleDateString()}</td>
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
+                        {order.user ? (
+                          <>
+                            <div className="font-medium">{order.user.fullname}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">{order.user.email}</div>
+                          </>
+                        ) : 'N/A'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
-                        <ul className="list-disc list-inside">
+                      <td className="px-3 md:px-6 py-4 text-sm text-slate-600 dark:text-slate-300 hidden lg:table-cell">
+                        <div className="max-w-xs">
                           {order.items.map((item, index) => (
-                            <li key={index}>
-                              {item.product ? item.product.name : item.nameAtPurchase} (Qty: {item.quantity}) @ ₹{item.priceAtPurchase.toFixed(2)}
-                            </li>
+                            <div key={index} className="text-xs mb-1">
+                              {item.product ? item.product.name : item.nameAtPurchase} (×{item.quantity})
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">₹{order.totalAmount.toFixed(2)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">₹{order.totalAmount.toFixed(2)}</td>
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-xl ${
                           order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100' :
                           order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100' :
                           'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100'

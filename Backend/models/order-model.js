@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const orderItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'product', // Changed from 'Product' to match the registered model name
+    ref: 'product', 
     required: true,
   },
   quantity: {
@@ -11,11 +11,11 @@ const orderItemSchema = new mongoose.Schema({
     required: true,
     min: 1,
   },
-  priceAtPurchase: { // Store the price at the time of purchase
+  priceAtPurchase: { 
     type: Number,
     required: true,
   },
-  nameAtPurchase: { // Store the name at the time of purchase
+  nameAtPurchase: { 
     type: String,
     required: true,
   }
@@ -24,7 +24,7 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user', // Changed from 'User' to match the registered model name
+    ref: 'user', 
     required: true,
   },
   items: [orderItemSchema],
@@ -32,7 +32,17 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  shippingAddress: { // You might want to add more address fields
+  appliedCouponCode: {
+    type: String,
+    trim: true,
+    uppercase: true,
+    default: null,
+  },
+  couponDiscountAmount: {
+    type: Number,
+    default: 0,
+  },
+  shippingAddress: { 
     street: String,
     city: String,
     postalCode: String,
@@ -40,7 +50,7 @@ const orderSchema = new mongoose.Schema({
   },
   razorpayOrderId: {
     type: String,
-    // required: true, // Will be set after order creation with Razorpay
+    // required: true,
   },
   razorpayPaymentId: {
     type: String,

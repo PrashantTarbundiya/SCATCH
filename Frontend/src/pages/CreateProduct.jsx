@@ -145,40 +145,19 @@ const CreateProductPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300 transition-colors duration-300 pt-28"> {/* Added pt-28 for fixed header, theme bg and text */}
+    // The parent div with padding and margin for sidebar is now in OwnerProtectedRoute.jsx
+    // This div should just be a simple container for its own content.
+    <div className="w-full"> {/* Removed min-h-screen, flex, bg, text, pt - handled by parent */}
       {(apiSuccess || apiError) && (
-        <div className={`fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-md shadow-lg z-50 ${apiSuccess ? 'bg-green-500 dark:bg-green-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}> {/* Reverted to top-20 */}
+        // Adjusted notification to be relative to this page's content flow or consider a global notification system
+        <div className={`mb-4 p-3 rounded-md shadow-lg ${apiSuccess ? 'bg-green-500 dark:bg-green-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}>
           <span className="inline-block">{apiSuccess || apiError}</span>
         </div>
       )}
 
-      <div className="w-full py-10 flex flex-grow px-4 md:px-6 lg:px-8"> {/* Removed container, mx-auto. Added w-full and some padding */}
-        {/* Sidebar */}
-        <aside className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300 h-fit sticky top-28"> {/* Styled like Admin/Shop sidebar */}
-          <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">Admin Menu</h3>
-          <nav className="flex flex-col space-y-1"> {/* Reduced space-y for tighter links */}
-            <Link
-              to="/admin"
-              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-sm"
-            >
-              All Products
-            </Link>
-            <Link
-              to="/admin/sales"
-              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-sm"
-            >
-              Sales Analytics
-            </Link>
-            <Link
-              to="/create-product"
-              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-sm font-semibold" // Keep font-semibold for active page
-            >
-              Create New Product
-            </Link>
-          </nav>
-        </aside>
-
-        <main className="w-full md:w-[75%] bg-white dark:bg-gray-800 p-6 sm:p-8 shadow rounded-lg transition-colors duration-300">
+      {/* Removed the outer flex container and the internal aside (sidebar) */}
+      {/* The main content area will now take full width within the space provided by OwnerProtectedRoute */}
+      <main className="w-full bg-white dark:bg-gray-800 p-6 sm:p-8 shadow rounded-lg transition-colors duration-300">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">
             {isEditMode ? 'Edit Product' : 'Create New Product'}
           </h2>
@@ -324,7 +303,7 @@ const CreateProductPage = () => {
             </button>
           </form>
         </main>
-      </div>
+        {/* Orphaned div removed here, main closes, then the top-level div from line 150 closes */}
     </div>
   );
 };

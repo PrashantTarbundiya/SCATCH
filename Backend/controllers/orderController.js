@@ -4,6 +4,7 @@ import razorpayInstance from '../utils/razorpay-instance.js';
 import Order from '../models/order-model.js';
 import User from '../models/users-model.js'; // To get user email
 import Product from '../models/product-model.js'; // To potentially update stock or verify
+import Coupon from '../models/coupon-model.js'; // Import Coupon model
 import nodemailer from 'nodemailer'; // Added for direct use
 import PDFDocument from 'pdfkit';
 import fs from 'fs'; // For temporarily saving PDF if needed
@@ -172,7 +173,9 @@ async function sendOrderConfirmationEmail(userEmail, order, pdfBuffer) {
 
 export const createRazorpayOrder = async (req, res) => {
   try {
-    const { amount, currency = 'INR', receipt, notes, items } = req.body; // items for context, not directly sent to Razorpay order API here
+    // amount here is the FINAL amount after frontend-calculated coupon discount
+    const { amount, currency = 'INR', receipt, notes, items, appliedCouponCode, couponDiscount: frontendCalculatedCouponDiscount } = req.body;
+    
     // Amount should be in the smallest currency unit (e.g., paise for INR)
     const orderAmount = Math.round(parseFloat(amount) * 100);
 
@@ -223,8 +226,10 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
       items, // Array of { productId, quantity, priceAtPurchase, nameAtPurchase }
-      totalAmount, // Final total amount calculated on frontend
+      totalAmount, // Final total amount calculated on frontend (after coupon)
       shippingAddress, // { street, city, postalCode, country }
+      appliedCouponCode, // Sent from frontend
+      couponDiscount: frontendCalculatedCouponDiscount // Sent from frontend
     } = req.body;
 
     const userId = req.user.id; // Assuming isLoggedIn middleware adds user to req
@@ -254,22 +259,92 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
     const orderItems = items.map(item => ({
       product: item.productId,
       quantity: item.quantity,
-      priceAtPurchase: item.priceAtPurchase,
+      priceAtPurchase: item.priceAtPurchase, // This is price per unit *after product's own discount*, before coupon
       nameAtPurchase: item.nameAtPurchase,
     }));
+
+    let finalCalculatedTotal = parseFloat(totalAmount); // This is the amount paid by user
+    let backendCalculatedCouponDiscount = 0;
+    let actualAppliedCouponCode = null;
+
+    // Calculate subtotal before any coupon, based on items received
+    const subtotalBeforeCoupon = orderItems.reduce((acc, item) => acc + (item.priceAtPurchase * item.quantity), 0);
+
+    if (appliedCouponCode) {
+      const coupon = await Coupon.findOne({ code: appliedCouponCode.toUpperCase() });
+
+      if (!coupon) {
+        // Coupon code from frontend not found, proceed without coupon or error out
+        console.warn(`Coupon code ${appliedCouponCode} not found. Proceeding without coupon discount for order ${razorpay_order_id}.`);
+        // Optionally, you could fail the order here if coupon integrity is paramount
+        // return res.status(400).json({ success: false, message: `Invalid coupon code: ${appliedCouponCode} provided.` });
+      } else {
+        // Validate coupon
+        const now = new Date();
+        if (!coupon.isActive || coupon.validFrom > now || coupon.validUntil < now || (coupon.usageLimit !== null && coupon.timesUsed >= coupon.usageLimit)) {
+          console.warn(`Coupon ${appliedCouponCode} is invalid or expired for order ${razorpay_order_id}. Proceeding without discount.`);
+        } else if (subtotalBeforeCoupon < coupon.minPurchaseAmount) {
+          console.warn(`Order subtotal ${subtotalBeforeCoupon} for order ${razorpay_order_id} does not meet minimum purchase amount of ${coupon.minPurchaseAmount} for coupon ${appliedCouponCode}. Proceeding without discount.`);
+        } else {
+          // Coupon is valid and applicable, calculate discount on backend
+          if (coupon.discountType === 'percentage') {
+            backendCalculatedCouponDiscount = (subtotalBeforeCoupon * coupon.discountValue) / 100;
+          } else if (coupon.discountType === 'fixedAmount') {
+            backendCalculatedCouponDiscount = coupon.discountValue;
+          }
+          backendCalculatedCouponDiscount = Math.min(backendCalculatedCouponDiscount, subtotalBeforeCoupon); // Cannot be more than subtotal
+
+          // CRITICAL: Compare backend calculated discount with frontend calculated discount
+          const frontendDiscount = parseFloat(frontendCalculatedCouponDiscount) || 0;
+          if (Math.abs(backendCalculatedCouponDiscount - frontendDiscount) > 0.01) { // Tolerance for floating point
+            console.error(`CRITICAL: Coupon discount mismatch for order ${razorpay_order_id}. FE: ${frontendDiscount}, BE: ${backendCalculatedCouponDiscount}. Coupon: ${appliedCouponCode}. Subtotal: ${subtotalBeforeCoupon}`);
+            // This is a serious issue. Decide how to handle:
+            // 1. Reject the order
+            // 2. Proceed without coupon
+            // 3. Log and alert admin
+            // For now, let's proceed without the coupon and log an error.
+            // A stricter system might reject the order.
+            backendCalculatedCouponDiscount = 0; // Override with no discount due to mismatch
+            // Or throw new Error('Coupon discount calculation mismatch.');
+          } else {
+            actualAppliedCouponCode = coupon.code; // Confirm this coupon will be applied
+          }
+        }
+      }
+    }
+    
+    // The `totalAmount` from frontend should already reflect the coupon discount.
+    // We are re-calculating here for verification and to store the correct discount amount.
+    // The final amount charged by Razorpay is `totalAmount`.
+    // The `totalAmount` stored in the order should be this final charged amount.
 
     const newOrder = new Order({
       user: userId,
       items: orderItems,
-      totalAmount: parseFloat(totalAmount),
+      totalAmount: finalCalculatedTotal, // This is the amount user actually paid
       shippingAddress,
       razorpayOrderId: razorpay_order_id,
       razorpayPaymentId: razorpay_payment_id,
       razorpaySignature: razorpay_signature,
-      paymentStatus: 'paid', // Mark as paid since signature is verified
+      paymentStatus: 'paid',
+      appliedCouponCode: actualAppliedCouponCode,
+      couponDiscountAmount: backendCalculatedCouponDiscount > 0 ? backendCalculatedCouponDiscount : 0,
     });
 
     const savedOrder = await newOrder.save();
+
+    // If a coupon was successfully applied and validated on backend, increment its usage
+    if (actualAppliedCouponCode && backendCalculatedCouponDiscount > 0) {
+        try {
+            await Coupon.updateOne(
+                { code: actualAppliedCouponCode },
+                { $inc: { timesUsed: 1 } }
+            );
+        } catch (couponUpdateError) {
+            console.error(`Failed to increment usage for coupon ${actualAppliedCouponCode} for order ${savedOrder._id}:`, couponUpdateError);
+            // Log this error, but the order is already placed.
+        }
+    }
     
     // 3. Update product stock and purchase count
     for (const item of savedOrder.items) {
