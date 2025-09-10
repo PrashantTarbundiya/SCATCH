@@ -15,6 +15,7 @@ const ShopPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [currentSort, setCurrentSort] = useState('newest'); // Default sort
   const [currentFilter, setCurrentFilter] = useState('all'); // Default filter
+
   const { addToWishlist, removeFromWishlist, isProductInWishlist, loading: wishlistLoading, wishlistItems, error: wishlistError } = useWishlist();
   const { currentUser: user, authLoading } = useUser();
 
@@ -222,6 +223,8 @@ const ShopPage = () => {
       }));
   }
   
+
+  
   const productsForHoverEffect = displayProducts.map(product => ({
     ...product,
     onAddToCart: currentFilter === 'wishlist' ? handleAddToCartFromWishlist : handleAddToCart, // Use appropriate handler
@@ -240,8 +243,43 @@ const ShopPage = () => {
         </div>
       )}
 
-      <div className="w-full min-h-screen flex items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
-        {/* Sidebar */}
+      <div className="w-full min-h-screen flex flex-col md:flex-row items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
+        
+        {/* Mobile Filters */}
+        <div className="w-full md:hidden bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mb-6 transition-colors duration-300">
+          <div className="flex flex-wrap gap-4 items-center">
+            <select
+              value={currentSort}
+              onChange={handleSortChange}
+              className="border border-gray-300 dark:border-gray-600 px-3 py-2 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm"
+            >
+              <option value="newest">Newest</option>
+              <option value="popular">Popular</option>
+            </select>
+            
+
+          </div>
+          
+          <div className="flex flex-wrap gap-2 mt-3">
+            <Link className={`px-3 py-1 text-xs rounded-full ${currentFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`} to="/shop?filter=all&sortBy=newest">
+              All
+            </Link>
+            <Link className={`px-3 py-1 text-xs rounded-full ${currentFilter === 'newCollection' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`} to="/shop?filter=newCollection&sortBy=newest">
+              New
+            </Link>
+            <Link className={`px-3 py-1 text-xs rounded-full ${currentFilter === 'discounted' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`} to="/shop?filter=discounted&sortBy=popular">
+              Discounted
+            </Link>
+            <Link className={`px-3 py-1 text-xs rounded-full ${currentFilter === 'wishlist' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`} to="/shop?filter=wishlist&sortBy=newest">
+              Wishlist
+            </Link>
+            <Link className={`px-3 py-1 text-xs rounded-full ${currentFilter === 'availability' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`} to="/shop?filter=availability&sortBy=newest">
+              In Stock
+            </Link>
+          </div>
+        </div>
+        
+        {/* Desktop Sidebar */}
         <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300">
           <div className="flex items-center gap-2 mb-4">
             <h3 className="text-gray-800 dark:text-gray-200">Sort by</h3>
@@ -282,11 +320,6 @@ const ShopPage = () => {
             <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'availability' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=availability&sortBy=newest">
               In Stock
             </Link>
-            {/* The "Discount" filter link is covered by "Discounted Products" above, or can be a separate filter if backend logic differs */}
-            {/* For example, if "Discounted Products" is a collection and "Discount" is a general filter */}
-            {/* <Link className={`block w-fit mb-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 ${currentFilter === 'discount' ? 'font-bold text-blue-600 dark:text-blue-400' : ''}`} to="/shop?filter=discount&sortBy=popular">
-              Discount
-            </Link> */}
           </div>
         </div>
 

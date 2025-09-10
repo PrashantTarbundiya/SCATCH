@@ -15,6 +15,7 @@ import ProfilePage from './pages/Profile'; // Import ProfilePage
 import EditProfilePage from './pages/EditProfile'; // Import EditProfilePage
 import ContactPage from './pages/ContactPage'; // Import ContactPage
 import ProductDetailPage from './pages/ProductDetailPage'; // Import ProductDetailPage
+import ProductReviewPage from './pages/ProductReviewPage'; // Import ProductReviewPage
 import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import OwnerProtectedRoute
 
 import Header from './components/Header';
@@ -44,6 +45,7 @@ function AppContent() {
           <Route path="/profile/edit" element={<EditProfilePage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/product/:productId" element={<ProductDetailPage />} />
+          <Route path="/product/:productId/reviews" element={<ProductReviewPage />} />
 
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>
