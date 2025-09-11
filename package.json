@@ -8,7 +8,7 @@
     "dev:backend": "cd Backend && npm run dev",
     "dev:frontend": "cd Frontend && npm run dev",
     "start": "cd Backend && npm start",
-    "build": "cd Frontend && npm run build",
+    "build": "cd Frontend && npm install && npm run build",
     "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install",
     "clean": "rm -rf node_modules Backend/node_modules Frontend/node_modules",
     "test": "cd Backend && npm test && cd ../Frontend && npm test",
