@@ -4,6 +4,7 @@ import { HoverEffect } from '../components/ui/HoverEffect';
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
 import { useUser } from '../context/UserContext'; // Import useUser
 import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
+import { toast } from '../utils/toast';
 
 const ShopPage = () => {
   const navigate = useNavigate();
@@ -98,12 +99,10 @@ const ShopPage = () => {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
       
-      setSuccessMessage(data?.message || 'Product added to cart!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success(data?.message || 'Product added to cart!');
 
     } catch (err) {
-      setError(err.message || 'Failed to add product to cart.');
-      setTimeout(() => setError(null), 3000);
+      toast.error(err.message || 'Failed to add product to cart.');
     }
   };
 
@@ -115,24 +114,22 @@ const ShopPage = () => {
       if (isProductInWishlist(productId)) {
         result = await removeFromWishlist(productId);
         if (result) {
-          setSuccessMessage('Product removed from wishlist!');
+          toast.success('Product removed from wishlist!');
         } else {
           throw new Error('Failed to remove product from wishlist.');
         }
       } else {
         result = await addToWishlist(productId);
         if (result) {
-          setSuccessMessage('Product added to wishlist!');
+          toast.success('Product added to wishlist!');
         } else {
           // Error might be set by context, or throw specific error
           throw new Error('Failed to add product to wishlist. User might not be logged in or product already in wishlist.');
         }
       }
-      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.message || 'Wishlist operation failed.');
+      toast.error(err.message || 'Wishlist operation failed.');
       console.error("Wishlist toggle error:", err);
-      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -142,14 +139,12 @@ const ShopPage = () => {
     try {
       const result = await removeFromWishlist(productId);
       if (result) {
-        setSuccessMessage('Product removed from wishlist!');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Product removed from wishlist!');
       } else {
         throw new Error('Failed to remove product from wishlist.');
       }
     } catch (err) {
-      setError(err.message || 'Failed to remove product from wishlist.');
-      setTimeout(() => setError(null), 3000);
+      toast.error(err.message || 'Failed to remove product from wishlist.');
     }
   };
 
@@ -171,12 +166,10 @@ const ShopPage = () => {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
       
-      setSuccessMessage(data?.message || 'Product added to cart!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success(data?.message || 'Product added to cart!');
 
     } catch (err) {
-      setError(err.message || 'Failed to add product to cart.');
-      setTimeout(() => setError(null), 3000);
+      toast.error(err.message || 'Failed to add product to cart.');
     }
   };
 
@@ -231,15 +224,7 @@ const ShopPage = () => {
 
   return (
     <>
-      {/* Notification Banner for page-level messages */}
-      {(successMessage || error) && (
-        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-[100] max-w-sm backdrop-blur-sm border ${successMessage ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full ${successMessage ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
-            <span className="text-sm font-medium">{successMessage || error}</span>
-          </div>
-        </div>
-      )}
+
 
       <div className="w-full min-h-screen flex flex-col md:flex-row items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
         

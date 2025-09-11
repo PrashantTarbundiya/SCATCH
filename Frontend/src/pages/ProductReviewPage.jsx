@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { ProductDetailSkeleton } from '../components/ui/SkeletonLoader.jsx';
+import { toast } from '../utils/toast';
 
 const ProductReviewPage = () => {
   const { productId } = useParams();
@@ -116,18 +117,16 @@ const ProductReviewPage = () => {
         throw new Error(data?.error || data?.message || `HTTP error! status: ${response.status}`);
       }
       
-      setSuccessMessage(data.success || (editingReview ? "Review updated!" : "Review submitted!"));
+      toast.success(data.success || (editingReview ? "Review updated!" : "Review submitted!"));
       setProduct(data.product);
       setUserRating(0);
       setReviewText('');
       setReviewImages([]);
       setReviewImagePreviews([]);
       setEditingReview(null);
-      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error("Review submission error:", err);
-      setError(err.message || "Failed to submit review. Please try again.");
-      setTimeout(() => setError(null), 5000);
+      toast.error(err.message || "Failed to submit review. Please try again.");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -162,7 +161,7 @@ const ProductReviewPage = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       
-      setSuccessMessage(data.success || "Review deleted!");
+      toast.success(data.success || "Review deleted!");
       setProduct(data.product);
       if (editingReview && editingReview._id === reviewIdToDelete) {
         setUserRating(0);
@@ -171,10 +170,8 @@ const ProductReviewPage = () => {
         setReviewImagePreviews([]);
         setEditingReview(null);
       }
-      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.message || "Failed to delete review.");
-      setTimeout(() => setError(null), 3000);
+      toast.error(err.message || "Failed to delete review.");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -204,14 +201,7 @@ const ProductReviewPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12 px-4 md:px-8 lg:px-16">
-      {(successMessage || (error && product)) && (
-        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-[100] max-w-sm backdrop-blur-sm border ${successMessage ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full ${successMessage ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
-            <span className="text-sm font-medium">{successMessage || error}</span>
-          </div>
-        </div>
-      )}
+
 
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto">
         {/* Product Header */}

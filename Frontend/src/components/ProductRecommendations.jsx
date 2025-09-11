@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
+import { toast } from '../utils/toast';
 
 const ProductRecommendations = ({ productId }) => {
   const [recommendations, setRecommendations] = useState([]);
@@ -115,8 +116,7 @@ const ProductRecommendations = ({ productId }) => {
                     credentials: 'include'
                   });
                   if (response.ok) {
-                    setShowToast(true);
-                    setTimeout(() => setShowToast(false), 3000);
+                    toast.success('Product added to cart successfully!');
                   }
                 } catch (err) {
                   console.error('Failed to add to cart:', err);
@@ -131,13 +131,7 @@ const ProductRecommendations = ({ productId }) => {
         ))}
       </div>
       
-      {/* Toast Notification */}
-      {showToast && (
-        <div className="fixed bottom-6 left-6 bg-green-500/90 backdrop-blur-sm text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          Product added to cart successfully!
-        </div>
-      )}
+
     </div>
   );
 };

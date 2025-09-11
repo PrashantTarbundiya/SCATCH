@@ -43,7 +43,12 @@ app.use(
       resave: false,
       saveUninitialized: false,
       secret: process.env.EXPRESS_SESSION_SECRET,
-      cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7 days
+      cookie: { 
+         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+         httpOnly: true,
+         secure: process.env.NODE_ENV === 'production',
+         sameSite: 'lax'
+      }
    })
 );
 app.use(flash());

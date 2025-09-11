@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
+import { toast } from '../utils/toast';
 
 // Create the context
 const UserContext = createContext(null);
@@ -11,7 +12,7 @@ export const UserProvider = ({ children }) => {
   // Memoized login function
   const loginUser = useCallback((userData) => {
     setCurrentUser(userData);
-    sessionStorage.setItem('currentUser', JSON.stringify(userData));
+    localStorage.setItem('currentUser', JSON.stringify(userData));
   }, []);
 
   // Memoized logout function
@@ -22,19 +23,22 @@ export const UserProvider = ({ children }) => {
         credentials: 'include',
       });
       setCurrentUser(null);
-      sessionStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUser');
       if (response.ok) {
         const data = await response.json().catch(() => ({}));
+        toast.success(data?.message || "Logout successful");
         return { success: true, message: data?.message || "Logout successful" };
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error('Logout API failed:', errorData);
+        toast.error(errorData?.error || errorData?.message || 'Logout failed on server');
         return { success: false, error: errorData?.error || errorData?.message || 'Logout failed on server' };
       }
     } catch (err) {
       console.error('Error during logout API call:', err);
       setCurrentUser(null);
-      sessionStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUser');
+      toast.error(err.message || 'Network error during logout');
       return { success: false, error: err.message || 'Network error during logout' };
     }
   }, []);
@@ -50,7 +54,7 @@ export const UserProvider = ({ children }) => {
 
   // Optional: Load user from localStorage on initial render for persistence
   useEffect(() => {
-    const storedUser = sessionStorage.getItem('currentUser');
+    const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
@@ -58,7 +62,7 @@ export const UserProvider = ({ children }) => {
         loginUser(parsedUser); // Use loginUser to set current user
       } catch (error) {
         console.error("Failed to parse stored user:", error);
-        sessionStorage.removeItem('currentUser'); // Clear corrupted data
+        localStorage.removeItem('currentUser'); // Clear corrupted data
       }
     }
     // console.log('[UserContext] Finished initial auth check. authLoading: false, currentUser:', currentUser); // DEBUG LOG REMOVED

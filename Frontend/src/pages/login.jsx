@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext'; // Import useUser
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
+import { toast } from '../utils/toast';
 
 
 // Renamed component to LoginPage to match App.jsx import
 const LoginPage = () => {
   const { theme } = useTheme(); // Consume theme
-  const { setCurrentUser } = useUser(); // Get setCurrentUser from context
+  const { setCurrentUser, isAuthenticated } = useUser(); // Get setCurrentUser from context
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -16,6 +17,17 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(null);
+
+  // Auto-dismiss messages after 3 seconds
+  useEffect(() => {
+    if (apiError || apiSuccess) {
+      const timer = setTimeout(() => {
+        setApiError(null);
+        setApiSuccess(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [apiError, apiSuccess]);
   const navigate = useNavigate();
 
   // Forgot Password State
@@ -47,6 +59,13 @@ const LoginPage = () => {
       });
     }, 1000);
   };
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/shop');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Clear interval on component unmount
   React.useEffect(() => {
@@ -181,7 +200,7 @@ const LoginPage = () => {
         throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       }
       
-      setApiSuccess(data.message || 'Login successful! Redirecting...');
+      toast.success(data.message || 'Login successful! Redirecting...');
       if (data.user) {
         setCurrentUser(data.user);
       }
@@ -190,7 +209,7 @@ const LoginPage = () => {
       }, 1000);
 
     } catch (err) {
-      setApiError(err.message || 'Login failed. Please try again.');
+      toast.error(err.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -198,15 +217,7 @@ const LoginPage = () => {
 
   return (
     <>
-      {/* API Messages */}
-      {(apiError || apiSuccess) && (
-        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-50 max-w-sm backdrop-blur-sm border ${apiSuccess ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full ${apiSuccess ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
-            <span className="text-sm font-medium">{apiSuccess || apiError}</span>
-          </div>
-        </div>
-      )}
+
 
       <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
         <CardContainer containerClassName="py-0" className="w-full max-w-md">

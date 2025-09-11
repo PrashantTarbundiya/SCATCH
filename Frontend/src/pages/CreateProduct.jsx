@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
+import { toast } from '../utils/toast';
 
 
 const CreateProductPage = () => {
@@ -63,7 +64,7 @@ const CreateProductPage = () => {
             throw new Error('Product data not found in response.');
           }
         } catch (err) {
-          setApiError(`Failed to load product for editing: ${err.message || 'Unknown error'}`);
+          toast.error(`Failed to load product for editing: ${err.message || 'Unknown error'}`);
         } finally {
           setIsLoading(false);
         }
@@ -102,7 +103,7 @@ const CreateProductPage = () => {
     if (imageFile) {
       productPayload.append('image', imageFile);
     } else if (!isEditMode && !imagePreview) {
-      setApiError("Product image is required for new products.");
+      toast.error("Product image is required for new products.");
       setIsLoading(false);
       return;
     }
@@ -126,7 +127,7 @@ const CreateProductPage = () => {
         throw new Error(result?.error || result?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
 
-      setApiSuccess(result.message || (isEditMode ? 'Product updated successfully!' : 'Product created successfully!'));
+      toast.success(result.message || (isEditMode ? 'Product updated successfully!' : 'Product created successfully!'));
       
       if (!isEditMode) {
         setFormData({ name: '', price: '', discount: '', bgcolor: '', panelcolor: '', textcolor: '', quantity: '' }); // Reset quantity
@@ -138,7 +139,7 @@ const CreateProductPage = () => {
       }
       setTimeout(() => navigate('/admin'), 2000);
     } catch (err) {
-      setApiError(err.message || (isEditMode ? 'Failed to update product.' : 'Failed to create product.'));
+      toast.error(err.message || (isEditMode ? 'Failed to update product.' : 'Failed to create product.'));
     } finally {
       setIsLoading(false);
     }
@@ -148,14 +149,7 @@ const CreateProductPage = () => {
     // The parent div with padding and margin for sidebar is now in OwnerProtectedRoute.jsx
     // This div should just be a simple container for its own content.
     <div className="w-full"> {/* Removed min-h-screen, flex, bg, text, pt - handled by parent */}
-      {(apiSuccess || apiError) && (
-        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-50 max-w-sm backdrop-blur-sm border ${apiSuccess ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full ${apiSuccess ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
-            <span className="text-sm font-medium">{apiSuccess || apiError}</span>
-          </div>
-        </div>
-      )}
+
 
       {/* Removed the outer flex container and the internal aside (sidebar) */}
       {/* The main content area will now take full width within the space provided by OwnerProtectedRoute */}

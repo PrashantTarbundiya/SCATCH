@@ -4,6 +4,7 @@ import { useUser } from '../context/UserContext'; // Corrected import
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
 import { ProductDetailSkeleton } from '../components/ui/SkeletonLoader.jsx';
 import ProductRecommendations from '../components/ProductRecommendations.jsx';
+import { toast } from '../utils/toast';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -119,14 +120,12 @@ const ProductDetailPage = () => {
         throw new Error(data?.error || data?.message || `HTTP error! status: ${response.status}`);
       }
       
-      setSuccessMessage(data.success || (editingReview ? "Review updated!" : "Review submitted!"));
+      toast.success(data.success || (editingReview ? "Review updated!" : "Review submitted!"));
       setProduct(data.product); // Ensure data.product is valid and expected structure
       setUserRating(0); setReviewText(''); setReviewImages([]); setReviewImagePreviews([]); setEditingReview(null);
-      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error("Review submission error:", err); // Log the full error for debugging
-      setError(err.message || "Failed to submit review. Please try again.");
-      setTimeout(() => setError(null), 5000); // Increased timeout for error visibility
+      toast.error(err.message || "Failed to submit review. Please try again.");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -153,15 +152,13 @@ const ProductDetailPage = () => {
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product._id}/reviews/${reviewIdToDelete}`, { method: 'DELETE', credentials: 'include' });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
-        setSuccessMessage(data.success || "Review deleted!");
+        toast.success(data.success || "Review deleted!");
         setProduct(data.product);
         if (editingReview && editingReview._id === reviewIdToDelete) {
             setUserRating(0); setReviewText(''); setReviewImages([]); setReviewImagePreviews([]); setEditingReview(null);
         }
-        setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-        setError(err.message || "Failed to delete review.");
-        setTimeout(() => setError(null), 3000);
+        toast.error(err.message || "Failed to delete review.");
     } finally {
         setIsSubmittingReview(false);
     }
@@ -174,11 +171,9 @@ const ProductDetailPage = () => {
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) data = await response.json();
       if (!response.ok) throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
-      setSuccessMessage(data?.message || 'Product added to cart!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success(data?.message || 'Product added to cart!');
     } catch (err) {
-      setError(err.message || 'Failed to add product to cart.');
-      setTimeout(() => setError(null), 3000);
+      toast.error(err.message || 'Failed to add product to cart.');
     }
   };
 
@@ -191,24 +186,22 @@ const ProductDetailPage = () => {
       if (isProductInWishlist(currentProductId)) {
         result = await removeFromWishlist(currentProductId);
         if (result) {
-          setSuccessMessage('Product removed from wishlist!');
+          toast.success('Product removed from wishlist!');
         } else {
           throw new Error('Failed to remove product from wishlist.');
         }
       } else {
         result = await addToWishlist(currentProductId);
         if (result) {
-          setSuccessMessage('Product added to wishlist!');
+          toast.success('Product added to wishlist!');
         } else {
           // Error might be set by context, or throw specific error
           throw new Error('Failed to add product to wishlist. User might not be logged in.');
         }
       }
-      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.message || 'Wishlist operation failed.');
+      toast.error(err.message || 'Wishlist operation failed.');
       console.error("Wishlist toggle error on detail page:", err);
-      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -218,14 +211,7 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12 px-4 md:px-8 lg:px-16">
-      {(successMessage || (error && product)) && (
-        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-[100] max-w-sm backdrop-blur-sm border ${successMessage ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full ${successMessage ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
-            <span className="text-sm font-medium">{successMessage || error}</span>
-          </div>
-        </div>
-      )}
+
       <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-xl w-full mx-auto">
         <div className="grid md:grid-cols-3 gap-4 md:gap-6">
           <div className="border dark:border-gray-700 p-4 rounded-lg flex items-center justify-center md:h-full">

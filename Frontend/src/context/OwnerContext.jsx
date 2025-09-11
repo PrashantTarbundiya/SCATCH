@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { toast } from '../utils/toast';
 
 
 const OwnerContext = createContext(null);
@@ -30,9 +31,11 @@ export const OwnerProvider = ({ children }) => {
       localStorage.removeItem('currentOwnerDetails');
       if (response.ok) {
         const data = await response.json().catch(() => ({})); 
+        toast.success(data?.message || "Owner logout successful");
         return { success: true, message: data?.message || "Owner logout successful" };
       } else {
         const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData?.error || errorData?.message || 'Owner logout failed on server');
         return { success: false, error: errorData?.error || errorData?.message || 'Owner logout failed on server' };
       }
     } catch (err) {
@@ -40,6 +43,7 @@ export const OwnerProvider = ({ children }) => {
       setIsOwnerAuthenticated(false);
       localStorage.removeItem('currentOwnerSessionActive');
       localStorage.removeItem('currentOwnerDetails');
+      toast.error(err.message || 'Network error during owner logout');
       return { success: false, error: err.message || 'Network error during owner logout' };
     }
   };
