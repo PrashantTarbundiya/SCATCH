@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import OptimizedImage from './OptimizedImage';
 
 // ProductCard Component
-export const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishlist, wishlistLoading }) => { // Added wishlist props
+export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInWishlist, wishlistLoading }) => {
   const { theme } = useTheme();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   
   const originalPrice = parseFloat(product.price) || 0;
   const discountAmount = parseFloat(product.discount) || 0;
@@ -47,9 +48,9 @@ export const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishli
                 }`}></i>
             </button>
             {product.image && typeof product.image === 'string' ? (
-              <img
-                onClick={() => product.quantity > 0 && navigate(`/product/${product._id}`)} // Keep navigation on image click
-                className={`h-[12rem] w-full object-contain transition-all duration-300 ${product.quantity === 0 ? 'group-hover:filter group-hover:blur-sm' : ''}`} // Apply blur directly to image on hover if out of stock
+              <OptimizedImage
+                onClick={useCallback(() => product.quantity > 0 && navigate(`/product/${product._id}`), [product._id, product.quantity, navigate])}
+                className={`h-[12rem] w-full object-contain transition-all duration-300 cursor-pointer ${product.quantity === 0 ? 'group-hover:filter group-hover:blur-sm' : ''}`}
                 src={product.image}
                 alt={product.name || "Product Image"}
               />
@@ -77,7 +78,7 @@ export const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishli
           <div className="flex-1 min-w-0 pr-2">
               <h3
                 className="font-semibold text-lg truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                onClick={() => navigate(`/product/${product._id}`)} // Navigate to product detail page
+                onClick={useCallback(() => navigate(`/product/${product._id}`), [product._id, navigate])}
               >
                 {product.name}
               </h3>
@@ -110,19 +111,22 @@ export const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishli
       </div>
     </div>
   );
-};
+});
 
 // HoverEffect Component
-export const HoverEffect = ({ items, className }) => {
-  let [hoveredIndex, setHoveredIndex] = useState(null);
+export const HoverEffect = memo(({ items, className }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  
+  const handleMouseEnter = useCallback((idx) => setHoveredIndex(idx), []);
+  const handleMouseLeave = useCallback(() => setHoveredIndex(null), []);
   return (
     <div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5", className)}>
       {items.map((item, idx) => (
         <div
           key={item._id} // Assuming item has _id from your ShopPage structure
           className="relative group block p-2 h-full w-full" // p-2 allows background to show
-          onMouseEnter={() => setHoveredIndex(idx)}
-          onMouseLeave={() => setHoveredIndex(null)}
+          onMouseEnter={() => handleMouseEnter(idx)}
+          onMouseLeave={handleMouseLeave}
         >
           <AnimatePresence>
             {hoveredIndex === idx && (
@@ -158,4 +162,4 @@ export const HoverEffect = ({ items, className }) => {
       ))}
     </div>
   );
-};
+});

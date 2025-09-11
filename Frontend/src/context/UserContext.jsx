@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'; // Added useEffect
+import React, { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
 
 // Create the context
 const UserContext = createContext(null);
@@ -8,15 +8,14 @@ export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null); // Or load from localStorage if you want persistence
   const [authLoading, setAuthLoading] = useState(true); // To track initial auth loading
 
-  // Function to update user, could also include login/logout logic here or keep it separate
-  const loginUser = (userData) => {
-    // console.log('User data being set in UserContext:', userData); // DEBUG LOG
+  // Memoized login function
+  const loginUser = useCallback((userData) => {
     setCurrentUser(userData);
-    // Optionally, save to sessionStorage for persistence across browser tab session
-    sessionStorage.setItem('currentUser', JSON.stringify(userData)); // Save to sessionStorage
-  };
+    sessionStorage.setItem('currentUser', JSON.stringify(userData));
+  }, []);
 
-  const logoutUser = async () => { // Make logoutUser async
+  // Memoized logout function
+  const logoutUser = useCallback(async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/logout`, {
         method: 'GET',
@@ -25,7 +24,7 @@ export const UserProvider = ({ children }) => {
       setCurrentUser(null);
       sessionStorage.removeItem('currentUser');
       if (response.ok) {
-        const data = await response.json().catch(() => ({})); // Catch if no JSON body
+        const data = await response.json().catch(() => ({}));
         return { success: true, message: data?.message || "Logout successful" };
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -38,16 +37,16 @@ export const UserProvider = ({ children }) => {
       sessionStorage.removeItem('currentUser');
       return { success: false, error: err.message || 'Network error during logout' };
     }
-  };
+  }, []);
 
-  // Value provided to consuming components
-  const value = {
+  // Memoized context value
+  const value = useMemo(() => ({
     currentUser,
-    setCurrentUser: loginUser, // Expose loginUser as setCurrentUser for clarity in login page
+    setCurrentUser: loginUser,
     logoutUser,
-    isAuthenticated: !!currentUser, // Helper to easily check if user is logged in
-    authLoading, // Expose authLoading state
-  };
+    isAuthenticated: !!currentUser,
+    authLoading,
+  }), [currentUser, loginUser, logoutUser, authLoading]);
 
   // Optional: Load user from localStorage on initial render for persistence
   useEffect(() => {

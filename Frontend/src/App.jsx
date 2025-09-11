@@ -1,25 +1,34 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import './App.css';
 
-import Admin from './pages/Admin';
-import AdminSalesPage from './pages/AdminSalesPage'; // Import the new sales page
-import Cart from './pages/Cart';
-import CreateProduct from './pages/CreateProduct';
-import AdminCouponsPage from './pages/AdminCouponsPage'; // Import Admin Coupons Page
-import LoginPage from './pages/login';
-import OwnerLoginPage from './pages/OwnerLogin';
-import RegisterPage from './pages/register';
-import ShopPage from './pages/Shop';
-import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
-import ProfilePage from './pages/Profile'; // Import ProfilePage
-import EditProfilePage from './pages/EditProfile'; // Import EditProfilePage
-import ContactPage from './pages/ContactPage'; // Import ContactPage
-import ProductDetailPage from './pages/ProductDetailPage'; // Import ProductDetailPage
-import ProductReviewPage from './pages/ProductReviewPage'; // Import ProductReviewPage
-import OwnerProtectedRoute from './components/OwnerProtectedRoute'; // Import OwnerProtectedRoute
+// Lazy load components
+const Admin = lazy(() => import('./pages/Admin'));
+const AdminSalesPage = lazy(() => import('./pages/AdminSalesPage'));
+const Cart = lazy(() => import('./pages/Cart'));
+const CreateProduct = lazy(() => import('./pages/CreateProduct'));
+const AdminCouponsPage = lazy(() => import('./pages/AdminCouponsPage'));
+const LoginPage = lazy(() => import('./pages/login'));
+const OwnerLoginPage = lazy(() => import('./pages/OwnerLogin'));
+const RegisterPage = lazy(() => import('./pages/register'));
+const ShopPage = lazy(() => import('./pages/Shop'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ProfilePage = lazy(() => import('./pages/Profile'));
+const EditProfilePage = lazy(() => import('./pages/EditProfile'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const ProductReviewPage = lazy(() => import('./pages/ProductReviewPage'));
+const OwnerProtectedRoute = lazy(() => import('./components/OwnerProtectedRoute'));
 
 import Header from './components/Header';
-import Footer from './components/Footer'; // Import Footer
+import Footer from './components/Footer';
+
+// Loading component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 function AppContent() {
   const location = useLocation();
@@ -34,7 +43,8 @@ function AppContent() {
       {!isAdminRoute && <Header />}
       
       <main className={isAdminRoute ? "w-full" : "py-8 w-full"}>
-        <Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -58,7 +68,8 @@ function AppContent() {
           
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </main>
       
       {/* Conditionally render Footer - exclude from admin routes */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom'; // Added useLocation
 import { HoverEffect } from '../components/ui/HoverEffect';
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
@@ -180,10 +180,32 @@ const ShopPage = () => {
     }
   };
 
+  // Prepare products for HoverEffect component
+  let displayProducts = products;
+  
+  // If filter is wishlist, show wishlist items instead
+  if (currentFilter === 'wishlist') {
+    displayProducts = wishlistItems
+      .filter(item => item.product)
+      .map(item => ({
+        ...item.product,
+        quantity: item.product.quantity || 1,
+      }));
+  }
+  
+  const productsForHoverEffect = useMemo(() => 
+    displayProducts.map(product => ({
+      ...product,
+      onAddToCart: currentFilter === 'wishlist' ? handleAddToCartFromWishlist : handleAddToCart,
+      onToggleWishlist: () => handleToggleWishlist(product._id),
+      isInWishlist: currentFilter === 'wishlist' ? true : isProductInWishlist(product._id),
+      wishlistLoading: wishlistLoading,
+    })), [displayProducts, currentFilter, handleAddToCartFromWishlist, handleAddToCart, handleToggleWishlist, isProductInWishlist, wishlistLoading]
+  );
+
   if (isLoading) {
     return (
       <div className="w-full min-h-screen flex items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
-        {/* Sidebar Skeleton */}
         <div className="w-full md:w-[25%] flex-col items-start hidden md:flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mr-6 transition-colors duration-300">
           <div className="space-y-4">
             <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-6 w-20 rounded"></div>
@@ -196,8 +218,6 @@ const ShopPage = () => {
             </div>
           </div>
         </div>
-        
-        {/* Main Content Skeleton */}
         <div className="w-full md:w-[75%] flex flex-col gap-5 md:pl-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -208,38 +228,16 @@ const ShopPage = () => {
       </div>
     );
   }
-  
-  // Prepare products for HoverEffect component
-  // ProductCard will handle navigation to detail page
-  let displayProducts = products;
-  
-  // If filter is wishlist, show wishlist items instead
-  if (currentFilter === 'wishlist') {
-    displayProducts = wishlistItems
-      .filter(item => item.product) // Only include items with valid product data
-      .map(item => ({
-        ...item.product, // Extract the product data
-        quantity: item.product.quantity || 1, // Ensure quantity is set (default to 1 if missing)
-      }));
-  }
-  
-
-  
-  const productsForHoverEffect = displayProducts.map(product => ({
-    ...product,
-    onAddToCart: currentFilter === 'wishlist' ? handleAddToCartFromWishlist : handleAddToCart, // Use appropriate handler
-    onToggleWishlist: () => handleToggleWishlist(product._id),
-    isInWishlist: currentFilter === 'wishlist' ? true : isProductInWishlist(product._id), // All wishlist items are in wishlist
-    wishlistLoading: wishlistLoading, // Pass loading state for individual button
-    // No onViewDetails needed here, ProductCard will navigate
-  }));
 
   return (
     <>
       {/* Notification Banner for page-level messages */}
       {(successMessage || error) && (
-        <div className={`fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-md shadow-lg z-[100] ${successMessage ? 'bg-blue-500 dark:bg-blue-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}>
-          <span className="inline-block">{successMessage || error}</span>
+        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-[100] max-w-sm backdrop-blur-sm border ${successMessage ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${successMessage ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
+            <span className="text-sm font-medium">{successMessage || error}</span>
+          </div>
         </div>
       )}
 

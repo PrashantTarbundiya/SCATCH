@@ -149,9 +149,11 @@ const CreateProductPage = () => {
     // This div should just be a simple container for its own content.
     <div className="w-full"> {/* Removed min-h-screen, flex, bg, text, pt - handled by parent */}
       {(apiSuccess || apiError) && (
-        // Adjusted notification to be relative to this page's content flow or consider a global notification system
-        <div className={`mb-4 p-3 rounded-md shadow-lg ${apiSuccess ? 'bg-green-500 dark:bg-green-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}>
-          <span className="inline-block">{apiSuccess || apiError}</span>
+        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-50 max-w-sm backdrop-blur-sm border ${apiSuccess ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${apiSuccess ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
+            <span className="text-sm font-medium">{apiSuccess || apiError}</span>
+          </div>
         </div>
       )}
 

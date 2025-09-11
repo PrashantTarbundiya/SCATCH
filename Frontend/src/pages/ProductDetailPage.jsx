@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext'; // Corrected import
 import { useWishlist } from '../context/WishlistContext'; // Import useWishlist
 import { ProductDetailSkeleton } from '../components/ui/SkeletonLoader.jsx';
+import ProductRecommendations from '../components/ProductRecommendations.jsx';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -218,11 +219,14 @@ const ProductDetailPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12 px-4 md:px-8 lg:px-16">
       {(successMessage || (error && product)) && (
-        <div className={`fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-md shadow-lg z-[100] w-auto max-w-md text-center ${successMessage ? 'bg-blue-500 dark:bg-blue-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}>
-          <span className="inline-block">{successMessage || error}</span>
+        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-[100] max-w-sm backdrop-blur-sm border ${successMessage ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${successMessage ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
+            <span className="text-sm font-medium">{successMessage || error}</span>
+          </div>
         </div>
       )}
-      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-xl w-full max-w-3xl mx-auto"> {/* max-w-3xl for the simpler layout */}
+      <div className="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-lg shadow-xl w-full mx-auto">
         <div className="grid md:grid-cols-3 gap-4 md:gap-6">
           <div className="border dark:border-gray-700 p-4 rounded-lg flex items-center justify-center md:h-full">
             <img src={product.image} alt={product.name} className="max-h-64 w-auto object-contain rounded-md" />
@@ -314,7 +318,7 @@ const ProductDetailPage = () => {
                     <div className="flex items-center mb-1 justify-between">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => { const starType = i < review.rating ? 'fill' : 'line'; return <i key={`review-star-${review._id}-${i}`} className={`ri-star-${starType} text-yellow-400 text-sm`}></i>; })}
-                        <span className="ml-2 text-xs font-semibold text-gray-700 dark:text-gray-200">{review.user ? (review.user.fullname || review.user.username || `User...${review.user._id.toString().slice(-4)}`) : 'Anonymous'}</span>
+                        <span className="ml-2 text-xs font-semibold text-gray-700 dark:text-gray-200">{review.user ? (review.user.fullname || review.user.username || `User...${review.user._id?.toString().slice(-4) || 'Unknown'}`) : 'Anonymous'}</span>
                       </div>
                       {currentUser && review.user && review.user._id === currentUser._id && (
                         <div className="flex gap-1">
@@ -333,6 +337,7 @@ const ProductDetailPage = () => {
             <p className="text-gray-600 dark:text-gray-400">No reviews yet. Be the first to review!</p>
           )}
         </div>
+        <ProductRecommendations productId={product._id} />
       </div>
     </div>
   );

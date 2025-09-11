@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios'; // Assuming you use axios for API calls
 import { useUser } from './UserContext'; // To get the logged-in user
 
@@ -36,16 +36,12 @@ export const WishlistProvider = ({ children }) => {
     const [error, setError] = useState(null);
     const { currentUser: user, authLoading } = useUser(); // Correctly destructure currentUser as user
 
-    const fetchWishlist = async () => {
-        // Wait for auth to complete and user to be available
+    const fetchWishlist = useCallback(async () => {
         if (authLoading || !user) {
-            setWishlistItems([]); // Clear wishlist if no user or still loading auth
-            if (!authLoading && !user) { // Only set error if auth is done and still no user
-                // setError("User not logged in to fetch wishlist."); // Optional: set an error
-            }
+            setWishlistItems([]);
             return;
         }
-        setLoading(true); // This is for wishlist data fetching
+        setLoading(true);
         setError(null);
         try {
             const response = await apiClient.get('/wishlist');
@@ -53,55 +49,37 @@ export const WishlistProvider = ({ children }) => {
         } catch (err) {
             const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch wishlist';
             setError(errorMessage);
-            console.error("Error fetching wishlist:", {
-                message: err.message,
-                url: err.config?.url,
-                method: err.config?.method,
-                responseStatus: err.response?.status,
-                responseData: err.response?.data,
-                // fullError: err // You can uncomment this for the full error object if needed
-            });
-            setWishlistItems([]); // Clear on error
+            setWishlistItems([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [authLoading, user]);
 
-    const addToWishlist = async (productId) => {
+    const addToWishlist = useCallback(async (productId) => {
         if (!user) {
             setError("Please log in to add items to your wishlist.");
-            // Optionally, redirect to login or show a modal
             return null;
         }
         setLoading(true);
         setError(null);
         try {
             const response = await apiClient.post('/wishlist', { productId });
-            // Add to local state optimistically or re-fetch
             setWishlistItems(prevItems => {
-                // Avoid duplicates if server confirms it's already there
                 const existingItem = prevItems.find(item => item.product._id === response.data.product._id);
                 if (existingItem) return prevItems;
                 return [...prevItems, response.data];
             });
-            return response.data; // Return the added item
+            return response.data;
         } catch (err) {
             const errorMessage = err.response?.data?.message || err.message || 'Failed to add to wishlist';
             setError(errorMessage);
-            console.error("Error adding to wishlist:", {
-                message: err.message,
-                url: err.config?.url,
-                method: err.config?.method,
-                responseStatus: err.response?.status,
-                responseData: err.response?.data,
-            });
             return null;
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
-    const removeFromWishlist = async (productId) => {
+    const removeFromWishlist = useCallback(async (productId) => {
         if (!user) {
             setError("User not logged in.");
             return false;
@@ -111,22 +89,15 @@ export const WishlistProvider = ({ children }) => {
         try {
             await apiClient.delete(`/wishlist/${productId}`);
             setWishlistItems(prevItems => prevItems.filter(item => item.product._id !== productId));
-            return true; // Indicate success
+            return true;
         } catch (err) {
             const errorMessage = err.response?.data?.message || err.message || 'Failed to remove from wishlist';
             setError(errorMessage);
-            console.error("Error removing from wishlist:", {
-                message: err.message,
-                url: err.config?.url,
-                method: err.config?.method,
-                responseStatus: err.response?.status,
-                responseData: err.response?.data,
-            });
-            return false; // Indicate failure
+            return false;
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
     // Fetch wishlist when user logs in or on initial load if user is already logged in
     useEffect(() => {
@@ -144,21 +115,23 @@ export const WishlistProvider = ({ children }) => {
         }
     }, [user, authLoading]); // Add authLoading to dependency array
 
-    const isProductInWishlist = (productId) => {
+    const isProductInWishlist = useCallback((productId) => {
         return wishlistItems.some(item => item.product && item.product._id === productId);
-    };
+    }, [wishlistItems]);
+
+    const contextValue = useMemo(() => ({
+        wishlistItems,
+        loading,
+        error,
+        fetchWishlist,
+        addToWishlist,
+        removeFromWishlist,
+        isProductInWishlist,
+        itemCount: wishlistItems.length
+    }), [wishlistItems, loading, error, fetchWishlist, addToWishlist, removeFromWishlist, isProductInWishlist]);
 
     return (
-        <WishlistContext.Provider value={{
-            wishlistItems,
-            loading,
-            error,
-            fetchWishlist,
-            addToWishlist,
-            removeFromWishlist,
-            isProductInWishlist,
-            itemCount: wishlistItems.length
-        }}>
+        <WishlistContext.Provider value={contextValue}>
             {children}
         </WishlistContext.Provider>
     );

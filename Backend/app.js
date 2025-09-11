@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 const app = express();
 
 import cookieParser from 'cookie-parser';
@@ -26,13 +27,16 @@ import orderRouter from './routes/orderRouter.js';
 import wishlistRouter from './routes/wishlistRouter.js';
 import couponRouter from './routes/couponRouter.js';
 
+// Performance middleware
+app.use(compression());
+
 app.use(cors({
   origin: process.env.FRONTEND_URI, 
   credentials: true 
 })); 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(
    expressSession({

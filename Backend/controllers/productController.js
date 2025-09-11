@@ -98,7 +98,10 @@ export const rateProduct = async (req, res, next) => {
 
         // Recalculate average rating (or rely on virtual if not sending back immediately)
         // For the response, let's send the updated product with its new average rating
-        const updatedProduct = await productModel.findById(productId);
+        const updatedProduct = await productModel.findById(productId).populate({
+            path: 'ratings.user',
+            select: 'username fullname email'
+        });
 
 
         res.status(200).json({ 
@@ -202,7 +205,10 @@ export const updateReview = async (req, res, next) => {
         product.ratings[reviewIndex].createdAt = Date.now(); // Update timestamp
 
         await product.save();
-        const updatedProduct = await productModel.findById(productId); // Fetch again to populate virtuals
+        const updatedProduct = await productModel.findById(productId).populate({
+            path: 'ratings.user',
+            select: 'username fullname email'
+        }); // Fetch again to populate virtuals
 
         res.status(200).json({
             success: "Review updated successfully.",
@@ -260,7 +266,10 @@ export const deleteReview = async (req, res, next) => {
         product.ratings.splice(reviewIndex, 1); // Remove the review
 
         await product.save();
-        const updatedProduct = await productModel.findById(productId); // Fetch again to populate virtuals
+        const updatedProduct = await productModel.findById(productId).populate({
+            path: 'ratings.user',
+            select: 'username fullname email'
+        }); // Fetch again to populate virtuals
 
         res.status(200).json({
             success: "Review deleted successfully.",
@@ -272,5 +281,55 @@ export const deleteReview = async (req, res, next) => {
         next(err);
     }
 };
+// Get recommended products based on current product
+export const getRecommendedProducts = async (req, res, next) => {
+    try {
+        const { productId } = req.params;
+        const limit = parseInt(req.query.limit) || 4;
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            const err = new Error("Invalid product ID format.");
+            err.status = 400;
+            return next(err);
+        }
+
+        const currentProduct = await productModel.findById(productId);
+        if (!currentProduct) {
+            const err = new Error("Product not found.");
+            err.status = 404;
+            return next(err);
+        }
+
+        // Get recommendations based on:
+        // 1. Similar price range (±20%)
+        // 2. Popular products (high purchase count)
+        // 3. Exclude current product
+        const priceRange = {
+            min: currentProduct.price * 0.8,
+            max: currentProduct.price * 1.2
+        };
+
+        const recommendations = await productModel.find({
+            _id: { $ne: productId },
+            $or: [
+                { price: { $gte: priceRange.min, $lte: priceRange.max } },
+                { purchaseCount: { $gte: 1 } }
+            ],
+            quantity: { $gt: 0 }
+        })
+        .sort({ purchaseCount: -1, averageRating: -1, createdAt: -1 })
+        .limit(limit);
+
+        res.status(200).json({
+            success: true,
+            recommendations
+        });
+
+    } catch (err) {
+        err.message = `Failed to get recommendations: ${err.message}`;
+        next(err);
+    }
+};
+
 // Placeholder for other product-specific controller functions if needed in the future
 // export const getProductReviews = async (req, res, next) => { ... };

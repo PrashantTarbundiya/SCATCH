@@ -4,7 +4,7 @@ import { upload } from '../config/multer-config.js'; // Assuming multer-config e
 import productModel from '../models/product-model.js';
 import isOwner from '../middleware/isOwner.js'; // Import isOwner middleware
 import isLoggedin from '../middleware/isLoggedin.js'; // Import isLoggedin middleware
-import { rateProduct, updateReview, deleteReview } from '../controllers/productController.js'; // Import new controllers
+import { rateProduct, updateReview, deleteReview, getRecommendedProducts } from '../controllers/productController.js'; // Import new controllers
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 router.post('/create', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
@@ -105,7 +105,7 @@ router.get('/:id', async (req, res, next) => { // Added next
     try {
         const product = await productModel.findById(req.params.id).populate({
             path: 'ratings.user',
-            select: 'username fullname email' // Select fields you want to show
+            select: 'username fullname email'
         });
 
         if (!product) {
@@ -185,6 +185,9 @@ router.put('/:productId/reviews/:reviewId', isLoggedin, upload.array('reviewImag
 
 // Route to delete a review
 router.delete('/:productId/reviews/:reviewId', isLoggedin, deleteReview);
+
+// Route to get recommended products
+router.get('/:productId/recommendations', getRecommendedProducts);
 
 // TEMPORARY ROUTE: Update existing products with default quantity and purchaseCount
 router.post('/temp/update-all-quantities', isOwner, async (req, res, next) => {

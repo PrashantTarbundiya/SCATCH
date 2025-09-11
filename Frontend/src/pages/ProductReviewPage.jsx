@@ -205,8 +205,11 @@ const ProductReviewPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12 px-4 md:px-8 lg:px-16">
       {(successMessage || (error && product)) && (
-        <div className={`fixed top-20 left-1/2 -translate-x-1/2 p-3 rounded-md shadow-lg z-[100] w-auto max-w-md text-center ${successMessage ? 'bg-blue-500 dark:bg-blue-600' : 'bg-red-500 dark:bg-red-600'} text-white transition-all duration-300`}>
-          <span className="inline-block">{successMessage || error}</span>
+        <div className={`fixed bottom-6 left-6 p-4 rounded-xl shadow-2xl z-[100] max-w-sm backdrop-blur-sm border ${successMessage ? 'bg-green-500/90 border-green-400/50' : 'bg-red-500/90 border-red-400/50'} text-white transition-all duration-500 transform animate-in slide-in-from-left-5`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${successMessage ? 'bg-green-300' : 'bg-red-300'} animate-pulse`}></div>
+            <span className="text-sm font-medium">{successMessage || error}</span>
+          </div>
         </div>
       )}
 
