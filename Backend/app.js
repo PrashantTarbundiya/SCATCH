@@ -31,8 +31,16 @@ import couponRouter from './routes/couponRouter.js';
 app.use(compression());
 
 app.use(cors({
-  origin: [process.env.FRONTEND_URI, 'https://scatch-livid.vercel.app'], 
-  credentials: true 
+  origin: function (origin, callback) {
+    const allowedOrigins = [process.env.FRONTEND_URI, 'https://scatch-livid.vercel.app', 'http://localhost:5173'];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
 })); 
 
 app.use(express.json({ limit: '10mb' }));
@@ -53,6 +61,15 @@ app.use(
 );
 app.use(flash());
 app.use(express.static(path.join(__dirname, "public")));
+
+// Debug route to check cookies
+app.get('/debug/cookies', (req, res) => {
+  res.json({
+    cookies: req.cookies,
+    headers: req.headers,
+    origin: req.get('origin')
+  });
+});
 
 app.use('/', indexRouter);
 app.use('/owners', ownerRouter);
