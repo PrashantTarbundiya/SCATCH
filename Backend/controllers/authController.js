@@ -154,8 +154,8 @@ export const registerUser = async (req, res) => {
                         const cookieOptions = {
                             path: '/',
                             httpOnly: true,
-                            secure: process.env.NODE_ENV === 'production',
-                            sameSite: 'Lax',
+                            secure: true,
+                            sameSite: 'none',
                             expires: new Date(Date.now() + oneDay)
                         };
                         
@@ -222,8 +222,8 @@ export const loginUser = async (req, res) => {
                     const cookieOptions = {
                         path: '/',
                         httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: 'Lax',
+                        secure: true,
+                        sameSite: 'none',
                         expires: new Date(Date.now() + oneDay)
                     };
                     // console.log("LOGIN_USER: Attempting to set token cookie. Token exists:", !!token, "Options:", cookieOptions);
@@ -391,8 +391,8 @@ export const loginOwner = async (req, res) => {
                     const cookieOptions = {
                         path: '/',
                         httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: 'Lax',
+                        secure: true,
+                        sameSite: 'none',
                         expires: new Date(Date.now() + oneDay)
                     };
                     // console.log("LOGIN_OWNER: Attempting to set token cookie. Token exists:", !!token, "Options:", cookieOptions);
