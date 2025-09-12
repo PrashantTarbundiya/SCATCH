@@ -1,4 +1,3 @@
-// Centralized toast system
 let toastContainer = null;
 let currentToast = null;
 
@@ -26,7 +25,7 @@ const showToast = (message, type = 'success') => {
   const container = createToastContainer();
   
   const toast = document.createElement('div');
-  toast.className = `p-4 rounded-xl shadow-2xl max-w-sm backdrop-blur-sm border ${
+  toast.className = `p-4 rounded-xl shadow-2xl max-w-sm h-[60px] backdrop-blur-sm border ${
     type === 'success' 
       ? 'bg-green-500/90 border-green-400/50' 
       : 'bg-red-500/90 border-red-400/50'
@@ -44,7 +43,6 @@ const showToast = (message, type = 'success') => {
   container.appendChild(toast);
   currentToast = toast;
   
-  // Auto-dismiss after 3 seconds
   setTimeout(() => {
     removeToast();
   }, 3000);

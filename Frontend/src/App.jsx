@@ -19,6 +19,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const ProductReviewPage = lazy(() => import('./pages/ProductReviewPage'));
 const OwnerProtectedRoute = lazy(() => import('./components/OwnerProtectedRoute'));
+const UserProtectedRoute = lazy(() => import('./components/UserProtectedRoute'));
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -48,14 +49,18 @@ function AppContent() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/shop" element={<ShopPage />} />
-          <Route path="/cart" element={<Cart />} />
           <Route path="/owner-login" element={<OwnerLoginPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/profile/edit" element={<EditProfilePage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/product/:productId" element={<ProductDetailPage />} />
-          <Route path="/product/:productId/reviews" element={<ProductReviewPage />} />
+          
+          {/* Protected User Routes */}
+          <Route element={<UserProtectedRoute />}>
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<EditProfilePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/product/:productId" element={<ProductDetailPage />} />
+            <Route path="/product/:productId/reviews" element={<ProductReviewPage />} />
+          </Route>
 
           {/* Protected Owner Routes */}
           <Route element={<OwnerProtectedRoute />}>

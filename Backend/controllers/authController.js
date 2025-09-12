@@ -5,6 +5,7 @@ import crypto from 'crypto'; // Added for OTP generation
 import nodemailer from 'nodemailer'; // Added for sending emails
 import { generateToken } from '../utils/generateToken.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js'; // Corrected import
+import { addToBlacklist } from '../utils/tokenBlacklist.js';
 // userModel is already imported at the top of the file
 
 // In-memory store for OTPs. In production, use Redis or a similar persistent store.
@@ -257,8 +258,13 @@ export const loginUser = async (req, res) => {
 }
 
 export const logout = (req, res) => {
+    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+    
+    if (token) {
+        addToBlacklist(token);
+    }
+    
     res.cookie("token", "", { httpOnly: true, secure: process.env.NODE_ENV === 'production', expires: new Date(0) }); // Clears cookie properly
-    // res.redirect("/register");
     return res.status(200).json({ success: true, message: "Logout successful" });
 };
 
@@ -423,8 +429,12 @@ export const loginOwner = async (req, res) => {
 };
 
 export const logoutOwner = (req, res) => {
-    // The token is HttpOnly, so client-side cannot remove it directly.
-    // Clearing the cookie on the server side is the correct approach.
+    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+    
+    if (token) {
+        addToBlacklist(token);
+    }
+    
     res.cookie("token", "", { httpOnly: true, secure: process.env.NODE_ENV === 'production', expires: new Date(0) });
     return res.status(200).json({ success: true, message: "Owner logout successful" });
 };

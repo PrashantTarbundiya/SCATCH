@@ -1,10 +1,15 @@
 import jwt from 'jsonwebtoken';
 import userModel from '../models/users-model.js';
+import { isBlacklisted } from '../utils/tokenBlacklist.js';
 
 const isLoggedIn = async (req, res, next) => {
     const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
     if (!token) {
         return res.status(401).json({ error: "Unauthorized: You need to login first." });
+    }
+
+    if (isBlacklisted(token)) {
+        return res.status(401).json({ error: "Unauthorized: Token has been invalidated." });
     }
 
     try {

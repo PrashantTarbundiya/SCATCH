@@ -4,6 +4,7 @@ import { useUser } from '../context/UserContext'; // Import useUser
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
 import { toast } from '../utils/toast';
+import PasswordInput from '../components/PasswordInput';
 
 
 // Renamed component to LoginPage to match App.jsx import
@@ -254,11 +255,9 @@ const LoginPage = () => {
               </CardItem>
               <CardItem translateZ="20" className="mb-6 w-full">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                <input
+                <PasswordInput
                   id="password"
                   className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                  type="password"
-                  placeholder="••••••••"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -444,12 +443,10 @@ const ForgotPasswordModal = ({
             </div>
             <div className="mb-4">
               <label htmlFor="new-password" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>New Password</label>
-              <input
+              <PasswordInput
                 id="new-password"
-                type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="••••••••"
                 required
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:ring-blue-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
                 disabled={isLoading}
@@ -457,12 +454,10 @@ const ForgotPasswordModal = ({
             </div>
             <div className="mb-6">
               <label htmlFor="confirm-new-password" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Confirm New Password</label>
-              <input
+              <PasswordInput
                 id="confirm-new-password"
-                type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
-                placeholder="••••••••"
                 required
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:ring-blue-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
                 disabled={isLoading}

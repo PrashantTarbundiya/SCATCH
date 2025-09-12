@@ -4,6 +4,7 @@ import { useOwner } from '../context/OwnerContext'; // Import useOwner
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
 import { toast } from '../utils/toast';
+import PasswordInput from '../components/PasswordInput';
 
 
 const OwnerLoginPage = () => {
@@ -121,11 +122,9 @@ const OwnerLoginPage = () => {
               </CardItem>
               <CardItem translateZ="20" className="mb-6 w-full">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                <input
+                <PasswordInput
                   id="password"
                   className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                  type="password"
-                  placeholder="••••••••"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}

@@ -24,9 +24,12 @@ export const UserProvider = ({ children }) => {
         credentials: 'include',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });
+      
+      // Clear all auth data immediately
       setCurrentUser(null);
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('authToken');
+      localStorage.clear(); // Clear all localStorage data
+      sessionStorage.clear(); // Clear all sessionStorage data
+      
       if (response.ok) {
         const data = await response.json().catch(() => ({}));
         toast.success(data?.message || "Logout successful");
@@ -39,9 +42,10 @@ export const UserProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Error during logout API call:', err);
+      // Clear auth data even if API call fails
       setCurrentUser(null);
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('authToken');
+      localStorage.clear();
+      sessionStorage.clear();
       toast.error(err.message || 'Network error during logout');
       return { success: false, error: err.message || 'Network error during logout' };
     }
