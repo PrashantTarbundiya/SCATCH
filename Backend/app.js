@@ -31,7 +31,7 @@ import couponRouter from './routes/couponRouter.js';
 app.use(compression());
 
 app.use(cors({
-  origin: process.env.FRONTEND_URI, 
+  origin: [process.env.FRONTEND_URI, 'https://scatch-livid.vercel.app'], 
   credentials: true 
 })); 
 
@@ -46,8 +46,8 @@ app.use(
       cookie: { 
          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
          httpOnly: true,
-         secure: process.env.NODE_ENV === 'production',
-         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+         secure: true,
+         sameSite: 'none'
       }
    })
 );
