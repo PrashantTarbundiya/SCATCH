@@ -74,10 +74,12 @@ const ShoppingCart = () => {
       setIsLoading(true);
       setError(null);
       try {
+        const token = localStorage.getItem('authToken');
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/cart`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` }),
           },
           credentials: 'include',
         });

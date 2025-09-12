@@ -18,12 +18,15 @@ export const UserProvider = ({ children }) => {
   // Memoized logout function
   const logoutUser = useCallback(async () => {
     try {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/logout`, {
         method: 'GET',
         credentials: 'include',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });
       setCurrentUser(null);
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
       if (response.ok) {
         const data = await response.json().catch(() => ({}));
         toast.success(data?.message || "Logout successful");
@@ -38,6 +41,7 @@ export const UserProvider = ({ children }) => {
       console.error('Error during logout API call:', err);
       setCurrentUser(null);
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
       toast.error(err.message || 'Network error during logout');
       return { success: false, error: err.message || 'Network error during logout' };
     }

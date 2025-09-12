@@ -2,14 +2,13 @@ import jwt from 'jsonwebtoken';
 import userModel from '../models/users-model.js';
 
 const isLoggedIn = async (req, res, next) => {
-    if (!req.cookies.token) {
-        // req.flash("error","You Need to login first");
-        // return res.redirect("/");
+    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
         return res.status(401).json({ error: "Unauthorized: You need to login first." });
     }
 
     try {
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_KEY);
         const user = await userModel
             .findOne({ email: decoded.email })
             .select("-password");
