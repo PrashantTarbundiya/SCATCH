@@ -67,6 +67,15 @@ const AdminSidebar = () => {
                     </li>
                     <li>
                         <NavLink 
+                            to="/admin/orders" 
+                            className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
+                        >
+                            <i className="ri-truck-line text-lg mr-3"></i>
+                            <span>Manage Orders</span>
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink 
                             to="/create-product" 
                             className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
                         >

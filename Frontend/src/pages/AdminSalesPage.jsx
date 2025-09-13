@@ -1,10 +1,84 @@
 import React, { useState, useEffect } from 'react';
-// We might need Link or other imports later if we add navigation within this page
 
 const AdminSalesPage = () => {
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState(null);
+  const [analytics, setAnalytics] = useState({
+    totalRevenue: 0,
+    totalOrders: 0,
+    avgOrderValue: 0,
+    topProducts: [],
+    topCustomers: [],
+    monthlyRevenue: [],
+    ordersByStatus: {}
+  });
+
+  const calculateAnalytics = (ordersData) => {
+    const totalRevenue = ordersData.reduce((sum, order) => sum + order.totalAmount, 0);
+    const totalOrders = ordersData.length;
+    const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    // Top products by quantity sold
+    const productStats = {};
+    ordersData.forEach(order => {
+      order.items.forEach(item => {
+        const productName = item.nameAtPurchase || item.product?.name || 'Unknown';
+        if (!productStats[productName]) {
+          productStats[productName] = { quantity: 0, revenue: 0 };
+        }
+        productStats[productName].quantity += item.quantity;
+        productStats[productName].revenue += item.quantity * item.priceAtPurchase;
+      });
+    });
+    const topProducts = Object.entries(productStats)
+      .sort(([,a], [,b]) => b.quantity - a.quantity)
+      .slice(0, 5)
+      .map(([name, stats]) => ({ name, ...stats }));
+
+    // Top customers by total spent
+    const customerStats = {};
+    ordersData.forEach(order => {
+      const customerName = order.user?.fullname || order.user?.email || 'Unknown';
+      if (!customerStats[customerName]) {
+        customerStats[customerName] = { orders: 0, totalSpent: 0 };
+      }
+      customerStats[customerName].orders += 1;
+      customerStats[customerName].totalSpent += order.totalAmount;
+    });
+    const topCustomers = Object.entries(customerStats)
+      .sort(([,a], [,b]) => b.totalSpent - a.totalSpent)
+      .slice(0, 5)
+      .map(([name, stats]) => ({ name, ...stats }));
+
+    // Monthly revenue (last 6 months)
+    const monthlyStats = {};
+    ordersData.forEach(order => {
+      const month = new Date(order.orderDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+      monthlyStats[month] = (monthlyStats[month] || 0) + order.totalAmount;
+    });
+    const monthlyRevenue = Object.entries(monthlyStats)
+      .sort(([a], [b]) => new Date(a) - new Date(b))
+      .slice(-6)
+      .map(([month, revenue]) => ({ month, revenue }));
+
+    // Orders by status
+    const ordersByStatus = {};
+    ordersData.forEach(order => {
+      const status = order.orderStatus || 'Processing';
+      ordersByStatus[status] = (ordersByStatus[status] || 0) + 1;
+    });
+
+    return {
+      totalRevenue,
+      totalOrders,
+      avgOrderValue,
+      topProducts,
+      topCustomers,
+      monthlyRevenue,
+      ordersByStatus
+    };
+  };
 
   const fetchAllOrders = async () => {
     setOrdersLoading(true);
@@ -18,7 +92,9 @@ const AdminSalesPage = () => {
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
-      setOrders(data?.orders || []);
+      const ordersData = data?.orders || [];
+      setOrders(ordersData);
+      setAnalytics(calculateAnalytics(ordersData));
     } catch (err) {
       setOrdersError(err.message || 'Failed to fetch orders.');
       setOrders([]);
@@ -54,61 +130,114 @@ const AdminSalesPage = () => {
           </div>
         )}
         
-        {!ordersLoading && !ordersError && (
-          <div className="overflow-x-auto bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
-            {orders.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-slate-600 dark:text-slate-400">No sales data found.</p>
+        {!ordersLoading && !ordersError && orders.length > 0 && (
+          <>
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+                <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
+                <p className="text-3xl font-bold">₹{analytics.totalRevenue.toFixed(2)}</p>
               </div>
-            ) : (
-              <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                <thead className="bg-slate-50 dark:bg-slate-700">
-                  <tr>
-                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Order ID</th>
-                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider hidden sm:table-cell">Date</th>
-                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Customer</th>
-                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider hidden lg:table-cell">Items</th>
-                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Total</th>
-                    <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                  {orders.map((order) => (
-                    <tr key={order._id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
-                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">{order._id.slice(-8)}</td>
-                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 hidden sm:table-cell">{new Date(order.orderDate).toLocaleDateString()}</td>
-                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
-                        {order.user ? (
-                          <>
-                            <div className="font-medium">{order.user.fullname}</div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">{order.user.email}</div>
-                          </>
-                        ) : 'N/A'}
-                      </td>
-                      <td className="px-3 md:px-6 py-4 text-sm text-slate-600 dark:text-slate-300 hidden lg:table-cell">
-                        <div className="max-w-xs">
-                          {order.items.map((item, index) => (
-                            <div key={index} className="text-xs mb-1">
-                              {item.product ? item.product.name : item.nameAtPurchase} (×{item.quantity})
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">₹{order.totalAmount.toFixed(2)}</td>
-                      <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-xl ${
-                          order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100' :
-                          order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-100' :
-                          'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100'
-                        }`}>
-                          {order.paymentStatus}
-                        </span>
-                      </td>
-                    </tr>
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white">
+                <h3 className="text-lg font-semibold mb-2">Total Orders</h3>
+                <p className="text-3xl font-bold">{analytics.totalOrders}</p>
+              </div>
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
+                <h3 className="text-lg font-semibold mb-2">Avg Order Value</h3>
+                <p className="text-3xl font-bold">₹{analytics.avgOrderValue.toFixed(2)}</p>
+              </div>
+            </div>
+
+            {/* Analytics Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Top Products */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Top Products</h3>
+                <div className="space-y-3">
+                  {analytics.topProducts.map((product, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <div>
+                        <p className="font-medium text-slate-800 dark:text-white">{product.name}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Sold: {product.quantity} units</p>
+                      </div>
+                      <p className="font-semibold text-green-600 dark:text-green-400">₹{product.revenue.toFixed(2)}</p>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            )}
+                </div>
+              </div>
+
+              {/* Top Customers */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Top Customers</h3>
+                <div className="space-y-3">
+                  {analytics.topCustomers.map((customer, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                      <div>
+                        <p className="font-medium text-slate-800 dark:text-white">{customer.name}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{customer.orders} orders</p>
+                      </div>
+                      <p className="font-semibold text-blue-600 dark:text-blue-400">₹{customer.totalSpent.toFixed(2)}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Monthly Revenue & Order Status */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Monthly Revenue */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Monthly Revenue</h3>
+                <div className="space-y-3">
+                  {analytics.monthlyRevenue.map((month, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-slate-600 dark:text-slate-400">{month.month}</span>
+                      <div className="flex items-center">
+                        <div className="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-2 mr-3">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full" 
+                            style={{ width: `${(month.revenue / Math.max(...analytics.monthlyRevenue.map(m => m.revenue))) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="font-semibold text-slate-800 dark:text-white">₹{month.revenue.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order Status */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Orders by Status</h3>
+                <div className="space-y-3">
+                  {Object.entries(analytics.ordersByStatus).map(([status, count]) => (
+                    <div key={status} className="flex justify-between items-center">
+                      <span className="text-slate-600 dark:text-slate-400">{status}</span>
+                      <div className="flex items-center">
+                        <div className="w-24 bg-slate-200 dark:bg-slate-700 rounded-full h-2 mr-3">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              status === 'Delivered' ? 'bg-green-500' :
+                              status === 'Shipped' ? 'bg-blue-500' :
+                              status === 'Processing' ? 'bg-yellow-500' :
+                              'bg-gray-500'
+                            }`}
+                            style={{ width: `${(count / analytics.totalOrders) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="font-semibold text-slate-800 dark:text-white">{count}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {!ordersLoading && !ordersError && orders.length === 0 && (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-slate-200 dark:border-slate-700 text-center">
+            <p className="text-slate-600 dark:text-slate-400">No sales data found.</p>
           </div>
         )}
       </div>

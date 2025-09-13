@@ -475,12 +475,25 @@ const handleClearCart = async () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300">
-        <h2 className="text-2xl font-semibold mb-5">Your Shopping Cart is Empty</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Looks like you haven't added anything to your cart yet.</p>
-        <Link to="/shop" className="px-5 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
-          Continue Shopping
-        </Link>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <svg className="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h15M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-semibold mb-4">Your Shopping Cart is Empty</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm md:text-base">Looks like you haven't added anything to your cart yet. Start shopping to fill it up!</p>
+          <Link 
+            to="/shop" 
+            className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            Start Shopping
+          </Link>
+        </div>
       </div>
     );
   }

@@ -19,4 +19,7 @@ router.get('/has-purchased/:productId', isLoggedIn, orderController.checkIfUserP
 // Route for admin to get all orders
 router.get('/admin/all-orders', isOwner, orderController.getAllOrdersForAdmin); // Removed isLoggedIn
 
+// Admin route to update order status
+router.put('/admin/:orderId/status', isOwner, orderController.updateOrderStatus);
+
 export default router;

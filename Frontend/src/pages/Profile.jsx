@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import UserContext from '../context/UserContext'; // Assuming you have a UserContext
 import { useUser } from '../context/UserContext'; // Import useUser to get user and setUser
 import { ProfileSkeleton } from '../components/ui/SkeletonLoader.jsx';
+import OrderStatusTracker from '../components/OrderStatusTracker';
 
 function ProfilePage() {
   const { currentUser: user, setCurrentUser: setUser, isAuthenticated, authLoading } = useUser();
@@ -28,7 +29,7 @@ function ProfilePage() {
         setProfileData({
           phone: user.phone || 'N/A',
           address: user.address || 'N/A',
-          profilePhoto: user.profilePhoto || 'https://via.placeholder.com/150',
+          profilePhoto: user.profilePhoto || 'https://res.cloudinary.com/dnlkzlnhv/image/upload/v1757783899/profile-image_ju6q5f.png',
           // orders: user.orders || [], // Orders will be fetched separately
           email: user.email || 'N/A', // Add fallback for email
           name: user.fullname || user.username || 'User'
@@ -190,37 +191,46 @@ function ProfilePage() {
                   const order = orders[currentOrderIndex];
                   if (!order) return <p className="text-center text-gray-500 dark:text-gray-400">Order not found.</p>;
                   return (
-                    <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-md">
-                      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3">
-                        <div>
-                          <span className="font-semibold text-lg text-gray-800 dark:text-gray-100">Order ID: {order.razorpayOrderId || order._id}</span>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Placed on: {new Date(order.orderDate).toLocaleDateString()}
-                          </p>
+                    <div className="space-y-6">
+                      <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-md">
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3">
+                          <div>
+                            <span className="font-semibold text-lg text-gray-800 dark:text-gray-100">Order ID: {order.razorpayOrderId || order._id}</span>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Placed on: {new Date(order.orderDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <span className={`mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full ${
+                            order.paymentStatus === 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100' :
+                            order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700 dark:text-yellow-100' :
+                            'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100'
+                          }`}>
+                            {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
+                          </span>
                         </div>
-                        <span className={`mt-2 sm:mt-0 px-3 py-1 text-xs font-semibold rounded-full ${
-                          order.paymentStatus === 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100' :
-                          order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700 dark:text-yellow-100' :
-                          'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100'
-                        }`}>
-                          {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
-                        </span>
+                        
+                        <div className="mb-3">
+                          <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-1">Items:</h4>
+                          <ul className="list-disc list-inside pl-1 space-y-1 text-sm text-gray-600 dark:text-gray-400 max-h-40 overflow-y-auto custom-scrollbar pr-1">
+                            {order.items.map(item => (
+                              <li key={item._id || item.product?._id}>
+                                {item.nameAtPurchase || item.product?.name || 'N/A'} - {item.quantity} x ₹{item.priceAtPurchase.toFixed(2)}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 text-right">
+                          <p className="text-md font-semibold text-gray-800 dark:text-gray-100">Total: ₹{order.totalAmount.toFixed(2)}</p>
+                        </div>
                       </div>
                       
-                      <div className="mb-3">
-                        <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-1">Items:</h4>
-                        <ul className="list-disc list-inside pl-1 space-y-1 text-sm text-gray-600 dark:text-gray-400 max-h-40 overflow-y-auto custom-scrollbar pr-1">
-                          {order.items.map(item => (
-                            <li key={item._id || item.product?._id}>
-                              {item.nameAtPurchase || item.product?.name || 'N/A'} - {item.quantity} x ₹{item.priceAtPurchase.toFixed(2)}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 text-right">
-                        <p className="text-md font-semibold text-gray-800 dark:text-gray-100">Total: ₹{order.totalAmount.toFixed(2)}</p>
-                      </div>
+                      {/* Order Status Tracker */}
+                      <OrderStatusTracker 
+                        currentStatus={order.orderStatus || 'Processing'}
+                        estimatedDeliveryDate={order.estimatedDeliveryDate}
+                        statusHistory={order.statusHistory}
+                      />
                     </div>
                   );
                 })()}

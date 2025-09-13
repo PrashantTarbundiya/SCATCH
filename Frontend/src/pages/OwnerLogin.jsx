@@ -37,6 +37,13 @@ const OwnerLoginPage = () => {
     }
   }, [isOwnerAuthenticated, navigate]);
 
+  // Check if already authenticated on component mount
+  useEffect(() => {
+    if (isOwnerAuthenticated) {
+      navigate('/admin', { replace: true });
+    }
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({

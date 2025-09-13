@@ -8,6 +8,7 @@ const AdminSalesPage = lazy(() => import('./pages/AdminSalesPage'));
 const Cart = lazy(() => import('./pages/Cart'));
 const CreateProduct = lazy(() => import('./pages/CreateProduct'));
 const AdminCouponsPage = lazy(() => import('./pages/AdminCouponsPage'));
+const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
 const LoginPage = lazy(() => import('./pages/login'));
 const OwnerLoginPage = lazy(() => import('./pages/OwnerLogin'));
 const RegisterPage = lazy(() => import('./pages/register'));
@@ -69,6 +70,7 @@ function AppContent() {
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
             <Route path="/admin/coupons" element={<AdminCouponsPage />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
           </Route>
           
           {/* Catch-all route for 404 Not Found */}

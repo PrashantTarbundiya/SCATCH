@@ -53,17 +53,46 @@ export const sendRegistrationOtp = async (req, res) => {
         otpStore[email] = { otp, expires, attempts: 0 };
 
         const mailOptions = {
-            from: `"Scatch App" <${process.env.GMAIL_USER}>`,
+            from: `"Scatch - Premium Shopping" <${process.env.GMAIL_USER}>`,
             to: email,
-            subject: 'Your OTP for Scatch Registration',
+            subject: '🔐 Your Scatch Registration OTP',
             html: `
-                <p>Hello,</p>
-                <p>Your One-Time Password (OTP) for Scatch registration is: <strong>${otp}</strong></p>
-                <p>This OTP is valid for 10 minutes.</p>
-                <p>If you did not request this, please ignore this email.</p>
-                <br>
-                <p>Thanks,</p>
-                <p>The Scatch Team</p>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Registration OTP</title>
+                </head>
+                <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #2D3436; margin: 0; padding: 0; background-color: #f8f9fa;">
+                    <div style="background: linear-gradient(135deg, #2D3436, #636e72); padding: 30px 20px; text-align: center;">
+                        <h1 style="color: white; font-size: 28px; margin: 0; font-weight: 700;">SCATCH</h1>
+                        <p style="color: #ddd5d0; margin: 5px 0 0 0; font-size: 12px;">Premium Shopping Experience</p>
+                    </div>
+                    <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; margin-top: -15px; position: relative; z-index: 1; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px;">
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, #00B894, #00A085); color: white; padding: 10px 20px; border-radius: 50px; display: inline-block; font-weight: 600; font-size: 14px;">
+                                🔐 Registration OTP
+                            </div>
+                        </div>
+                        <h2 style="color: #2D3436; text-align: center; margin: 0 0 20px 0; font-size: 20px;">Complete Your Registration</h2>
+                        <p style="color: #636e72; text-align: center; margin: 0 0 25px 0;">Enter this OTP to verify your email and create your Scatch account:</p>
+                        <div style="background: linear-gradient(135deg, #2D3436, #636e72); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0;">
+                            <div style="font-size: 12px; margin-bottom: 5px; opacity: 0.8;">Your OTP Code</div>
+                            <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; font-family: monospace; display: flex; justify-content: center; gap: 8px;">
+                                ${otp.split('').map(digit => `<span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; min-width: 20px; display: inline-block;">${digit}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: center;">
+                            <p style="margin: 0; color: #856404; font-size: 14px;">⏰ This OTP expires in <strong>2 minutes</strong></p>
+                        </div>
+                        <p style="color: #636e72; font-size: 14px; text-align: center; margin: 20px 0;">If you didn't request this registration, please ignore this email.</p>
+                    </div>
+                    <div style="background: #2D3436; color: white; padding: 20px; text-align: center; margin-top: 20px;">
+                        <p style="margin: 0; font-size: 12px; opacity: 0.8;">© 2024 Scatch. All rights reserved.</p>
+                    </div>
+                </body>
+                </html>
             `
         };
 
@@ -579,17 +608,49 @@ export const forgotPassword = async (req, res) => {
 
 
         const mailOptions = {
-            from: `"Scatch App" <${process.env.GMAIL_USER}>`,
+            from: `"Scatch - Premium Shopping" <${process.env.GMAIL_USER}>`,
             to: email,
-            subject: 'Your Password Reset OTP for Scatch',
+            subject: '🔒 Reset Your Scatch Password',
             html: `
-                <p>Hello ${user.fullname},</p>
-                <p>Your One-Time Password (OTP) to reset your Scatch account password is: <strong>${otp}</strong></p>
-                <p>This OTP is valid for 10 minutes.</p>
-                <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
-                <br>
-                <p>Thanks,</p>
-                <p>The Scatch Team</p>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Password Reset OTP</title>
+                </head>
+                <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #2D3436; margin: 0; padding: 0; background-color: #f8f9fa;">
+                    <div style="background: linear-gradient(135deg, #2D3436, #636e72); padding: 30px 20px; text-align: center;">
+                        <h1 style="color: white; font-size: 28px; margin: 0; font-weight: 700;">SCATCH</h1>
+                        <p style="color: #ddd5d0; margin: 5px 0 0 0; font-size: 12px;">Premium Shopping Experience</p>
+                    </div>
+                    <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; margin-top: -15px; position: relative; z-index: 1; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px;">
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <div style="background: linear-gradient(135deg, #E17055, #D63031); color: white; padding: 10px 20px; border-radius: 50px; display: inline-block; font-weight: 600; font-size: 14px;">
+                                🔒 Password Reset
+                            </div>
+                        </div>
+                        <h2 style="color: #2D3436; text-align: center; margin: 0 0 10px 0; font-size: 20px;">Hello ${user.fullname}!</h2>
+                        <p style="color: #636e72; text-align: center; margin: 0 0 25px 0;">We received a request to reset your Scatch account password. Use this OTP to proceed:</p>
+                        <div style="background: linear-gradient(135deg, #E17055, #D63031); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0;">
+                            <div style="font-size: 12px; margin-bottom: 5px; opacity: 0.8;">Your Reset OTP</div>
+                            <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; font-family: monospace; display: flex; justify-content: center; gap: 8px;">
+                                ${otp.split('').map(digit => `<span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; min-width: 20px; display: inline-block;">${digit}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: center;">
+                            <p style="margin: 0; color: #856404; font-size: 14px;">⏰ This OTP expires in <strong>10 minutes</strong></p>
+                        </div>
+                        <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 6px; padding: 15px; margin: 20px 0;">
+                            <p style="margin: 0; color: #721c24; font-size: 14px; text-align: center;">🛡️ If you didn't request this password reset, please ignore this email or contact our support team if you have security concerns.</p>
+                        </div>
+                    </div>
+                    <div style="background: #2D3436; color: white; padding: 20px; text-align: center; margin-top: 20px;">
+                        <p style="margin: 0 0 10px 0; font-size: 14px;">Need help? Contact us at <a href="mailto:scatchotp@gmail.com" style="color: #FDCB6E; text-decoration: none;">scatchotp@gmail.com</a></p>
+                        <p style="margin: 0; font-size: 12px; opacity: 0.8;">© 2024 Scatch. All rights reserved.</p>
+                    </div>
+                </body>
+                </html>
             `
         };
 
