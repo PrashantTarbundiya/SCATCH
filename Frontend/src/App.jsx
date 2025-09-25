@@ -3,6 +3,7 @@ import { Suspense, lazy } from 'react';
 import './App.css';
 
 // Lazy load components
+const Home = lazy(() => import('./pages/Home'));
 const Admin = lazy(() => import('./pages/Admin'));
 const AdminSalesPage = lazy(() => import('./pages/AdminSalesPage'));
 const Cart = lazy(() => import('./pages/Cart'));
@@ -35,19 +36,20 @@ const PageLoader = () => (
 function AppContent() {
   const location = useLocation();
   
-  // Check if current route is an admin route
+  // Check if current route is an admin route or home page
   const isAdminRoute = location.pathname.startsWith('/admin') ||
                       location.pathname.startsWith('/create-product');
+  const isHomePage = location.pathname === '/';
 
   return (
     <>
       {/* Conditionally render Header - exclude from admin routes */}
       {!isAdminRoute && <Header />}
       
-      <main className={isAdminRoute ? "w-full" : "py-8 w-full"}>
+      <main className={isAdminRoute ? "w-full" : isHomePage ? "w-full" : "py-8 w-full"}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/owner-login" element={<OwnerLoginPage />} />
@@ -79,8 +81,8 @@ function AppContent() {
         </Suspense>
       </main>
       
-      {/* Conditionally render Footer - exclude from admin routes */}
-      {!isAdminRoute && <Footer />}
+      {/* Conditionally render Footer - exclude from admin routes and home page */}
+      {!isAdminRoute && !isHomePage && <Footer />}
     </>
   );
 }

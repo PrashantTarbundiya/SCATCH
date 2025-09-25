@@ -1,17 +1,19 @@
 "use client";;
-import React, { useRef, useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useOwner } from '../context/OwnerContext';
 import { useTheme } from '../context/ThemeContext';
 import { cn } from '../utils/cn';
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import { LimelightNav } from './ui/limelight-nav';
+
 import {
   motion,
   AnimatePresence,
   useScroll,
   useMotionValueEvent,
-} from "motion/react"; // Or "framer-motion" if that's what you use
+} from "motion/react";
 
 // Navbar Components (from user prompt)
 
@@ -61,6 +63,8 @@ export const NavBody = ({
   visible,
   unifiedDesktopItems, // New prop
   logoItem, // New prop for the logo
+  limelightNavItems, // New prop for LimelightNav
+  activeNavIndex, // New prop for active index
   onItemClick // Prop for nav link clicks
 }) => {
   const [isHovering, setIsHovering] = useState(false); // For overall NavBody blur
@@ -120,23 +124,31 @@ export const NavBody = ({
         // No hover animation for logo itself, or add if desired with a unique key
       />
 
-      {/* Render Unified NavLinks (center) */}
+      {/* Render LimelightNav or Unified NavLinks (center) */}
       <div className="flex flex-1 items-center justify-center space-x-1">
-        {currentNavLinks.map((item) => (
-          <NavbarButton
-            key={item.key}
-            as={Link} // Items in navLinks (original or moved auth links) use Link
-            to={item.to}
-            onClick={onItemClick}
-            variant="secondary"
-            className="px-3 py-2 text-neutral-600 dark:text-neutral-300"
-            onMouseEnterHandler={() => setHoveredKey(item.key)}
-            isHoveredForAnimation={hoveredKey === item.key}
-            animationLayoutId="desktop-unified-hover"
-          >
-            {item.label}
-          </NavbarButton>
-        ))}
+        {limelightNavItems.length > 0 ? (
+          <LimelightNav 
+            items={limelightNavItems}
+            defaultActiveIndex={activeNavIndex}
+            className="bg-transparent"
+          />
+        ) : (
+          currentNavLinks.map((item) => (
+            <NavbarButton
+              key={item.key}
+              as={Link}
+              to={item.to}
+              onClick={onItemClick}
+              variant="secondary"
+              className="px-3 py-2 text-neutral-600 dark:text-neutral-300"
+              onMouseEnterHandler={() => setHoveredKey(item.key)}
+              isHoveredForAnimation={hoveredKey === item.key}
+              animationLayoutId="desktop-unified-hover"
+            >
+              {item.label}
+            </NavbarButton>
+          ))
+        )}
       </div>
 
       {/* Render Unified Action Buttons (right) */}
@@ -331,6 +343,7 @@ const Header = () => {
   const { currentOwner, isOwnerAuthenticated, logoutOwnerContext } = useOwner();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleUserLogout = async () => {
@@ -431,6 +444,42 @@ const Header = () => {
 
   const logoDesktopItem = { key: 'logo', type: 'logo', to: logoLink, logoText: 'Scatch' };
 
+  // LimelightNav items based on authentication state
+  const limelightNavItems = useMemo(() => {
+    if (isOwnerAuthenticated) {
+      return [
+        { id: 'admin', icon: <span>Admin Panel</span>, label: 'Admin Panel', onClick: () => navigate('/admin') },
+        { id: 'sales', icon: <span>Sales</span>, label: 'Sales', onClick: () => navigate('/admin/sales') },
+        { id: 'create', icon: <span>Create Product</span>, label: 'Create Product', onClick: () => navigate('/create-product') },
+      ];
+    } else if (isAuthenticated) {
+      return [
+        { id: 'shop', icon: <span>Shop</span>, label: 'Shop', onClick: () => navigate('/shop') },
+        { id: 'cart', icon: <span>Cart</span>, label: 'Cart', onClick: () => navigate('/cart') },
+        { id: 'profile', icon: <span>Profile</span>, label: 'Profile', onClick: () => navigate('/profile') },
+        { id: 'contact', icon: <span>Contact</span>, label: 'Contact', onClick: () => navigate('/contact') },
+      ];
+    }
+    return [];
+  }, [isOwnerAuthenticated, isAuthenticated, navigate]);
+
+  // Get active index based on current path
+  const activeNavIndex = useMemo(() => {
+    const currentPath = location.pathname;
+    
+    if (isOwnerAuthenticated) {
+      if (currentPath.includes('/admin/sales')) return 1;
+      if (currentPath.includes('/create-product')) return 2;
+      if (currentPath.includes('/admin')) return 0;
+    } else if (isAuthenticated) {
+      if (currentPath.includes('/cart')) return 1;
+      if (currentPath.includes('/profile')) return 2;
+      if (currentPath.includes('/contact')) return 3;
+      if (currentPath.includes('/shop')) return 0;
+    }
+    return 0;
+  }, [location.pathname, isOwnerAuthenticated, isAuthenticated]);
+
 
   const mobileActionItems = [];
    if (isOwnerAuthenticated) {
@@ -458,7 +507,9 @@ const Header = () => {
       <NavBody
         unifiedDesktopItems={unifiedDesktopItems}
         logoItem={logoDesktopItem}
-        onItemClick={closeMobileMenu} // Pass this for nav links if they need to close mobile menu (though it's desktop)
+        limelightNavItems={limelightNavItems}
+        activeNavIndex={activeNavIndex}
+        onItemClick={closeMobileMenu}
       >
         {/* Content is now rendered inside NavBody based on unifiedDesktopItems */}
       </NavBody>
