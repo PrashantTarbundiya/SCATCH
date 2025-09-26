@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import logo2 from '../../assets/logo2.png';
 
 
 
@@ -274,7 +275,10 @@ export const HeroSection = () => {
           />
         </div>
         <div className="z-10 absolute top-[51.3%] left-1/2 transform -translate-x-1/2 w-[550px] h-[550px] backdrop-blur-3xl rounded-full bg-[radial-gradient(circle_at_25%_90%,_#1e386b_15%,_#000000de_70%,_#000000ed_100%)] flex items-center justify-center">
-          <img src="/logo2.png" alt="Scatch" className="w-120 h-120 opacity-80 rounded-full" />
+          <img src={logo2} alt="Scatch" className="w-120 h-120 opacity-80 rounded-full" onError={(e) => e.target.style.display = 'none'} />
+          <div className="absolute inset-0 flex items-center justify-center text-6xl font-bold text-white/90">
+            Scatch
+          </div>
         </div>
       </motion.div>
     </div>
