@@ -124,38 +124,62 @@ router.get('/:id', async (req, res, next) => { // Added next
 router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
     try {
         const { name, price, discount, bgcolor, panelcolor, textcolor, quantity } = req.body; // Added quantity
+        
+        // Get current product for comparison
+        const currentProduct = await productModel.findById(req.params.id);
+        if (!currentProduct) {
+            const err = new Error("Product not found for update");
+            err.status = 404;
+            return next(err);
+        }
+        
         let updateData = { name, price, discount, bgcolor, panelcolor, textcolor };
+        const oldPrice = currentProduct.price;
+        const oldQuantity = currentProduct.quantity;
 
         if (quantity !== undefined && !isNaN(parseInt(quantity, 10)) && parseInt(quantity, 10) >= 0) {
             updateData.quantity = parseInt(quantity, 10);
         }
-
 
         if (req.file) {
             const localFilePath = req.file.path;
             const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
 
             if (!cloudinaryResponse || !cloudinaryResponse.secure_url) {
-                // fs.unlinkSync(localFilePath); // Already handled in uploadOnCloudinary
                 const err = new Error("Failed to upload image to Cloudinary for update");
                 err.status = 500;
                 return next(err);
             }
-            updateData.image = cloudinaryResponse.secure_url; // Store Cloudinary URL
-            // TODO: Optionally, delete the old image from Cloudinary if it exists
+            updateData.image = cloudinaryResponse.secure_url;
         }
 
         const product = await productModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
-
-        if (!product) {
-            const err = new Error("Product not found for update");
-            err.status = 404;
-            return next(err);
+        
+        // Import notification functions dynamically to avoid circular imports
+        const { createPriceDropAlert, createStockAlert } = await import('../controllers/notificationController.js');
+        
+        // Check for price drop (>5% decrease)
+        if (price && oldPrice && price < oldPrice) {
+            const dropPercentage = ((oldPrice - price) / oldPrice) * 100;
+            if (dropPercentage >= 5) {
+                await createPriceDropAlert(req.params.id, oldPrice, price);
+            }
         }
+        
+        // Check for stock alerts
+        if (updateData.quantity !== undefined) {
+            const newQuantity = updateData.quantity;
+            if (oldQuantity === 0 && newQuantity > 0) {
+                await createStockAlert(req.params.id, 'Item is back in stock!', 'high');
+            } else if (newQuantity <= 5 && newQuantity > 0) {
+                await createStockAlert(req.params.id, `Only ${newQuantity} items left in stock!`, 'medium');
+            } else if (newQuantity === 0) {
+                await createStockAlert(req.params.id, 'Item is now out of stock', 'low');
+            }
+        }
+
         res.status(200).json({ success: "Product updated successfully", product });
     } catch (err) {
-        // If req.file.path exists, it means multer saved it but something else failed.
-        // The unlink is handled in uploadOnCloudinary's catch or finally block.
         err.message = `Product update failed for ID ${req.params.id}: ${err.message}`;
         next(err);
     }

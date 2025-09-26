@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 import { cn } from '../utils/cn';
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { LimelightNav } from './ui/limelight-nav';
+import NotificationBell from './NotificationBell';
 
 import {
   motion,
@@ -97,12 +98,10 @@ export const NavBody = ({
       }}
       animate={{
         backdropFilter: (visible || isHovering) ? "blur(10px)" : "none",
-        // boxShadow and background changes are still tied only to 'visible' (scroll)
-        // If these should also change on hover, this logic would need adjustment
         boxShadow: visible
           ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
           : "none",
-        width: visible ? "40%" : "100%", // Adjusted width to 45%
+        width: visible ? "45%" : "100%", 
         y: visible ? 20 : 0,
       }}
       transition={{
@@ -111,7 +110,7 @@ export const NavBody = ({
         damping: 50,
       }}
       style={{
-        minWidth: "300px", // Adjusted minWidth for better flexibility with 40%
+        minWidth: "300px", 
       }}
       className={cn(
         "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent",
@@ -155,22 +154,27 @@ export const NavBody = ({
 
       {/* Render Unified Action Buttons (right) */}
       <div className="flex items-center gap-x-1">
-        {currentActions.map((item) => (
-          <NavbarButton
-            key={item.key}
-            as={item.type === 'link' ? Link : (item.type === 'themeToggle' ? 'button' : 'button')} // Handle different action types
-            to={item.to}
-            onClick={item.onClick}
-            variant={item.variant || 'secondary'}
-            className={cn("p-2", item.className)}
-            aria-label={item.ariaLabel}
-            onMouseEnterHandler={() => setHoveredKey(item.key)}
-            isHoveredForAnimation={hoveredKey === item.key}
-            animationLayoutId="desktop-unified-hover"
-          >
-            {item.label}
-          </NavbarButton>
-        ))}
+        {currentActions.map((item) => {
+          if (item.type === 'component') {
+            return <div key={item.key}>{item.label}</div>;
+          }
+          return (
+            <NavbarButton
+              key={item.key}
+              as={item.type === 'link' ? Link : (item.type === 'themeToggle' ? 'button' : 'button')} // Handle different action types
+              to={item.to}
+              onClick={item.onClick}
+              variant={item.variant || 'secondary'}
+              className={cn("p-2", item.className)}
+              aria-label={item.ariaLabel}
+              onMouseEnterHandler={() => setHoveredKey(item.key)}
+              isHoveredForAnimation={hoveredKey === item.key}
+              animationLayoutId="desktop-unified-hover"
+            >
+              {item.label}
+            </NavbarButton>
+          );
+        })}
       </div>
     </motion.div>
   );
@@ -431,6 +435,7 @@ const Header = () => {
   if (isOwnerAuthenticated) {
     unifiedDesktopItems.push({ key: `action-${desktopItemKeyCounter++}`, type: 'button', label: 'Owner Logout', onClick: handleOwnerLogout, variant: 'secondary', section: 'actions' });
   } else if (isAuthenticated) {
+    unifiedDesktopItems.push({ key: `action-${desktopItemKeyCounter++}`, type: 'component', label: <NotificationBell />, section: 'actions' });
     unifiedDesktopItems.push({ key: `action-${desktopItemKeyCounter++}`, type: 'button', label: 'Logout', onClick: handleUserLogout, variant: 'secondary', section: 'actions' });
   } else {
     unifiedDesktopItems.push({ key: `action-${desktopItemKeyCounter++}`, type: 'link', label: 'User Login', to: '/login', variant: 'secondary', section: 'actions' });

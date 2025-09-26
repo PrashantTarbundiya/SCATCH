@@ -3,6 +3,7 @@ import orderModel from '../models/order-model.js'; // To verify purchase
 import mongoose from 'mongoose';
 import { uploadOnCloudinary } from '../utils/cloudinary.js'; // For review image uploads
 import fs from 'fs'; // For cleaning up local file after upload
+import { createPriceDropAlert, createStockAlert } from './notificationController.js';
 
 export const rateProduct = async (req, res, next) => {
     try {
@@ -328,6 +329,52 @@ export const getRecommendedProducts = async (req, res, next) => {
     } catch (err) {
         err.message = `Failed to get recommendations: ${err.message}`;
         next(err);
+    }
+};
+
+// Update product with price monitoring
+export const updateProduct = async (req, res, next) => {
+    try {
+        const { productId } = req.params;
+        const { price, quantity, ...otherUpdates } = req.body;
+        
+        const product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+        
+        const oldPrice = product.price;
+        const oldQuantity = product.quantity;
+        
+        // Update product
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            productId,
+            { price, quantity, ...otherUpdates },
+            { new: true }
+        );
+        
+        // Check for price drop (>5% decrease)
+        if (price && oldPrice && price < oldPrice) {
+            const dropPercentage = ((oldPrice - price) / oldPrice) * 100;
+            if (dropPercentage >= 5) {
+                await createPriceDropAlert(productId, oldPrice, price);
+            }
+        }
+        
+        // Check for stock alerts
+        if (quantity !== undefined) {
+            if (oldQuantity === 0 && quantity > 0) {
+                await createStockAlert(productId, 'Item is back in stock!', 'high');
+            } else if (quantity <= 5 && quantity > 0) {
+                await createStockAlert(productId, `Only ${quantity} items left in stock!`, 'medium');
+            } else if (quantity === 0) {
+                await createStockAlert(productId, 'Item is now out of stock', 'low');
+            }
+        }
+        
+        res.json({ success: true, product: updatedProduct });
+    } catch (error) {
+        next(error);
     }
 };
 
