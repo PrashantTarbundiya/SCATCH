@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo2 from '../../assets/logo2.png';
 
-
-
 const Lightning = ({
   hue = 230,
   xOffset = 0,
@@ -189,11 +187,63 @@ const Lightning = ({
   return <canvas ref={canvasRef} className="w-full h-full relative" />;
 };
 
-
-
 export const HeroSection = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [screenSize, setScreenSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
+    height: typeof window !== 'undefined' ? window.innerHeight : 768
+  });
+
+  // Track screen size for responsive adjustments
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const lightningHue = 212;
+  const isMobile = screenSize.width < 768;
+  const isSmall = screenSize.width < 640;
+
+  // Logo size function - only this is needed now
+  const getLogoSize = () => {
+      return 'w-90 h-90';
+  };
+
+  // Lightning parameters adjusted for mobile
+  const getLightningProps = () => {
+    if (isSmall) {
+      return {
+        hue: lightningHue,
+        xOffset: 0,
+        speed: 1.2,
+        intensity: 1.2, 
+        size: 1.5 
+      };
+    } else if (isMobile) {
+      return {
+        hue: lightningHue,
+        xOffset: 0,
+        speed: 1.4,
+        intensity: 1.0,
+        size: 1.8
+      };
+    } else {
+      return {
+        hue: lightningHue,
+        xOffset: 0,
+        speed: 1.6,
+        intensity: 0.6,
+        size: 2
+      };
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -218,13 +268,11 @@ export const HeroSection = () => {
     }
   };
 
+  const lightningProps = getLightningProps();
+
   return (
-    <div className="relative w-full bg-black text-white overflow-hidden">
-      <div className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-6 h-screen">
-
-
-
-
+    <div className="relative w-full h-screen bg-black text-white overflow-hidden">
+      <div className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-6 h-full">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -233,14 +281,14 @@ export const HeroSection = () => {
         >
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl font-light mb-2"
+            className="text-4xl sm:text-5xl md:text-7xl font-light mb-2"
           >
             Scatch
           </motion.h1>
 
           <motion.h2
             variants={itemVariants}
-            className="text-lg md:text-xl pb-3 font-light bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 bg-clip-text text-transparent"
+            className="text-base sm:text-lg md:text-xl pb-3 font-light bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 bg-clip-text text-transparent"
           >
             Premium Shopping Experience
           </motion.h2>
@@ -250,7 +298,7 @@ export const HeroSection = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => window.location.href = '/shop'}
-            className="mt-8 px-8 py-3 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors cursor-pointer"
+            className="mt-8 px-6 sm:px-8 py-3 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors cursor-pointer text-sm sm:text-base"
           >
             Start Shopping
           </motion.button>
@@ -263,19 +311,25 @@ export const HeroSection = () => {
         transition={{ duration: 1 }}
         className="absolute inset-0 z-0"
       >
+        {/* Background overlay */}
         <div className="absolute inset-0 bg-black/80"></div>
-        <div className="absolute top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[800px] rounded-full bg-gradient-to-b from-blue-500/20 to-purple-600/10 blur-3xl"></div>
+        
+        {/* Gradient blur background */}
+        <div className={`absolute top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${isSmall ? 'w-[250px] h-[250px]' : isMobile ? 'w-[400px] h-[400px]' : 'w-[800px] h-[800px]'} rounded-full bg-gradient-to-b from-blue-500/20 to-purple-600/10 blur-3xl`}></div>
+        
+        {/* Lightning effect */}
         <div className="absolute top-0 w-full left-1/2 transform -translate-x-1/2 h-full">
-          <Lightning
-            hue={lightningHue}
-            xOffset={0}
-            speed={1.6}
-            intensity={0.6}
-            size={2}
-          />
+          <Lightning {...lightningProps} />
         </div>
-        <div className="z-10 absolute top-[61.5%] sm:top-[61.7%] md:top-[61.6%] lg:top-[52.9%] xl:top-[51.4%] 2xl:top-[50.3%] left-1/2 transform -translate-x-1/2 w-[510px] h-[510px] backdrop-blur-3xl rounded-full flex items-center justify-center">
-          <img src={logo2} alt="Scatch" className="w-90 h-90 opacity-80 rounded-full" onError={(e) => e.target.style.display = 'none'} />
+        
+        {/* Logo circle - using original positioning exactly as provided */}
+        <div className="z-10 absolute top-[50.5%] sm:top-[50.7%] md:top-[61.6%] lg:top-[58.9%] xl:top-[50.4%] 2xl:top-[50.3%] left-1/2 transform -translate-x-1/2 w-[550px] h-[550px] backdrop-blur-3xl rounded-full flex items-center justify-center">
+          <img 
+            src={logo2} 
+            alt="Scatch" 
+            className={`${getLogoSize()} opacity-80 rounded-full`} 
+            onError={(e) => e.target.style.display = 'none'} 
+          />
         </div>
       </motion.div>
     </div>

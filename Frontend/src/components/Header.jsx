@@ -142,8 +142,7 @@ export const NavBody = ({
               to={item.to}
               onClick={onItemClick}
               variant="secondary"
-              className={cn("px-3 py-2", 
-                location.pathname === '/' ? "text-white" : "text-neutral-700 dark:text-neutral-200")}
+              className={cn("px-3 py-2 text-white")}
               onMouseEnterHandler={() => setHoveredKey(item.key)}
               isHoveredForAnimation={hoveredKey === item.key}
               animationLayoutId="desktop-unified-hover"
@@ -267,21 +266,17 @@ export const MobileNavToggle = ({
 
 // Modified NavbarLogo to use Link and accept props
 export const NavbarLogo = ({ to, logoText, logoSrc, className }) => {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-  
   return (
     <Link
       to={to || "/"}
-      className={cn("relative z-20 flex items-center space-x-2 text-sm font-normal", 
-        isHomePage ? "text-white" : "text-black dark:text-white", 
+      className={cn("relative z-20 flex items-center space-x-2 text-sm font-normal text-black dark:text-white", 
         className)}>
       {logoSrc && <img
         src={logoSrc}
         alt="logo"
         width={30}
         height={30} />}
-      <span className="font-medium text-lg">{logoText || "AppLogo"}</span>
+      <span className="font-medium text-lg text-black dark:text-white">{logoText || "AppLogo"}</span>
     </Link>
   );
 };
@@ -307,14 +302,13 @@ export const NavbarButton = ({
   const variantStyles = {
     primary:
       "bg-white text-black shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-800 dark:text-white",
-    secondary: "bg-transparent shadow-none",
+    secondary: "bg-transparent shadow-none text-black dark:text-white",
     dark: "bg-black text-white shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
     gradient:
       "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
   };
 
-  const textColorClass = variant === 'secondary' && isHomePage ? 'text-white' : 
-    variant === 'secondary' ? 'text-black dark:text-white' : '';
+  const textColorClass = variant === 'secondary' ? 'text-black dark:text-white' : '';
 
   const commonProps = {
     className: cn(baseStyles, variantStyles[variant], textColorClass, className),
@@ -529,7 +523,7 @@ const Header = () => {
 
       <MobileNav>
         <MobileNavHeader>
-          <NavbarLogo to={logoLink} logoText="Scatch" />
+          <NavbarLogo to={logoLink} logoText="Scatch" className="text-white" />
           <MobileNavToggle isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
         </MobileNavHeader>
         <MobileNavMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu}>
