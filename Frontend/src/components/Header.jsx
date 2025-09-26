@@ -67,8 +67,10 @@ export const NavBody = ({
   activeNavIndex, // New prop for active index
   onItemClick // Prop for nav link clicks
 }) => {
+  const location = useLocation();
   const [isHovering, setIsHovering] = useState(false); // For overall NavBody blur
   const [hoveredKey, setHoveredKey] = useState(null); // For unified item hover animation
+  const isHomePage = location.pathname === '/';
 
   // --- Dynamically adjust items for navLinks and actions based on 'visible' and logged-out state ---
   let currentNavLinks = unifiedDesktopItems.filter(item => item.section === 'navLinks');
@@ -140,7 +142,8 @@ export const NavBody = ({
               to={item.to}
               onClick={onItemClick}
               variant="secondary"
-              className="px-3 py-2 text-neutral-700 dark:text-neutral-200"
+              className={cn("px-3 py-2", 
+                location.pathname === '/' ? "text-white" : "text-neutral-700 dark:text-neutral-200")}
               onMouseEnterHandler={() => setHoveredKey(item.key)}
               isHoveredForAnimation={hoveredKey === item.key}
               animationLayoutId="desktop-unified-hover"
@@ -264,10 +267,15 @@ export const MobileNavToggle = ({
 
 // Modified NavbarLogo to use Link and accept props
 export const NavbarLogo = ({ to, logoText, logoSrc, className }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+  
   return (
     <Link
       to={to || "/"}
-      className={cn("relative z-20 flex items-center space-x-2 text-sm font-normal text-black dark:text-white", className)}>
+      className={cn("relative z-20 flex items-center space-x-2 text-sm font-normal", 
+        isHomePage ? "text-white" : "text-black dark:text-white", 
+        className)}>
       {logoSrc && <img
         src={logoSrc}
         alt="logo"
@@ -291,20 +299,25 @@ export const NavbarButton = ({
   animationLayoutId, // New prop
   ...props
 }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const baseStyles =
     "px-4 py-2 rounded-full text-sm font-bold relative cursor-pointer transition duration-200 inline-block text-center"; // Static hover removed
 
   const variantStyles = {
     primary:
       "bg-white text-black shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-800 dark:text-white",
-    secondary: "bg-transparent text-black dark:text-white shadow-none",
+    secondary: "bg-transparent shadow-none",
     dark: "bg-black text-white shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
     gradient:
       "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
   };
 
+  const textColorClass = variant === 'secondary' && isHomePage ? 'text-white' : 
+    variant === 'secondary' ? 'text-black dark:text-white' : '';
+
   const commonProps = {
-    className: cn(baseStyles, variantStyles[variant], className),
+    className: cn(baseStyles, variantStyles[variant], textColorClass, className),
     onClick,
     onMouseEnter: onMouseEnterHandler, // Use the new prop
     ...props,
@@ -370,7 +383,7 @@ const Header = () => {
   if (isOwnerAuthenticated) {
     logoLink = "/admin";
   } else if (isAuthenticated) {
-    logoLink = "/shop";
+    logoLink = "/";
   }
 
   const desktopNavLinks = [];

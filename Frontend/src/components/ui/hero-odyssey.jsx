@@ -264,8 +264,8 @@ export const HeroSection = () => {
         className="absolute inset-0 z-0"
       >
         <div className="absolute inset-0 bg-black/80"></div>
-        <div className="absolute top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-b from-blue-500/20 to-purple-600/10 blur-3xl"></div>
-        <div className="absolute top-0 w-[100%] left-1/2 transform -translate-x-1/2 h-full">
+        <div className="absolute top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[800px] md:h-[800px] rounded-full bg-gradient-to-b from-blue-500/20 to-purple-600/10 blur-3xl"></div>
+        <div className="absolute top-0 w-full left-1/2 transform -translate-x-1/2 h-full">
           <Lightning
             hue={lightningHue}
             xOffset={0}
@@ -274,8 +274,8 @@ export const HeroSection = () => {
             size={2}
           />
         </div>
-        <div className="z-10 absolute top-[51.3%] left-1/2 transform -translate-x-1/2 w-[550px] h-[550px] backdrop-blur-3xl rounded-full bg-[radial-gradient(circle_at_25%_90%,_#1e386b_15%,_#000000de_70%,_#000000ed_100%)] flex items-center justify-center">
-          <img src={logo2} alt="Scatch" className="w-120 h-120 opacity-80 rounded-full" onError={(e) => e.target.style.display = 'none'} />
+        <div className="z-10 absolute top-[61.5%] sm:top-[61.7%] md:top-[61.6%] lg:top-[52.9%] xl:top-[51.4%] 2xl:top-[50.3%] left-1/2 transform -translate-x-1/2 w-[510px] h-[510px] backdrop-blur-3xl rounded-full flex items-center justify-center">
+          <img src={logo2} alt="Scatch" className="w-90 h-90 opacity-80 rounded-full" onError={(e) => e.target.style.display = 'none'} />
         </div>
       </motion.div>
     </div>
