@@ -98,7 +98,12 @@ const Lightning = ({
       void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
           vec2 uv = fragCoord / iResolution.xy;
           uv = 2.0 * uv - 1.0;
-          uv.x *= iResolution.x / iResolution.y;
+          float aspect = iResolution.x / iResolution.y;
+          if (aspect > 1.0) {
+              uv.x *= aspect;
+          } else {
+              uv.y /= aspect;
+          }
           uv.x += uXOffset;
           
           uv += 2.0 * fbm(uv * uSize + 0.8 * iTime * uSpeed) - 1.0;
@@ -221,7 +226,7 @@ export const HeroSection = () => {
     if (isSmall) {
       return {
         hue: lightningHue,
-        xOffset: 0,
+        xOffset: -0.3,
         speed: 1.2,
         intensity: 1.2, 
         size: 1.5 
