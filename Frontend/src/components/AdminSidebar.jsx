@@ -74,15 +74,7 @@ const AdminSidebar = () => {
                             <span>Manage Orders</span>
                         </NavLink>
                     </li>
-                    <li>
-                        <NavLink 
-                            to="/admin/notifications" 
-                            className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
-                        >
-                            <i className="ri-notification-line text-lg mr-3"></i>
-                            <span>Notifications</span>
-                        </NavLink>
-                    </li>
+
                     <li>
                         <NavLink 
                             to="/create-product" 

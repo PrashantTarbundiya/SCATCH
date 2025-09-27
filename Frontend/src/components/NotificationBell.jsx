@@ -39,6 +39,32 @@ const NotificationBell = () => {
     }
   };
 
+  const markAllAsRead = async () => {
+    try {
+      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/notifications/mark-all-read`, {}, {
+        withCredentials: true
+      });
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+    }
+  };
+
+  const clearAll = async () => {
+    if (window.confirm('Are you sure you want to clear all notifications?')) {
+      try {
+        await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/notifications/clear-all`, {
+          withCredentials: true
+        });
+        setNotifications([]);
+        setUnreadCount(0);
+      } catch (error) {
+        console.error('Error clearing notifications:', error);
+      }
+    }
+  };
+
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'stock_alert': return '📦';
@@ -80,8 +106,24 @@ const NotificationBell = () => {
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
           >
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
               <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+              {notifications.length > 0 && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    Mark all read
+                  </button>
+                  <button
+                    onClick={clearAll}
+                    className="text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                  >
+                    Clear all
+                  </button>
+                </div>
+              )}
             </div>
             
             <div className="max-h-96 overflow-y-auto">

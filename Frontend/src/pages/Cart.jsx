@@ -304,6 +304,47 @@ const handleClearCart = async () => {
       return;
     }
 
+    // Check stock availability before payment
+    try {
+      const stockCheckResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/cart/check-stock`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          items: cartItems.map(item => ({
+            productId: item._id,
+            quantity: item.quantity || 1
+          }))
+        })
+      });
+
+      const stockData = await stockCheckResponse.json();
+      
+      if (!stockCheckResponse.ok) {
+        if (stockData.outOfStock && stockData.outOfStock.length > 0) {
+          const outOfStockItems = stockData.outOfStock.map(item => item.name).join(', ');
+          setPaymentError(`Sorry, these items are out of stock: ${outOfStockItems}`);
+          return;
+        }
+        
+        if (stockData.insufficientStock && stockData.insufficientStock.length > 0) {
+          const insufficientItems = stockData.insufficientStock.map(item => 
+            `${item.name} (only ${item.available} available)`
+          ).join(', ');
+          setPaymentError(`Insufficient stock for: ${insufficientItems}`);
+          return;
+        }
+        
+        setPaymentError(stockData.message || 'Stock validation failed.');
+        return;
+      }
+    } catch (error) {
+      setPaymentError('Failed to validate stock. Please try again.');
+      return;
+    }
+
     setPaymentLoading(true);
     setPaymentError(null);
 

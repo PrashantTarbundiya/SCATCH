@@ -27,6 +27,7 @@ import orderRouter from './routes/orderRouter.js';
 import wishlistRouter from './routes/wishlistRouter.js';
 import couponRouter from './routes/couponRouter.js';
 import notificationRouter from './routes/notificationRouter.js';
+import cartRouter from './routes/cartRouter.js';
 
 // Performance middleware
 app.use(compression());
@@ -73,6 +74,7 @@ app.use('/orders', orderRouter);
 app.use('/api/wishlist', wishlistRouter); 
 app.use('/api/v1/coupons', couponRouter);
 app.use('/notifications', notificationRouter);
+app.use('/cart', cartRouter);
 
 
 app.use((err, req, res, next) => {

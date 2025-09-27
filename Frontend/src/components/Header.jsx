@@ -87,7 +87,6 @@ export const NavBody = ({
     currentNavLinks = [...currentNavLinks, ...authActionsToMove]; // Add them to nav links
     currentActions = currentActions.filter(item => !authActionLabels.includes(item.label)); // Remove them from actions
   }
-  // --- End dynamic adjustment ---
 
   return (
     <motion.div

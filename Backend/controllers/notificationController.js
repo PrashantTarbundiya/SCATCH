@@ -108,3 +108,26 @@ export const createSeasonalEvent = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// Mark all notifications as read
+export const markAllAsRead = async (req, res) => {
+    try {
+        await Notification.updateMany(
+            { user: req.user._id, isRead: false },
+            { isRead: true }
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// Clear all notifications
+export const clearAllNotifications = async (req, res) => {
+    try {
+        await Notification.deleteMany({ user: req.user._id });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
