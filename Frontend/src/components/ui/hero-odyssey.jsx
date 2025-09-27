@@ -227,17 +227,17 @@ export const HeroSection = () => {
       return {
         hue: lightningHue,
         xOffset: 1.0,
-        speed: 1.2,
-        intensity: 1.2, 
-        size: 1.5 
+        speed: 1.6,
+        intensity: 0.6,
+        size: 1.7
       };
     } else if (isMobile) {
       return {
         hue: lightningHue,
         xOffset: 0,
-        speed: 1.4,
-        intensity: 1.0,
-        size: 1.8
+        speed: 1.6,
+        intensity: 0.6,
+        size: 2
       };
     } else {
       return {
