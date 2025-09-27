@@ -226,7 +226,7 @@ export const HeroSection = () => {
     if (isSmall) {
       return {
         hue: lightningHue,
-        xOffset: -0.3,
+        xOffset: -1.5,
         speed: 1.2,
         intensity: 1.2, 
         size: 1.5 
