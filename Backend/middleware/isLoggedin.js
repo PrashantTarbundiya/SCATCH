@@ -3,7 +3,18 @@ import userModel from '../models/users-model.js';
 import { isBlacklisted } from '../utils/tokenBlacklist.js';
 
 const isLoggedIn = async (req, res, next) => {
-    const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+    // Try multiple ways to get the token for production compatibility
+    let token = req.cookies.token || 
+                req.cookies['token'] || 
+                req.headers.authorization?.replace('Bearer ', '') ||
+                req.headers['x-auth-token'];
+    
+    // Debug logging for production
+    if (!token && process.env.NODE_ENV === 'production') {
+        console.log('No token found. Cookies:', Object.keys(req.cookies || {}));
+        console.log('Headers auth:', req.headers.authorization);
+    }
+    
     if (!token) {
         return res.status(401).json({ error: "Unauthorized: You need to login first." });
     }

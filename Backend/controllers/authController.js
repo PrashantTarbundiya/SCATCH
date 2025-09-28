@@ -180,13 +180,14 @@ export const registerUser = async (req, res) => {
                             return res.status(500).json({ error: "Failed to generate token during registration." });
                         }
 
-                        const oneDay = 24 * 60 * 60 * 1000;
+                        const oneWeek = 7 * 24 * 60 * 60 * 1000;
                         const cookieOptions = {
                             path: '/',
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: 'none',
-                            expires: new Date(Date.now() + oneDay)
+                            httpOnly: false,
+                            secure: process.env.NODE_ENV === 'production',
+                            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                            expires: new Date(Date.now() + oneWeek),
+                            domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
                         };
                         
                         // console.log("REGISTER_USER: Attempting to set token cookie. Token exists:", !!token, "Options:", cookieOptions);

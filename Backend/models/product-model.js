@@ -11,9 +11,6 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    bgcolor: String,
-    panelcolor: String,
-    textcolor: String,
     quantity: {
         type: Number,
         required: true,
@@ -24,6 +21,11 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    category: {
+        type: String,
+        required: true,
+        trim: true
     },
     ratings: [{
         user: {

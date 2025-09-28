@@ -10,10 +10,8 @@ const CreateProductPage = () => {
     name: '',
     price: '',
     discount: '',
-    bgcolor: '',
-    panelcolor: '',
-    textcolor: '',
-    quantity: '', // Added quantity
+    quantity: '',
+    category: ''
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // For showing existing image in edit mode
@@ -42,15 +40,13 @@ const CreateProductPage = () => {
           }
           
           if (data.product) {
-            const { name, price, discount, bgcolor, panelcolor, textcolor, image, quantity } = data.product; // Added quantity
+            const { name, price, discount, image, quantity, category } = data.product;
             setFormData({
               name: name || '',
               price: price || '',
               discount: discount || '',
-              bgcolor: bgcolor || '',
-              panelcolor: panelcolor || '',
-              textcolor: textcolor || '',
-              quantity: quantity || '' // Added quantity
+              quantity: quantity || '',
+              category: category || ''
             });
             if (image && image.data) {
                 let binary = '';
@@ -96,10 +92,8 @@ const CreateProductPage = () => {
     productPayload.append('name', formData.name);
     productPayload.append('price', formData.price);
     productPayload.append('discount', formData.discount || 0);
-    productPayload.append('bgcolor', formData.bgcolor);
-    productPayload.append('panelcolor', formData.panelcolor);
-    productPayload.append('textcolor', formData.textcolor);
-    productPayload.append('quantity', formData.quantity || 0); // Added quantity
+    productPayload.append('quantity', formData.quantity || 0);
+    productPayload.append('category', formData.category);
     if (imageFile) {
       productPayload.append('image', imageFile);
     } else if (!isEditMode && !imagePreview) {
@@ -130,7 +124,7 @@ const CreateProductPage = () => {
       toast.success(result.message || (isEditMode ? 'Product updated successfully!' : 'Product created successfully!'));
       
       if (!isEditMode) {
-        setFormData({ name: '', price: '', discount: '', bgcolor: '', panelcolor: '', textcolor: '', quantity: '' }); // Reset quantity
+        setFormData({ name: '', price: '', discount: '', quantity: '', category: '' });
         setImageFile(null);
         setImagePreview(null);
         if (document.getElementById('image')) {
@@ -212,7 +206,7 @@ const CreateProductPage = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"> {/* New row for discount and quantity */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
                   <label htmlFor="discount" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Discount (%)</label>
                   <input
@@ -241,54 +235,30 @@ const CreateProductPage = () => {
                     disabled={isLoading}
                   />
                 </div>
+                <div>
+                  <label htmlFor="category" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Category*</label>
+                  <select
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+                    required
+                    disabled={isLoading}
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Books">Books</option>
+                    <option value="Home">Home</option>
+                    <option value="Beauty">Beauty</option>
+                    <option value="Sports">Sports</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            {/* Panel Details Section */}
-            <div className="mb-8 p-4 border border-gray-200 dark:border-gray-700 rounded-md">
-              <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Display Panel Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label htmlFor="bgcolor" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Background Color</label>
-                  <input
-                    id="bgcolor"
-                    name="bgcolor"
-                    type="text"
-                    placeholder="e.g., #FFFFFF or red"
-                    value={formData.bgcolor}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
-                    disabled={isLoading}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="panelcolor" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Panel Color</label>
-                  <input
-                    id="panelcolor"
-                    name="panelcolor"
-                    type="text"
-                    placeholder="e.g., #EEEEEE or lightgray"
-                    value={formData.panelcolor}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
-                    disabled={isLoading}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="textcolor" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Text Color</label>
-                  <input
-                    id="textcolor"
-                    name="textcolor"
-                    type="text"
-                    placeholder="e.g., #000000 or black"
-                    value={formData.textcolor}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
-            </div>
+
 
             <button
               className="px-6 py-2.5 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"

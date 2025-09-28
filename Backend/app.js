@@ -48,9 +48,10 @@ app.use(
       secret: process.env.EXPRESS_SESSION_SECRET,
       cookie: { 
          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-         httpOnly: true,
+         httpOnly: false, // Allow client-side access for debugging
          secure: process.env.NODE_ENV === 'production',
-         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+         domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
       }
    })
 );

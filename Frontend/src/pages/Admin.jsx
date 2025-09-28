@@ -15,7 +15,8 @@ const AllProductsPage = () => {
   const [error, setError] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [showOutOfStockOnly, setShowOutOfStockOnly] = useState(false); // New state for filter
+  const [showOutOfStockOnly, setShowOutOfStockOnly] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(''); // Category filter
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -144,6 +145,19 @@ const AllProductsPage = () => {
               <p className="text-slate-600 dark:text-slate-400">Manage your product inventory and settings</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full lg:w-auto">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Books">Books</option>
+                <option value="Home">Home</option>
+                <option value="Beauty">Beauty</option>
+                <option value="Sports">Sports</option>
+              </select>
               <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer bg-slate-50 dark:bg-slate-700 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-all duration-200">
                 <input
                   id="outOfStockFilter"
@@ -173,7 +187,11 @@ const AllProductsPage = () => {
         {/* Product List */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
           {products
-            .filter(product => !showOutOfStockOnly || product.quantity === 0)
+            .filter(product => {
+              const stockFilter = !showOutOfStockOnly || product.quantity === 0;
+              const categoryFilter = !selectedCategory || product.category === selectedCategory;
+              return stockFilter && categoryFilter;
+            })
             .map((product) => {
             const originalPrice = parseFloat(product.price) || 0;
             const discountAmount = parseFloat(product.discount) || 0;
@@ -224,6 +242,9 @@ const AllProductsPage = () => {
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Quantity Left: {product.quantity !== undefined ? product.quantity : 'N/A'}
+                  </p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">
+                    {product.category || 'No Category'}
                   </p>
                 </div>
                 {/* Buttons container - always visible on mobile, hover on desktop */}

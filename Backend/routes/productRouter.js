@@ -9,7 +9,7 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 router.post('/create', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
     try {
-        const { name, price, discount, bgcolor, panelcolor, textcolor, quantity } = req.body; // Added quantity
+        const { name, price, discount, quantity, category } = req.body; // Added quantity and category
 
         if (!quantity || isNaN(parseInt(quantity, 10)) || parseInt(quantity, 10) < 0) {
             const err = new Error("Valid quantity is required.");
@@ -35,7 +35,7 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
 
         const product = await productModel.create(({
             image: cloudinaryResponse.secure_url, // Store Cloudinary URL
-            name, price, discount, bgcolor, panelcolor, textcolor, quantity: parseInt(quantity, 10) // Added quantity
+            name, price, discount, quantity: parseInt(quantity, 10), category // Added quantity and category
         }));
         res.status(201).json({ success: "Product created successfully", product });
     } catch (err) {
@@ -123,7 +123,7 @@ router.get('/:id', async (req, res, next) => { // Added next
 // Route to update a product by ID
 router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
     try {
-        const { name, price, discount, bgcolor, panelcolor, textcolor, quantity } = req.body; // Added quantity
+        const { name, price, discount, quantity, category } = req.body; // Added quantity and category
         
         // Get current product for comparison
         const currentProduct = await productModel.findById(req.params.id);
@@ -133,7 +133,7 @@ router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { 
             return next(err);
         }
         
-        let updateData = { name, price, discount, bgcolor, panelcolor, textcolor };
+        let updateData = { name, price, discount, quantity, category };
         const oldPrice = currentProduct.price;
         const oldQuantity = currentProduct.quantity;
 
