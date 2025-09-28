@@ -528,7 +528,10 @@ const Header = () => {
       <MobileNav>
         <MobileNavHeader>
           <NavbarLogo to={logoLink} logoText="Scatch" className="text-white" />
-          <MobileNavToggle isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+          <div className="flex items-center gap-2">
+            {isAuthenticated && <NotificationBell />}
+            <MobileNavToggle isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+          </div>
         </MobileNavHeader>
         <MobileNavMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu}>
           {mobileNavLinks.map((item) => (

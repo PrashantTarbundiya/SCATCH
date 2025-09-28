@@ -10,6 +10,7 @@ const Cart = lazy(() => import('./pages/Cart'));
 const CreateProduct = lazy(() => import('./pages/CreateProduct'));
 const AdminCouponsPage = lazy(() => import('./pages/AdminCouponsPage'));
 const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 
 const LoginPage = lazy(() => import('./pages/login'));
 const OwnerLoginPage = lazy(() => import('./pages/OwnerLogin'));
@@ -62,6 +63,7 @@ function AppContent() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/edit" element={<EditProfilePage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/product/:productId" element={<ProductDetailPage />} />
             <Route path="/product/:productId/reviews" element={<ProductReviewPage />} />
           </Route>

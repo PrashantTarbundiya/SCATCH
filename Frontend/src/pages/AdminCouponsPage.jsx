@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllCoupons, createCoupon, updateCoupon, deleteCoupon } from '../services/couponService.js'; // Corrected path and added .js
 import CouponFormModal from '../components/CouponFormModal.jsx'; // Corrected path and added .jsx
 import { TableSkeleton } from '../components/ui/SkeletonLoader.jsx';
+import axios from 'axios';
 
 const AdminCouponsPage = () => {
     const [coupons, setCoupons] = useState([]);
@@ -12,6 +13,8 @@ const AdminCouponsPage = () => {
     const [currentCouponToEdit, setCurrentCouponToEdit] = useState(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [couponToDeleteId, setCouponToDeleteId] = useState(null);
+    const [notificationLoading, setNotificationLoading] = useState(false);
+    const [notificationSuccess, setNotificationSuccess] = useState('');
 
     const fetchCoupons = async () => {
         setIsLoading(true);
@@ -50,19 +53,44 @@ const AdminCouponsPage = () => {
             if (response.success) {
                 fetchCoupons(); // Refresh the list
                 handleCloseCreateModal();
-                // Optionally, show a success notification
+                // Coupon notification is automatically sent by backend
             } else {
-                // The error should be caught by the modal's submit handler and displayed there
-                // If not, or for additional handling:
                 throw new Error(response.message || "Failed to create coupon from page.");
             }
         } catch (err) {
             console.error("Error creating coupon from page:", err);
-            // setError(err.message || "An error occurred while creating the coupon."); // Modal handles its own errors
-            // Let the modal display the error from its own submission attempt.
-            // If the modal's onSubmit itself throws, it will be caught here.
-            // Re-throw to ensure modal's finally block runs if it depends on promise rejection
             throw err;
+        }
+    };
+    
+    const sendCouponNotification = async (coupon) => {
+        setNotificationLoading(true);
+        setNotificationSuccess('');
+        setError(null);
+        
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/notifications/coupon-alert`,
+                { 
+                    couponData: {
+                        code: coupon.code,
+                        discountType: coupon.discountType,
+                        discountValue: coupon.discountValue,
+                        validUntil: coupon.validUntil
+                    }
+                },
+                { withCredentials: true }
+            );
+            
+            if (response.data.success) {
+                setNotificationSuccess(`🎫 Coupon notification sent for ${coupon.code}!`);
+                setTimeout(() => setNotificationSuccess(''), 3000);
+            }
+        } catch (error) {
+            console.error('Error sending coupon notification:', error);
+            setError(error.response?.data?.message || 'Failed to send notification');
+        } finally {
+            setNotificationLoading(false);
         }
     };
     
@@ -134,6 +162,12 @@ const AdminCouponsPage = () => {
                 </button>
             </div>
         </div>
+        
+        {notificationSuccess && (
+            <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <p className="text-green-700 dark:text-green-300">{notificationSuccess}</p>
+            </div>
+        )}
 
             {isLoading && <TableSkeleton rows={5} columns={7} />}
             {error && <p className="text-center text-red-500 bg-red-100 dark:bg-red-900 dark:text-red-300 p-3 rounded-md">{error}</p>}
@@ -201,6 +235,13 @@ const AdminCouponsPage = () => {
                                         </td>
                                         <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div className="flex flex-col sm:flex-row gap-2">
+                                                <button
+                                                    onClick={() => sendCouponNotification(coupon)}
+                                                    disabled={notificationLoading}
+                                                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105 text-xs font-semibold"
+                                                >
+                                                    {notificationLoading ? '...' : '🔔'}
+                                                </button>
                                                 <button
                                                     onClick={() => handleOpenEditModal(coupon)}
                                                     className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105 text-xs font-semibold"

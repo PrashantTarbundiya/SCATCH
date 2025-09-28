@@ -1,5 +1,6 @@
 import Coupon from '../models/coupon-model.js';
 import Owner from '../models/owner-model.js';
+import { createCouponAlert } from './notificationController.js';
 
 export const createCoupon = async (req, res) => {
     try {
@@ -41,6 +42,18 @@ export const createCoupon = async (req, res) => {
             usageLimit,
             createdBy: ownerId,
         });
+
+        // Send coupon notification to all users
+        try {
+            await createCouponAlert({
+                code: coupon.code,
+                discountType: coupon.discountType,
+                discountValue: coupon.discountValue,
+                validUntil: coupon.validUntil
+            });
+        } catch (notificationError) {
+            console.error('Failed to send coupon notifications:', notificationError);
+        }
 
         res.status(201).json({
             success: true,

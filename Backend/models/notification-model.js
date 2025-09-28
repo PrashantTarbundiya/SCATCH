@@ -8,7 +8,7 @@ const notificationSchema = mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['stock_alert', 'price_drop', 'wishlist_update', 'order_status', 'seasonal_event'],
+        enum: ['stock_alert', 'price_drop', 'wishlist_update', 'order_status', 'coupon_alert'],
         required: true
     },
     title: {
@@ -36,7 +36,15 @@ const notificationSchema = mongoose.Schema({
         oldPrice: Number,
         newPrice: Number,
         stockLevel: Number,
-        eventCode: String
+        eventCode: String,
+        couponCode: String,
+        discountValue: Number,
+        discountType: String,
+        validUntil: Date,
+        changePercentage: Number
+    },
+    actionUrl: {
+        type: String
     }
 }, { timestamps: true });
 
