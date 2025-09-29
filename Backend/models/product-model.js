@@ -23,9 +23,9 @@ const productSchema = mongoose.Schema({
         min: 0
     },
     category: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category',
+        required: true
     },
     ratings: [{
         user: {

@@ -18,9 +18,42 @@ const CreateProductPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const navigate = useNavigate();
   const { productId } = useParams(); // Get productId from URL
   const isEditMode = Boolean(productId);
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setCategoriesLoading(true);
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, {
+          credentials: 'include'
+        });
+        let data;
+        if (response.headers.get("content-type")?.includes("application/json")) {
+          data = await response.json();
+        }
+        
+        if (!response.ok) {
+          throw new Error(data?.error || 'Failed to load categories');
+        }
+        
+        if (data.success && data.categories) {
+          setCategories(data.categories);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        toast.error('Failed to load categories');
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (isEditMode) {
@@ -41,12 +74,17 @@ const CreateProductPage = () => {
           
           if (data.product) {
             const { name, price, discount, image, quantity, category } = data.product;
+            // Convert absolute discount amount back to percentage for display
+            const discountPercentage = price > 0 && discount > 0
+              ? Math.round((discount / price) * 100)
+              : 0;
+            
             setFormData({
               name: name || '',
               price: price || '',
-              discount: discount || '',
+              discount: discountPercentage || '',
               quantity: quantity || '',
-              category: category || ''
+              category: category?._id || category || ''
             });
             if (image && image.data) {
                 let binary = '';
@@ -88,10 +126,15 @@ const CreateProductPage = () => {
     setApiError(null);
     setApiSuccess(null);
 
+    // Convert discount percentage to absolute amount
+    const discountPercentage = parseFloat(formData.discount) || 0;
+    const price = parseFloat(formData.price) || 0;
+    const discountAmount = (price * discountPercentage) / 100;
+
     const productPayload = new FormData();
     productPayload.append('name', formData.name);
     productPayload.append('price', formData.price);
-    productPayload.append('discount', formData.discount || 0);
+    productPayload.append('discount', discountAmount.toFixed(2));
     productPayload.append('quantity', formData.quantity || 0);
     productPayload.append('category', formData.category);
     if (imageFile) {
@@ -244,16 +287,22 @@ const CreateProductPage = () => {
                     onChange={handleInputChange}
                     className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
                     required
-                    disabled={isLoading}
+                    disabled={isLoading || categoriesLoading}
                   >
-                    <option value="">Select Category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Clothing">Clothing</option>
-                    <option value="Books">Books</option>
-                    <option value="Home">Home</option>
-                    <option value="Beauty">Beauty</option>
-                    <option value="Sports">Sports</option>
+                    <option value="">
+                      {categoriesLoading ? 'Loading categories...' : 'Select Category'}
+                    </option>
+                    {categories.map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
                   </select>
+                  {categories.length === 0 && !categoriesLoading && (
+                    <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
+                      No categories available. Please create categories first.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

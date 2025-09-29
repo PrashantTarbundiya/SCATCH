@@ -1,10 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import { upload } from '../config/multer-config.js'; // Assuming multer-config exports 'upload'
+import { upload } from '../config/multer-config.js';
 import productModel from '../models/product-model.js';
-import isOwner from '../middleware/isOwner.js'; // Import isOwner middleware
-import isLoggedin from '../middleware/isLoggedin.js'; // Import isLoggedin middleware
-import { rateProduct, updateReview, deleteReview, getRecommendedProducts } from '../controllers/productController.js'; // Import new controllers
+import categoryModel from '../models/category-model.js';
+import isOwner from '../middleware/isOwner.js';
+import isLoggedin from '../middleware/isLoggedin.js';
+import { rateProduct, updateReview, deleteReview, getRecommendedProducts } from '../controllers/productController.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 router.post('/create', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
@@ -15,6 +16,21 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
             const err = new Error("Valid quantity is required.");
             err.status = 400;
             return next(err);
+        }
+
+        // Validate category if provided
+        if (category) {
+            const categoryExists = await categoryModel.findById(category);
+            if (!categoryExists) {
+                const err = new Error("Invalid category ID. Category does not exist.");
+                err.status = 400;
+                return next(err);
+            }
+            if (!categoryExists.isActive) {
+                const err = new Error("Cannot assign product to inactive category.");
+                err.status = 400;
+                return next(err);
+            }
         }
 
         if (!req.file) {
@@ -35,8 +51,16 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
 
         const product = await productModel.create(({
             image: cloudinaryResponse.secure_url, // Store Cloudinary URL
-            name, price, discount, quantity: parseInt(quantity, 10), category // Added quantity and category
+            name,
+            price,
+            discount,
+            quantity: parseInt(quantity, 10),
+            category: category || null // Store category ObjectId or null
         }));
+        
+        // Populate category details for response
+        await product.populate('category', 'name slug');
+        
         res.status(201).json({ success: "Product created successfully", product });
     } catch (err) {
         // If req.file.path exists, it means multer saved it but something else failed.
@@ -74,10 +98,13 @@ router.get('/', async (req, res, next) => {
             sortOptions.createdAt = -1; // Default to newest
         }
 
-        const products = await productModel.find(query).sort(sortOptions).populate({
-            path: 'ratings.user', // Keep population for averageRating virtual
-            select: 'username fullname'
-        });
+        const products = await productModel.find(query)
+            .sort(sortOptions)
+            .populate('category', 'name slug')
+            .populate({
+                path: 'ratings.user',
+                select: 'username fullname'
+            });
         
         res.status(200).json({ success: true, products });
     } catch (err) {
@@ -100,13 +127,112 @@ router.delete('/all', isOwner, async (req, res, next) => { // Added isOwner
     }
 });
 
+// Route to search and filter products (MUST BE BEFORE /:id route)
+router.get('/search', async (req, res, next) => {
+    try {
+        const { query, minPrice, maxPrice, category, minRating, sortBy } = req.query;
+        
+        let searchQuery = {};
+        
+        // Text search by name
+        if (query && query.trim()) {
+            searchQuery.name = { $regex: query.trim(), $options: 'i' };
+        }
+        
+        // Price range filter
+        if (minPrice !== undefined || maxPrice !== undefined) {
+            searchQuery.price = {};
+            if (minPrice !== undefined) searchQuery.price.$gte = parseFloat(minPrice);
+            if (maxPrice !== undefined) searchQuery.price.$lte = parseFloat(maxPrice);
+        }
+        
+        // Category filter - now using ObjectId reference
+        if (category && category.trim()) {
+            // Find category by slug
+            const categoryDoc = await categoryModel.findOne({
+                slug: category.trim().toLowerCase(),
+                isActive: true
+            });
+            if (categoryDoc) {
+                searchQuery.category = categoryDoc._id;
+            } else {
+                // If category not found, return empty results
+                return res.status(200).json({
+                    success: true,
+                    count: 0,
+                    products: [],
+                    message: 'No products found for this category'
+                });
+            }
+        }
+        
+        // Rating filter
+        if (minRating !== undefined) {
+            const minRatingNum = parseFloat(minRating);
+            if (!isNaN(minRatingNum) && minRatingNum >= 0 && minRatingNum <= 5) {
+                // We'll filter by averageRating after fetching
+                // For now, just note it for post-processing
+            }
+        }
+        
+        // Sort options
+        let sortOptions = {};
+        if (sortBy === 'price_asc') {
+            sortOptions.price = 1;
+        } else if (sortBy === 'price_desc') {
+            sortOptions.price = -1;
+        } else if (sortBy === 'popular') {
+            sortOptions.purchaseCount = -1;
+        } else if (sortBy === 'rating') {
+            // Will sort by averageRating after processing
+        } else {
+            sortOptions.createdAt = -1; // Default newest
+        }
+        
+        let products = await productModel.find(searchQuery)
+            .sort(sortOptions)
+            .populate('category', 'name slug')
+            .populate({
+                path: 'ratings.user',
+                select: 'username fullname'
+            });
+        
+        // Filter by rating if specified (post-query filtering since averageRating is virtual)
+        if (minRating !== undefined) {
+            const minRatingNum = parseFloat(minRating);
+            if (!isNaN(minRatingNum)) {
+                products = products.filter(product => {
+                    const avgRating = product.averageRating || 0;
+                    return avgRating >= minRatingNum;
+                });
+            }
+        }
+        
+        // Sort by rating if requested (post-query since it's virtual)
+        if (sortBy === 'rating') {
+            products.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+        }
+        
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            products
+        });
+    } catch (err) {
+        err.message = `Failed to search products: ${err.message}`;
+        next(err);
+    }
+});
+
 // Route to get a single product by ID
 router.get('/:id', async (req, res, next) => { // Added next
     try {
-        const product = await productModel.findById(req.params.id).populate({
-            path: 'ratings.user',
-            select: 'username fullname email'
-        });
+        const product = await productModel.findById(req.params.id)
+            .populate('category', 'name slug')
+            .populate({
+                path: 'ratings.user',
+                select: 'username fullname email'
+            });
 
         if (!product) {
             const err = new Error("Product not found");
@@ -133,7 +259,22 @@ router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { 
             return next(err);
         }
         
-        let updateData = { name, price, discount, quantity, category };
+        // Validate category if provided
+        if (category) {
+            const categoryExists = await categoryModel.findById(category);
+            if (!categoryExists) {
+                const err = new Error("Invalid category ID. Category does not exist.");
+                err.status = 400;
+                return next(err);
+            }
+            if (!categoryExists.isActive) {
+                const err = new Error("Cannot assign product to inactive category.");
+                err.status = 400;
+                return next(err);
+            }
+        }
+        
+        let updateData = { name, price, discount, category };
         const oldPrice = currentProduct.price;
         const oldQuantity = currentProduct.quantity;
 
@@ -153,7 +294,11 @@ router.put('/:id', isOwner, upload.single("image"), async (req, res, next) => { 
             updateData.image = cloudinaryResponse.secure_url;
         }
 
-        const product = await productModel.findByIdAndUpdate(req.params.id, updateData, { new: true });
+        const product = await productModel.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        ).populate('category', 'name slug');
         
         // Import notification functions dynamically to avoid circular imports
         const { createPriceDropAlert, createStockAlert } = await import('../controllers/notificationController.js');

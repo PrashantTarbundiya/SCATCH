@@ -1,94 +1,119 @@
 import mongoose from 'mongoose';
 
 const couponSchema = new mongoose.Schema({
-    code: {
-        type: String,
-        required: [true, "Coupon code is required."],
-        unique: true,
-        trim: true,
-        uppercase: true,
-    },
-    discountType: {
-        type: String,
-        required: [true, "Discount type is required."],
-        enum: ['percentage', 'fixedAmount'], 
-    },
-    discountValue: {
-        type: Number,
-        required: [true, "Discount value is required."],
-        min: [0, "Discount value cannot be negative."],
-    },
-    description: {
-        type: String,
-        trim: true,
-    },
-    isActive: {
-        type: Boolean,
-        default: true,
-    },
-    validFrom: {
-        type: Date,
-        default: Date.now,
-    },
-    validUntil: {
-        type: Date,
-        required: [true, "Coupon validity end date is required."],
-    },
-    minPurchaseAmount: {
-        type: Number,
-        default: 0,
-    },
-    usageLimit: { 
-        type: Number,
-        min: [1, "Usage limit must be at least 1."],
-        default: null,
-    },
-    timesUsed: {
-        type: Number,
-        default: 0,
-    },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'owner',
-        required: true,
-    }
+  code: {
+    type: String,
+    required: [true, 'Coupon code is required'],
+    unique: true,
+    uppercase: true,
+    trim: true,
+    minlength: [3, 'Coupon code must be at least 3 characters'],
+    maxlength: [20, 'Coupon code cannot exceed 20 characters']
+  },
+  description: {
+    type: String,
+    trim: true,
+    maxlength: [200, 'Description cannot exceed 200 characters']
+  },
+  discountType: {
+    type: String,
+    enum: ['percentage', 'fixed'],
+    required: [true, 'Discount type is required']
+  },
+  discountValue: {
+    type: Number,
+    required: [true, 'Discount value is required'],
+    min: [0, 'Discount value cannot be negative']
+  },
+  minPurchaseAmount: {
+    type: Number,
+    default: 0,
+    min: [0, 'Minimum purchase amount cannot be negative']
+  },
+  maxDiscountAmount: {
+    type: Number,
+    default: null,
+    min: [0, 'Maximum discount amount cannot be negative']
+  },
+  applicableCategories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'category'
+  }],
+  applicableProducts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'product'
+  }],
+  applicationType: {
+    type: String,
+    enum: ['all', 'categories', 'products'],
+    default: 'all'
+  },
+  usageLimit: {
+    type: Number,
+    default: null,
+    min: [0, 'Usage limit cannot be negative']
+  },
+  usedCount: {
+    type: Number,
+    default: 0,
+    min: [0, 'Used count cannot be negative']
+  },
+  usersUsed: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
+  }],
+  oneTimePerUser: {
+    type: Boolean,
+    default: false
+  },
+  startDate: {
+    type: Date,
+    default: Date.now
+  },
+  expiryDate: {
+    type: Date,
+    required: [true, 'Expiry date is required']
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
 }, {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+  timestamps: true
 });
 
-// Virtual property to check if coupon is truly active (not expired)
-couponSchema.virtual('isCurrentlyActive').get(function() {
-    const now = new Date();
-    return this.isActive &&
-           this.validFrom <= now &&
-           this.validUntil >= now &&
-           (this.usageLimit === null || this.timesUsed < this.usageLimit);
-});
+// Index for faster lookups
+couponSchema.index({ code: 1, isActive: 1 });
+couponSchema.index({ expiryDate: 1 });
 
-// Method to check if coupon is expired
-couponSchema.methods.isExpired = function() {
-    const now = new Date();
-    return this.validUntil < now;
+// Method to check if coupon is valid
+couponSchema.methods.isValid = function() {
+  const now = new Date();
+  return (
+    this.isActive &&
+    now >= this.startDate &&
+    now <= this.expiryDate &&
+    (this.usageLimit === null || this.usedCount < this.usageLimit)
+  );
 };
 
-// Method to check if coupon usage limit is reached
-couponSchema.methods.isUsageLimitReached = function() {
-    return this.usageLimit !== null && this.timesUsed >= this.usageLimit;
+// Method to check if user can use coupon
+couponSchema.methods.canUserUse = function(userId) {
+  if (!this.oneTimePerUser) return true;
+  return !this.usersUsed.includes(userId);
 };
 
-couponSchema.pre('save', function(next) {
-    if (this.validUntil && this.validFrom && this.validUntil <= this.validFrom) {
-        next(new Error('validUntil must be after validFrom.'));
+// Method to calculate discount
+couponSchema.methods.calculateDiscount = function(amount) {
+  if (this.discountType === 'percentage') {
+    const discount = (amount * this.discountValue) / 100;
+    if (this.maxDiscountAmount && discount > this.maxDiscountAmount) {
+      return this.maxDiscountAmount;
     }
-    if (this.discountType === 'percentage' && (this.discountValue <= 0 || this.discountValue > 100)) {
-        next(new Error('Percentage discount value must be between 1 and 100.'));
-    }
-    if (this.discountType === 'fixedAmount' && this.discountValue <= 0) {
-        next(new Error('Fixed amount discount value must be greater than 0.'));
-    }
-    next();
-});
+    return discount;
+  } else {
+    return Math.min(this.discountValue, amount);
+  }
+};
 
-export default mongoose.model('Coupon', couponSchema);
+export default mongoose.model('coupon', couponSchema);

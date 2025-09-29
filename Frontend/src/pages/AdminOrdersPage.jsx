@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminOrderStatusUpdate from '../components/AdminOrderStatusUpdate';
+import { PageSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 const AdminOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -37,7 +38,15 @@ const AdminOrdersPage = () => {
     setSelectedOrder(null);
   };
 
-  if (loading) return <div className="w-full p-6 text-slate-600 dark:text-slate-400">Loading orders...</div>;
+  if (loading) return (
+    <div className="w-full">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+        <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-8 w-64 rounded mb-2"></div>
+        <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-48 rounded"></div>
+      </div>
+      <PageSkeleton title={false} content={6} />
+    </div>
+  );
   if (error) return <div className="w-full p-6 text-red-500 dark:text-red-400">Error: {error}</div>;
 
   return (

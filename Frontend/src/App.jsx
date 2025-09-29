@@ -8,7 +8,9 @@ const Admin = lazy(() => import('./pages/Admin'));
 const AdminSalesPage = lazy(() => import('./pages/AdminSalesPage'));
 const Cart = lazy(() => import('./pages/Cart'));
 const CreateProduct = lazy(() => import('./pages/CreateProduct'));
-const AdminCouponsPage = lazy(() => import('./pages/AdminCouponsPage'));
+const ManageCoupons = lazy(() => import('./pages/ManageCoupons'));
+const CreateCoupon = lazy(() => import('./pages/CreateCoupon'));
+const EditCoupon = lazy(() => import('./pages/EditCoupon'));
 const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
 
@@ -74,7 +76,9 @@ function AppContent() {
             <Route path="/admin/sales" element={<AdminSalesPage />} />
             <Route path="/create-product" element={<CreateProduct />} />
             <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
-            <Route path="/admin/coupons" element={<AdminCouponsPage />} />
+            <Route path="/admin/coupons" element={<ManageCoupons />} />
+            <Route path="/admin/create-coupon" element={<CreateCoupon />} />
+            <Route path="/admin/edit-coupon/:couponId" element={<EditCoupon />} />
             <Route path="/admin/orders" element={<AdminOrdersPage />} />
 
           </Route>

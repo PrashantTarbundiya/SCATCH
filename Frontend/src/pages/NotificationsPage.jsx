@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '../hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
+import { PageSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 const NotificationsPage = () => {
   const navigate = useNavigate();
@@ -147,42 +148,44 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 md:py-8 pt-20 md:pt-24">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex flex-wrap items-center gap-2 sm:gap-3">
                 <i className="ri-notification-3-line"></i>
-                Notifications
+                <span>Notifications</span>
                 {unreadCount > 0 && (
-                  <span className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-sm px-3 py-1 rounded-full">
+                  <span className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full">
                     {unreadCount} unread
                   </span>
                 )}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
                 Stay updated with your latest activities and offers
               </p>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               {notifications.length > 0 && (
                 <>
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                   >
                     <i className="ri-check-double-line"></i>
-                    Mark All Read
+                    <span className="hidden sm:inline">Mark All Read</span>
+                    <span className="sm:hidden">Mark Read</span>
                   </button>
                   <button
                     onClick={handleClearAll}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                   >
                     <i className="ri-delete-bin-line"></i>
-                    Clear All
+                    <span className="hidden sm:inline">Clear All</span>
+                    <span className="sm:hidden">Clear</span>
                   </button>
                 </>
               )}
@@ -191,27 +194,27 @@ const NotificationsPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-4 md:mb-6">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {[
               { key: 'all', label: 'All', icon: 'ri-list-check' },
               { key: 'unread', label: 'Unread', icon: 'ri-mail-unread-line' },
               { key: 'price_drop', label: 'Price Drops', icon: 'ri-price-tag-3-line' },
               { key: 'stock_alert', label: 'Stock Alerts', icon: 'ri-archive-line' },
               { key: 'coupon_alert', label: 'Coupons', icon: 'ri-coupon-line' },
-
             ].map(({ key, label, icon }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-colors text-xs sm:text-sm ${
                   filter === key
                     ? 'bg-blue-600 text-white'
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <i className={icon}></i>
-                {label}
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{key === 'price_drop' ? 'Prices' : key === 'stock_alert' ? 'Stock' : key === 'coupon_alert' ? 'Coupons' : label}</span>
               </button>
             ))}
           </div>
@@ -236,10 +239,7 @@ const NotificationsPage = () => {
         {/* Notifications List */}
         <div className="space-y-4">
           {loading && notifications.length === 0 ? (
-            <div className="text-center py-12">
-              <i className="ri-loader-4-line animate-spin text-4xl text-gray-400 mb-4"></i>
-              <p className="text-gray-600 dark:text-gray-400">Loading notifications...</p>
-            </div>
+            <PageSkeleton title={false} content={5} />
           ) : filteredNotifications.length === 0 ? (
             <div className="text-center py-12">
               <i className="ri-notification-off-line text-6xl text-gray-400 mb-4"></i>
@@ -267,24 +267,24 @@ const NotificationsPage = () => {
                   } hover:shadow-md transition-all cursor-pointer`}
                   onClick={() => handleNotificationClick(notification)}
                 >
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-4 flex-1">
-                        <span className="text-3xl flex-shrink-0">
+                      <div className="flex items-start space-x-2 sm:space-x-4 flex-1">
+                        <span className="text-2xl sm:text-3xl flex-shrink-0">
                           {getNotificationIcon(notification.type)}
                         </span>
                         
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">
                               {notification.title}
                             </h3>
                             {!notification.isRead && (
-                              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                              <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
                             )}
                           </div>
                           
-                          <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 leading-relaxed">
                             {notification.message}
                           </p>
                           
@@ -314,12 +314,12 @@ const NotificationsPage = () => {
                             </div>
                           )}
                           
-                          <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                               {new Date(notification.createdAt).toLocaleString()}
                             </span>
                             {notification.actionUrl && (
-                              <span className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                              <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
                                 Click to view <i className="ri-arrow-right-line"></i>
                               </span>
                             )}
@@ -336,24 +336,24 @@ const NotificationsPage = () => {
 
         {/* Pagination */}
         {pagination && pagination.pages > 1 && (
-          <div className="mt-8 flex justify-center">
-            <div className="flex items-center gap-2">
+          <div className="mt-6 md:mt-8 flex justify-center">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="px-2 sm:px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
               >
                 <i className="ri-arrow-left-line"></i>
               </button>
               
-              <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
+              <span className="px-2 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                 Page {currentPage} of {pagination.pages}
               </span>
               
               <button
                 onClick={() => setCurrentPage(prev => Math.min(pagination.pages, prev + 1))}
                 disabled={currentPage === pagination.pages}
-                className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="px-2 sm:px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
               >
                 <i className="ri-arrow-right-line"></i>
               </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
+import { CardSkeleton } from './ui/SkeletonLoader.jsx';
 import { toast } from '../utils/toast';
 
 const ProductRecommendations = ({ productId }) => {
@@ -43,7 +44,7 @@ const ProductRecommendations = ({ productId }) => {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">You might also like</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg h-48"></div>
+            <CardSkeleton key={i} showImage={true} lines={2} />
           ))}
         </div>
       </div>

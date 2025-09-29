@@ -253,9 +253,17 @@ const NotificationBell = () => {
             {/* Notifications List */}
             <div className="max-h-96 overflow-y-auto">
               {loading && notifications.length === 0 ? (
-                <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                  <i className="ri-loader-4-line animate-spin text-xl mb-2"></i>
-                  <p>Loading notifications...</p>
+                <div className="p-4 space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-start space-x-3 p-3 border-b border-gray-100 dark:border-gray-700">
+                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-8 w-8 rounded-full flex-shrink-0"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-3/4 rounded"></div>
+                        <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-3 w-full rounded"></div>
+                        <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-3 w-1/2 rounded"></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="p-8 text-center text-gray-500 dark:text-gray-400">

@@ -120,7 +120,7 @@ export const HoverEffect = memo(({ items, className }) => {
   const handleMouseEnter = useCallback((idx) => setHoveredIndex(idx), []);
   const handleMouseLeave = useCallback(() => setHoveredIndex(null), []);
   return (
-    <div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5", className)}>
+    <div className={cn("grid grid-cols-2 lg:grid-cols-4 gap-5", className)}>
       {items.map((item, idx) => (
         <div
           key={item._id} // Assuming item has _id from your ShopPage structure

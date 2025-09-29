@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react'; // Added useRef, useCallback
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { useUser } from '../context/UserContext'; // Import useUser
 import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate
@@ -156,7 +156,6 @@ const ShoppingCart = () => {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
       if (!data.success) {
-        // console.warn("Backend update for quantity failed:", data);
       }
     } catch (err) {
       console.error("Failed to update cart quantity on backend:", err);
@@ -219,7 +218,6 @@ const ShoppingCart = () => {
         setCouponCode('');
         setCouponError(null);
       } else {
-        // setError(data?.message || "Failed to remove item.");
       }
     } catch (err) {
       console.error("Failed to remove item from cart:", err);
@@ -267,7 +265,6 @@ const handleClearCart = async () => {
   let totalMRP = 0;
   let totalDiscount = 0;
   const platformFee = 20;
-  // const shippingFee = 0; // Not used in finalBill calculation in original
 
   if (cartItems && cartItems.length > 0) {
     cartItems.forEach((item) => {
@@ -477,15 +474,26 @@ const handleClearCart = async () => {
     setAppliedCoupon(null);
 
     try {
-      // Calculate subtotal before any coupon is applied
-      const subtotalForValidation = totalMRP - totalDiscount;
-      const response = await validateCoupon(couponCode, subtotalForValidation);
+      // Prepare cart items in the format backend expects
+      const formattedCartItems = cartItems.map(item => ({
+        productId: item._id,
+        price: Number(item.price) || 0,
+        quantity: item.quantity || 1,
+        category: item.category // Include category if available
+      }));
 
-      if (response.success && response.data) {
-        setAppliedCoupon(response.data);
+      const response = await validateCoupon(couponCode, formattedCartItems, currentUser?._id);
+
+      if (response.success && response.coupon) {
+        setAppliedCoupon({
+          code: response.coupon.code,
+          description: response.coupon.description,
+          discountType: response.coupon.discountType,
+          discountValue: response.coupon.discountValue
+        });
         // setCouponCode(''); // Optionally clear input on success
       } else {
-        setCouponError(response.message || "Invalid coupon code.");
+        setCouponError(response.error || "Invalid coupon code.");
       }
     } catch (err) {
       setCouponError(err.message || "Failed to validate coupon.");
@@ -556,7 +564,6 @@ const handleClearCart = async () => {
           )}
         </div>
         
-        {/* console.log('Cart.jsx: cartItems in render:', JSON.stringify(cartItems, null, 2)) */} {/* DEBUG LOG 3 */}
         {cartItems.map((item, index) => (
           <div key={item._id || index} className="flex flex-col sm:flex-row gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 shadow-sm transition-colors duration-300">
             {/* Product Image */}

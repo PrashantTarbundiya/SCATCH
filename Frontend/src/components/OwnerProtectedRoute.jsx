@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useOwner } from '../context/OwnerContext';
-import AdminSidebar from './AdminSidebar'; // Import the AdminSidebar
+import { PageSkeleton } from './ui/SkeletonLoader.jsx';
+import AdminSidebar from './AdminSidebar'; 
 
 const OwnerProtectedRoute = () => {
   const { isOwnerAuthenticated, isLoading } = useOwner(); 
@@ -18,7 +19,13 @@ const OwnerProtectedRoute = () => {
   }, []);
 
   if (isLoading) {
-    return <div className="w-full min-h-screen flex items-center justify-center">Loading session...</div>;
+    return (
+      <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-6">
+        <div className="w-full max-w-6xl">
+          <PageSkeleton title={true} content={5} />
+        </div>
+      </div>
+    );
   }
 
   if (!isOwnerAuthenticated) {

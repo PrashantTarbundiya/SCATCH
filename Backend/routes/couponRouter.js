@@ -1,23 +1,19 @@
 import express from 'express';
 const router = express.Router();
-import {
-    createCoupon,
-    getAllCoupons,
-    getCouponById,
-    updateCoupon,
-    deleteCoupon,
-    validateCoupon
-} from '../controllers/couponController.js';
-import isOwner from '../middleware/isOwner.js'; 
-import isLoggedIn from '../middleware/isLoggedin.js'; 
+import couponController from '../controllers/couponController.js';
+import isOwner from '../middleware/isOwner.js';
+import isLoggedin from '../middleware/isLoggedin.js';
 
+// Owner-only routes (create, update, delete coupons)
+router.post('/', isOwner, couponController.createCoupon);
+router.get('/', isOwner, couponController.getAllCoupons);
+router.get('/:id', isOwner, couponController.getCouponById);
+router.put('/:id', isOwner, couponController.updateCoupon);
+router.delete('/:id', isOwner, couponController.deleteCoupon);
+router.post('/:couponId/notify', isOwner, couponController.sendCouponNotification);
 
-router.post('/', isOwner, createCoupon); // Create a new coupon
-router.get('/', isOwner, getAllCoupons); // Get all coupons
-router.get('/:id', isOwner, getCouponById); // Get a single coupon by ID
-router.put('/:id', isOwner, updateCoupon); // Update a coupon
-router.delete('/:id', isOwner, deleteCoupon); // Delete a coupon
-
-router.post('/validate', isLoggedIn, validateCoupon); 
+// User routes (validate and apply coupons)
+router.post('/validate', isLoggedin, couponController.validateCoupon);
+router.post('/apply', isLoggedin, couponController.applyCoupon);
 
 export default router;
