@@ -4,7 +4,7 @@ import * as LucideIcons from 'lucide-react';
 import { GlowingEffect } from "./ui/glowing-effect";
 import { cn } from "../utils/cn";
 import { CardSkeleton } from './ui/SkeletonLoader.jsx';
-import axios from 'axios';
+import apiClient from '../services/apiClient';
 
 const CategoriesSection = () => {
   const [categories, setCategories] = useState([]);
@@ -17,9 +17,9 @@ const CategoriesSection = () => {
 
   const fetchFeaturedCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/categories/featured/list');
-      if (response.data.success) {
-        setCategories(response.data.categories);
+      const response = await apiClient.get('/api/categories/featured/list');
+      if (response.success) {
+        setCategories(response.categories);
       }
     } catch (error) {
       console.error('Error fetching featured categories:', error);

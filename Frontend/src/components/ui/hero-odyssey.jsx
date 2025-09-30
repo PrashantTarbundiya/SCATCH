@@ -167,25 +167,78 @@ const Lightning = ({
     const uIntensityLocation = gl.getUniformLocation(program, "uIntensity");
     const uSizeLocation = gl.getUniformLocation(program, "uSize");
 
-    const startTime = performance.now();
-    const render = () => {
-      resizeCanvas();
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(iResolutionLocation, canvas.width, canvas.height);
-      const currentTime = performance.now();
-      gl.uniform1f(iTimeLocation, (currentTime - startTime) / 1000.0);
-      gl.uniform1f(uHueLocation, hue);
-      gl.uniform1f(uXOffsetLocation, xOffset);
-      gl.uniform1f(uSpeedLocation, speed);
-      gl.uniform1f(uIntensityLocation, intensity);
-      gl.uniform1f(uSizeLocation, size);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-      requestAnimationFrame(render);
+    // Validate all uniform locations before rendering
+    const uniformLocations = {
+      iResolution: iResolutionLocation,
+      iTime: iTimeLocation,
+      uHue: uHueLocation,
+      uXOffset: uXOffsetLocation,
+      uSpeed: uSpeedLocation,
+      uIntensity: uIntensityLocation,
+      uSize: uSizeLocation
     };
-    requestAnimationFrame(render);
+
+    // Check if any uniform location is invalid
+    const hasInvalidUniforms = Object.values(uniformLocations).some(loc => loc === null || loc === -1);
+    if (hasInvalidUniforms) {
+      console.warn("Some uniform locations are invalid, skipping WebGL rendering");
+      return;
+    }
+
+    let animationId;
+    const startTime = performance.now();
+    
+    const render = () => {
+      try {
+        // Validate WebGL context is still valid
+        if (gl.isContextLost()) {
+          console.warn("WebGL context lost, stopping animation");
+          return;
+        }
+
+        resizeCanvas();
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        
+        // Only set uniforms if locations are valid
+        if (iResolutionLocation !== null && iResolutionLocation !== -1) {
+          gl.uniform2f(iResolutionLocation, canvas.width, canvas.height);
+        }
+        
+        const currentTime = performance.now();
+        if (iTimeLocation !== null && iTimeLocation !== -1) {
+          gl.uniform1f(iTimeLocation, (currentTime - startTime) / 1000.0);
+        }
+        if (uHueLocation !== null && uHueLocation !== -1) {
+          gl.uniform1f(uHueLocation, hue);
+        }
+        if (uXOffsetLocation !== null && uXOffsetLocation !== -1) {
+          gl.uniform1f(uXOffsetLocation, xOffset);
+        }
+        if (uSpeedLocation !== null && uSpeedLocation !== -1) {
+          gl.uniform1f(uSpeedLocation, speed);
+        }
+        if (uIntensityLocation !== null && uIntensityLocation !== -1) {
+          gl.uniform1f(uIntensityLocation, intensity);
+        }
+        if (uSizeLocation !== null && uSizeLocation !== -1) {
+          gl.uniform1f(uSizeLocation, size);
+        }
+        
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        animationId = requestAnimationFrame(render);
+      } catch (error) {
+        console.error("WebGL render error:", error);
+        // Stop the animation loop on error
+      }
+    };
+    
+    animationId = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
     };
   }, [hue, xOffset, speed, intensity, size]);
 
