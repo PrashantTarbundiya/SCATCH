@@ -10,7 +10,7 @@ const Home = () => {
       <HeroSection />
       <CategoriesSection />
     </div>
-  );
+  ); 
 };
 
 export default Home;

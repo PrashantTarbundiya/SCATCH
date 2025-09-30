@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
-import { GlowingEffect } from "./ui/glowing-effect";
-import { cn } from "../utils/cn";
+import { GlowingEffect } from './ui/glowing-effect';
 import { CardSkeleton } from './ui/SkeletonLoader.jsx';
 import apiClient from '../services/apiClient';
 

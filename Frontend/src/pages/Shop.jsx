@@ -32,7 +32,7 @@ const ShopPage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/categories?active=true');
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories?active=true`);
         if (response.data.success) {
           setCategories(response.data.categories);
         }
@@ -340,7 +340,7 @@ const ShopPage = () => {
         {/* Slide-in Filter Menu (Unified for Mobile and Desktop) */}
         <div
           ref={filterMenuRef}
-          className={`fixed top-0 right-0 h-full w-[85%] max-w-sm md:max-w-md bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+          className={`fixed top-0 right-0 h-full w-[85%] max-w-sm md:max-w-md bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto overflow-x-hidden ${
             isFilterMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
@@ -515,18 +515,18 @@ const ShopPage = () => {
         {/* Main Content Area */}
         <div className="w-full flex flex-col gap-5">
           {/* Search Bar and Filter Button (Always Visible) */}
-          <div className="w-full flex flex-col md:flex-row items-stretch md:items-center gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-            <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2">
+          <div className="w-full flex flex-col md:flex-row items-stretch md:items-center gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm overflow-hidden">
+            <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2 min-w-0">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search products by name..."
-                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="flex-1 min-w-0 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
               <button
                 type="submit"
-                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md flex items-center gap-2"
+                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md flex items-center gap-2 flex-shrink-0"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/>
@@ -537,7 +537,7 @@ const ShopPage = () => {
             
             <button
               onClick={() => setIsFilterMenuOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 whitespace-nowrap"
+              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />

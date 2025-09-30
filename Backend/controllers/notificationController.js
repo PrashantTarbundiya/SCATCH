@@ -61,23 +61,27 @@ export const createStockAlert = async (productId, message, priority = 'medium') 
         const product = await Product.findById(productId);
         if (!product) return;
 
-        // Find users who have this product in wishlist
-        const wishlists = await Wishlist.find({ products: productId }).populate('user');
+        // Get all users to notify them about stock changes
+        const users = await User.find({}).select('_id');
         
-        const title = product.quantity === 0 ? 'Out of Stock' : 
+        const title = product.quantity === 0 ? 'Out of Stock' :
                      product.quantity <= 5 ? 'Low Stock Alert' : 'Back in Stock';
         
-        for (const wishlist of wishlists) {
-            await Notification.create({
-                user: wishlist.user._id,
-                type: 'stock_alert',
-                title,
-                message: `${product.name} - ${message}`,
-                product: productId,
-                priority,
-                actionUrl: `/product/${productId}`,
-                data: { stockLevel: product.quantity }
-            });
+        // Create notifications for all users
+        const notifications = users.map(user => ({
+            user: user._id,
+            type: 'stock_alert',
+            title,
+            message: `${product.name} - ${message}`,
+            product: productId,
+            priority,
+            actionUrl: `/product/${productId}`,
+            data: { stockLevel: product.quantity }
+        }));
+        
+        // Bulk insert for better performance
+        if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
         }
     } catch (error) {
         console.error('Stock alert error:', error);
@@ -97,25 +101,29 @@ export const createPriceDropAlert = async (productId, oldPrice, newPrice) => {
             changePercentage
         });
 
-        // Find users who have this product in wishlist
-        const wishlists = await Wishlist.find({ products: productId }).populate('user');
+        // Get all users to notify them about price drops
+        const users = await User.find({}).select('_id');
         const product = await Product.findById(productId);
         
-        for (const wishlist of wishlists) {
-            await Notification.create({
-                user: wishlist.user._id,
-                type: 'price_drop',
-                title: 'Price Drop Alert!',
-                message: `${product?.name || 'Product'} price dropped by ${changePercentage}% - Save ₹${(oldPrice - newPrice).toFixed(2)}!`,
-                product: productId,
-                priority: 'high',
-                actionUrl: `/product/${productId}`,
-                data: { 
-                    oldPrice, 
-                    newPrice, 
-                    changePercentage: parseFloat(changePercentage)
-                }
-            });
+        // Create notifications for all users
+        const notifications = users.map(user => ({
+            user: user._id,
+            type: 'price_drop',
+            title: 'Price Drop Alert!',
+            message: `${product?.name || 'Product'} price dropped by ${changePercentage}% - Save ₹${(oldPrice - newPrice).toFixed(2)}!`,
+            product: productId,
+            priority: 'high',
+            actionUrl: `/product/${productId}`,
+            data: {
+                oldPrice,
+                newPrice,
+                changePercentage: parseFloat(changePercentage)
+            }
+        }));
+        
+        // Bulk insert for better performance
+        if (notifications.length > 0) {
+            await Notification.insertMany(notifications);
         }
     } catch (error) {
         console.error('Price drop alert error:', error);

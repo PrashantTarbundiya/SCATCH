@@ -117,20 +117,27 @@ async function generateModernInvoicePDF(order) {
 
     // Order details box
     currentY += 30;
-    doc.rect(margin, currentY, pageWidth - 2 * margin, 30)
+    const boxWidth = pageWidth - 2 * margin;
+    const boxHeight = 30;
+    doc.rect(margin, currentY, boxWidth, boxHeight)
        .fill(colors.lightGray);
+
+    // Calculate column widths for proper alignment
+    const col1Width = boxWidth * 0.33;
+    const col2Width = boxWidth * 0.33;
+    const col3Width = boxWidth * 0.34;
 
     doc.fillColor(colors.primary)
        .fontSize(10)
        .font('Helvetica-Bold')
-       .text('Order ID:', margin + 10, currentY + 8)
-       .text('Payment ID:', margin + 150, currentY + 8)
-       .text('Status:', margin + 300, currentY + 8);
+       .text('Order ID:', margin + 10, currentY + 8, { width: col1Width - 10 })
+       .text('Payment ID:', margin + col1Width, currentY + 8, { width: col2Width })
+       .text('Status:', margin + col1Width + col2Width, currentY + 8, { width: col3Width });
 
     doc.font('Helvetica')
-       .text(order.razorpayOrderId, margin + 10, currentY + 20)
-       .text(order.razorpayPaymentId.slice(-16), margin + 150, currentY + 20)
-       .text('PAID', margin + 300, currentY + 20);
+       .text(order.razorpayOrderId, margin + 10, currentY + 20, { width: col1Width - 10, ellipsis: true })
+       .text(order.razorpayPaymentId.slice(-16), margin + col1Width, currentY + 20, { width: col2Width, ellipsis: true })
+       .text('PAID', margin + col1Width + col2Width, currentY + 20, { width: col3Width });
 
     // Items table
     currentY += 60;
@@ -183,34 +190,39 @@ async function generateModernInvoicePDF(order) {
     // Subtotal
     if (order.couponDiscountAmount > 0) {
       const subtotal = order.totalAmount + order.couponDiscountAmount;
+      const labelX = pageWidth - margin - 230;
+      const valueX = pageWidth - margin - 100;
+      
       doc.fontSize(11)
          .font('Helvetica')
          .fillColor(colors.text)
-         .text('Subtotal:', pageWidth - 150, currentY, { width: 80, align: 'right' })
-         .text(`₹${subtotal.toFixed(2)}`, pageWidth - 70, currentY, { width: 60, align: 'right' });
+         .text('Subtotal:', labelX, currentY, { width: 130, align: 'right' })
+         .text(`₹${subtotal.toFixed(2)}`, valueX, currentY, { width: 100, align: 'right' });
 
       currentY += 20;
 
       // Coupon discount
       doc.fillColor(colors.secondary)
-         .text('Coupon Discount:', pageWidth - 150, currentY, { width: 80, align: 'right' })
-         .text(`-₹${order.couponDiscountAmount.toFixed(2)}`, pageWidth - 70, currentY, { width: 60, align: 'right' });
+         .text('Coupon Discount:', labelX, currentY, { width: 130, align: 'right' })
+         .text(`-₹${order.couponDiscountAmount.toFixed(2)}`, valueX, currentY, { width: 100, align: 'right' });
 
       currentY += 25;
     } else {
       currentY += 5;
     }
 
-    // Total amount box
-    doc.rect(pageWidth - 160, currentY, 150, 35)
+    // Total amount box - properly centered and aligned
+    const totalBoxWidth = 250;
+    const totalBoxX = pageWidth - margin - totalBoxWidth;
+    doc.rect(totalBoxX, currentY, totalBoxWidth, 40)
        .fill(colors.primary);
 
     doc.fillColor(colors.white)
        .fontSize(14)
        .font('Helvetica-Bold')
-       .text('TOTAL AMOUNT', pageWidth - 150, currentY + 8, { width: 80, align: 'left' })
-       .fontSize(16)
-       .text(`₹${order.totalAmount.toFixed(2)}`, pageWidth - 70, currentY + 12, { width: 60, align: 'right' });
+       .text('TOTAL AMOUNT', totalBoxX + 15, currentY + 10, { width: totalBoxWidth - 130, align: 'left' })
+       .fontSize(18)
+       .text(`₹${order.totalAmount.toFixed(2)}`, totalBoxX + 15, currentY + 10, { width: totalBoxWidth - 30, align: 'right' });
 
     // Thank you section - only if space available
     if (currentY < pageHeight - 150) {
@@ -294,17 +306,18 @@ async function sendModernOrderConfirmationEmail(userEmail, order, pdfBuffer) {
               
               <!-- Order Details Box -->
               <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-                <div style="overflow: hidden;">
-                  <div style="float: left; width: 48%;">
-                    <strong style="color: #2D3436;">Order ID:</strong>
-                    <br><span style="color: #636e72; font-family: monospace;">#${order._id.toString().slice(-8).toUpperCase()}</span>
-                  </div>
-                  <div style="float: right; width: 48%; text-align: right;">
-                    <strong style="color: #2D3436;">Order Date:</strong>
-                    <br><span style="color: #636e72;">${order.orderDate.toLocaleDateString('en-GB')}</span>
-                  </div>
-                  <div style="clear: both;"></div>
-                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                      <strong style="color: #2D3436;">Order ID:</strong>
+                      <br><span style="color: #636e72; font-family: monospace;">#${order._id.toString().slice(-8).toUpperCase()}</span>
+                    </td>
+                    <td style="width: 50%; vertical-align: top; text-align: right;">
+                      <strong style="color: #2D3436;">Order Date:</strong>
+                      <br><span style="color: #636e72;">${order.orderDate.toLocaleDateString('en-GB')}</span>
+                    </td>
+                  </tr>
+                </table>
               </div>
 
               ${couponSection}
@@ -328,11 +341,17 @@ async function sendModernOrderConfirmationEmail(userEmail, order, pdfBuffer) {
               </div>
 
               <!-- Total -->
-              <div style="text-align: right; margin: 25px 0;">
-                <div style="background: linear-gradient(135deg, #2D3436, #636e72); color: white; padding: 20px; border-radius: 8px; display: inline-block; min-width: 200px; text-align: center;">
-                  <div style="font-size: 16px; margin-bottom: 8px;">Total Amount Paid</div>
-                  <div style="font-size: 28px; font-weight: 700;">₹${order.totalAmount.toFixed(2)}</div>
-                </div>
+              <div style="text-align: center; margin: 25px 0;">
+                <table style="margin: 0 auto;">
+                  <tr>
+                    <td>
+                      <div style="background: linear-gradient(135deg, #2D3436, #636e72); color: white; padding: 20px; border-radius: 8px; min-width: 200px; text-align: center;">
+                        <div style="font-size: 16px; margin-bottom: 8px;">Total Amount Paid</div>
+                        <div style="font-size: 28px; font-weight: 700;">₹${order.totalAmount.toFixed(2)}</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               </div>
 
               <!-- Shipping Address -->

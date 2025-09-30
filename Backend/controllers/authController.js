@@ -78,9 +78,9 @@ export const sendRegistrationOtp = async (req, res) => {
                         <h2 style="color: #2D3436; text-align: center; margin: 0 0 20px 0; font-size: 20px;">Complete Your Registration</h2>
                         <p style="color: #636e72; text-align: center; margin: 0 0 25px 0;">Enter this OTP to verify your email and create your Scatch account:</p>
                         <div style="background: linear-gradient(135deg, #2D3436, #636e72); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0;">
-                            <div style="font-size: 12px; margin-bottom: 5px; opacity: 0.8;">Your OTP Code</div>
-                            <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; font-family: monospace; display: flex; justify-content: center; gap: 8px;">
-                                ${otp.split('').map(digit => `<span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; min-width: 20px; display: inline-block;">${digit}</span>`).join('')}
+                            <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.8;">Your OTP Code</div>
+                            <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; font-family: monospace; text-align: center;">
+                                ${otp.split('').map(digit => `<span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; min-width: 20px; display: inline-block; margin: 0 4px;">${digit}</span>`).join('')}
                             </div>
                         </div>
                         <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: center;">
@@ -634,9 +634,9 @@ export const forgotPassword = async (req, res) => {
                         <h2 style="color: #2D3436; text-align: center; margin: 0 0 10px 0; font-size: 20px;">Hello ${user.fullname}!</h2>
                         <p style="color: #636e72; text-align: center; margin: 0 0 25px 0;">We received a request to reset your Scatch account password. Use this OTP to proceed:</p>
                         <div style="background: linear-gradient(135deg, #E17055, #D63031); color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0;">
-                            <div style="font-size: 12px; margin-bottom: 5px; opacity: 0.8;">Your Reset OTP</div>
-                            <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; font-family: monospace; display: flex; justify-content: center; gap: 8px;">
-                                ${otp.split('').map(digit => `<span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; min-width: 20px; display: inline-block;">${digit}</span>`).join('')}
+                            <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.8;">Your Reset OTP</div>
+                            <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; font-family: monospace; text-align: center;">
+                                ${otp.split('').map(digit => `<span style="background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 6px; min-width: 20px; display: inline-block; margin: 0 4px;">${digit}</span>`).join('')}
                             </div>
                         </div>
                         <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: center;">
