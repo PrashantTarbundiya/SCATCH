@@ -54,7 +54,7 @@ export const orderLimiter = rateLimit({
 // Limiter for search operations
 export const searchLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isDevelopment ? 50000 : 5000,
+  max: isDevelopment ? 50000000000 : 500000000,
   message: {
     error: 'Too many search requests, please try again after 15 minutes.'
   },

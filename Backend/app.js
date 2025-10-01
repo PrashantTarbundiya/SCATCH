@@ -53,14 +53,37 @@ app.use(helmet({
 // Performance middleware
 app.use(compression());
 
-// Apply general rate limiter to all routes
-app.use(generalLimiter);
+// Apply general rate limiter to all routes (disabled for production)
+// app.use(generalLimiter);
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+// CORS configuration for multiple origins
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://scatch-livid.vercel.app',
+      'https://scatch-22kx.onrender.com'
+    ];
+    
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200
-}));
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'Accept', 'Origin', 'X-Requested-With']
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -96,6 +119,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // CSRF token endpoint for SPA
 app.get('/api/csrf-token', getCsrfToken);
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    origin: req.get('origin'),
+    cors: 'enabled'
+  });
+});
+
 // Debug route to check cookies
 app.get('/debug/cookies', (req, res) => {
   res.json({
@@ -109,11 +142,11 @@ app.get('/debug/cookies', (req, res) => {
 app.use('/', indexRouter);
 app.use('/owners', ownerRouter);
 
-// Authentication routes with stricter rate limiting
-app.use('/users', authLimiter, userRouter);
+// Authentication routes (rate limiting disabled)
+app.use('/users', userRouter);
 
-// Product and search routes
-app.use('/products', searchLimiter, productRouter);
+// Product and search routes (rate limiting disabled)
+app.use('/products', productRouter);
 
 // Other routes with general limiter (already applied globally)
 app.use('/orders', orderRouter);
