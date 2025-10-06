@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom'; // Import Link
 import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
@@ -12,6 +12,7 @@ const AllProductsPage = () => {
   // const navigate = useNavigate(); // Remove useNavigate initialization
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
@@ -19,12 +20,28 @@ const AllProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(''); // Category filter
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
+  
+  // Infinite scroll state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const observerTarget = useRef(null);
+  const PRODUCTS_PER_PAGE = 20;
 
-  const fetchProducts = async () => {
-    setLoading(true);
+  const fetchProducts = useCallback(async (page = 1, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      setProducts([]);
+    }
     setError(null);
+    
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products`, { credentials: 'include' });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/products?page=${page}&limit=${PRODUCTS_PER_PAGE}`,
+        { credentials: 'include' }
+      );
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
           data = await response.json();
@@ -32,14 +49,27 @@ const AllProductsPage = () => {
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
-      setProducts(data?.products || []);
+      
+      const newProducts = data?.products || [];
+      
+      if (append) {
+        setProducts(prev => [...prev, ...newProducts]);
+      } else {
+        setProducts(newProducts);
+      }
+      
+      setHasMore(data?.pagination?.hasNextPage || false);
+      setTotalProducts(data?.pagination?.totalProducts || newProducts.length);
     } catch (err) {
       setError(err.message || 'Failed to fetch products.');
-      setProducts([]);
+      if (!append) {
+        setProducts([]);
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  };
+  }, []);
 
   const fetchCategories = async () => {
     setCategoriesLoading(true);
@@ -63,9 +93,40 @@ const AllProductsPage = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchProducts(1, false);
     fetchCategories();
-  }, []);
+  }, [fetchProducts]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (loading || loadingMore || !hasMore) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          const nextPage = currentPage + 1;
+          setCurrentPage(nextPage);
+          fetchProducts(nextPage, true);
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [currentPage, hasMore, loadingMore, loading, fetchProducts]);
 
   const handleDeleteAll = async () => {
     if (window.confirm("Are you sure you want to delete all products? This action cannot be undone.")) {
@@ -80,7 +141,9 @@ const AllProductsPage = () => {
         }
         if (response.ok) {
           alert(responseData?.message || "All products deleted successfully.");
-          fetchProducts();
+          setCurrentPage(1);
+          setHasMore(true);
+          fetchProducts(1, false);
         } else {
           alert(`Failed to delete products: ${responseData?.error || responseData?.message || response.statusText || 'Unknown server error'}`);
         }
@@ -109,7 +172,9 @@ const AllProductsPage = () => {
       }
       if (response.ok) {
         alert(responseData?.message || "Product deleted successfully.");
-        fetchProducts();
+        setCurrentPage(1);
+        setHasMore(true);
+        fetchProducts(1, false);
       } else {
         alert(`Failed to delete product: ${responseData?.error || responseData?.message || response.statusText || `HTTP error! status: ${response.status}`}`);
       }
@@ -296,6 +361,16 @@ const AllProductsPage = () => {
             );
           })}
         </div>
+        
+        {/* Infinite Scroll Trigger & Loading Indicator */}
+        {loadingMore && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5 mt-5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <CardSkeleton key={`loading-${i}`} showImage={true} lines={2} />
+            ))}
+          </div>
+        )}
+        <div ref={observerTarget} className="h-4" />
       </div>
 
       {/* Sales Data Section REMOVED */}

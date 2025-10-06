@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
+import { useTheme } from '../context/ThemeContext';
 import { CardSkeleton } from './ui/SkeletonLoader.jsx';
 import { toast } from '../utils/toast';
 
 const ProductRecommendations = ({ productId }) => {
+  const { theme } = useTheme();
   const [recommendations, setRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,11 +61,16 @@ const ProductRecommendations = ({ productId }) => {
     <div className="mt-8 pt-6 border-t dark:border-gray-700">
       <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">You might also like</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {recommendations.map((product) => (
+        {recommendations.map((product) => {
+          const originalPrice = parseFloat(product.price) || 0;
+          const discountAmount = parseFloat(product.discount) || 0;
+          const finalPrice = originalPrice - discountAmount;
+          const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
+          
+          return (
           <div
             key={product._id}
-            className="group rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border dark:border-gray-700 relative"
-            style={{ backgroundColor: product.panelcolor || '#ffffff' }}
+            className="group rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-slate-700 dark:hover:border-slate-500 relative"
           >
             {/* Wishlist icon - top left */}
             {isProductInWishlist(product._id) && (
@@ -81,27 +88,38 @@ const ProductRecommendations = ({ productId }) => {
             )}
 
             <Link to={`/product/${product._id}`} className="block">
-              <div 
-                className="aspect-square overflow-hidden flex items-center justify-center p-2"
-                style={{ backgroundColor: product.bgcolor || '#f0f0f0' }}
+              <div
+                className="w-full h-44 flex items-center justify-center relative"
+                style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }}
               >
+                {discountPercentage > 0 && (
+                  <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
+                    {`${discountPercentage}% OFF`}
+                  </div>
+                )}
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  className="h-40 w-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div className="p-3" style={{ color: product.textcolor || '#000000' }}>
+              <div
+                className="p-3"
+                style={{
+                  backgroundColor: product.panelcolor || (theme === 'dark' ? '#1f2937' : '#ffffff'),
+                  color: product.textcolor || (theme === 'dark' ? '#e5e7eb' : '#111827')
+                }}
+              >
                 <h4 className="text-sm font-medium truncate mb-2">
                   {product.name}
                 </h4>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold">
-                    ₹{(product.price - (product.discount || 0)).toFixed(2)}
+                    ₹{finalPrice.toFixed(2)}
                   </span>
-                  {product.discount > 0 && (
+                  {discountAmount > 0 && (
                     <span className="text-xs opacity-60 line-through">
-                      ₹{product.price.toFixed(2)}
+                      ₹{originalPrice.toFixed(2)}
                     </span>
                   )}
                 </div>
@@ -129,7 +147,8 @@ const ProductRecommendations = ({ productId }) => {
               <i className="ri-add-line text-sm"></i>
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
       
 

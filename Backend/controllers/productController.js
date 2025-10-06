@@ -294,32 +294,83 @@ export const getRecommendedProducts = async (req, res, next) => {
             return next(err);
         }
 
-        const currentProduct = await productModel.findById(productId);
+        const currentProduct = await productModel.findById(productId).populate('category');
         if (!currentProduct) {
             const err = new Error("Product not found.");
             err.status = 404;
             return next(err);
         }
 
-        // Get recommendations based on:
-        // 1. Similar price range (±20%)
-        // 2. Popular products (high purchase count)
-        // 3. Exclude current product
+        // Advanced recommendation algorithm with weighted scoring
         const priceRange = {
-            min: currentProduct.price * 0.8,
-            max: currentProduct.price * 1.2
+            min: currentProduct.price * 0.7,  // Wider range
+            max: currentProduct.price * 1.3
         };
 
-        const recommendations = await productModel.find({
+        // Get all potential recommendations (exclude current product and out-of-stock)
+        const candidates = await productModel.find({
             _id: { $ne: productId },
-            $or: [
-                { price: { $gte: priceRange.min, $lte: priceRange.max } },
-                { purchaseCount: { $gte: 1 } }
-            ],
             quantity: { $gt: 0 }
-        })
-        .sort({ purchaseCount: -1, averageRating: -1, createdAt: -1 })
-        .limit(limit);
+        }).populate('category');
+
+        // Calculate recommendation score for each product
+        const scoredProducts = candidates.map(product => {
+            let score = 0;
+            
+            // 1. Category match (highest weight: 40 points)
+            if (currentProduct.category && product.category) {
+                if (product.category._id.equals(currentProduct.category._id)) {
+                    score += 40;
+                }
+            }
+            
+            // 2. Price similarity (25 points max)
+            const priceDiff = Math.abs(product.price - currentProduct.price);
+            const priceRange = currentProduct.price * 0.5; // 50% range
+            if (priceDiff === 0) {
+                score += 25;
+            } else if (priceDiff <= priceRange) {
+                score += 25 * (1 - (priceDiff / priceRange));
+            }
+            
+            // 3. Rating similarity and quality (20 points max)
+            const currentRating = currentProduct.averageRating || 0;
+            const productRating = product.averageRating || 0;
+            if (productRating >= 4) {
+                score += 10; // High quality products
+            }
+            const ratingDiff = Math.abs(productRating - currentRating);
+            if (ratingDiff <= 1) {
+                score += 10 * (1 - ratingDiff);
+            }
+            
+            // 4. Popularity (15 points max)
+            const purchaseScore = Math.min(product.purchaseCount / 10, 1);
+            score += 15 * purchaseScore;
+            
+            // 5. Discount factor - promote discounted items slightly (5 points)
+            if (product.discount > 0) {
+                score += 5 * (product.discount / product.price);
+            }
+            
+            // 6. Recency bonus - newer products get slight boost (5 points max)
+            const daysSinceCreation = (Date.now() - new Date(product.createdAt)) / (1000 * 60 * 60 * 24);
+            if (daysSinceCreation <= 30) {
+                score += 5 * (1 - daysSinceCreation / 30);
+            }
+            
+            return {
+                product,
+                score
+            };
+        });
+
+        // Sort by score and get top recommendations
+        scoredProducts.sort((a, b) => b.score - a.score);
+        
+        const recommendations = scoredProducts
+            .slice(0, limit)
+            .map(item => item.product);
 
         res.status(200).json({
             success: true,

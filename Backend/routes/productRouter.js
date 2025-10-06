@@ -70,13 +70,18 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
     }
 });
 
-// Route to get all products (with filtering and sorting)
+// Route to get all products (with filtering, sorting, and pagination)
 router.get('/', async (req, res, next) => {
     try {
         let query = {};
         let sortOptions = {};
 
-        const { sortBy, filter, discounted } = req.query;
+        const { sortBy, filter, discounted, page = 1, limit = 12 } = req.query;
+
+        // Pagination parameters
+        const pageNum = Math.max(1, parseInt(page, 10));
+        const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10))); // Max 100 items per page
+        const skip = (pageNum - 1) * limitNum;
 
         // Filtering
         if (filter === 'discounted' || discounted === 'true') {
@@ -86,7 +91,6 @@ router.get('/', async (req, res, next) => {
         if (filter === 'availability') {
             query.quantity = { $gt: 0 };
         }
-
 
         // Sorting
         if (sortBy === 'popular') {
@@ -98,15 +102,31 @@ router.get('/', async (req, res, next) => {
             sortOptions.createdAt = -1; // Default to newest
         }
 
+        // Get total count for pagination
+        const totalProducts = await productModel.countDocuments(query);
+
         const products = await productModel.find(query)
             .sort(sortOptions)
+            .skip(skip)
+            .limit(limitNum)
             .populate('category', 'name slug')
             .populate({
                 path: 'ratings.user',
                 select: 'username fullname'
             });
         
-        res.status(200).json({ success: true, products });
+        res.status(200).json({
+            success: true,
+            products,
+            pagination: {
+                currentPage: pageNum,
+                totalPages: Math.ceil(totalProducts / limitNum),
+                totalProducts,
+                productsPerPage: limitNum,
+                hasNextPage: pageNum < Math.ceil(totalProducts / limitNum),
+                hasPrevPage: pageNum > 1
+            }
+        });
     } catch (err) {
         err.message = `Failed to fetch products: ${err.message}`;
         next(err);

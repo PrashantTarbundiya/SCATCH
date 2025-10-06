@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { HoverEffect } from '../components/ui/HoverEffect';
 import { useWishlist } from '../context/WishlistContext';
@@ -14,6 +14,7 @@ const ShopPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [currentSort, setCurrentSort] = useState('newest');
@@ -24,6 +25,13 @@ const ShopPage = () => {
   const [minRating, setMinRating] = useState('');
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const filterMenuRef = useRef(null);
+  
+  // Infinite scroll state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const observerTarget = useRef(null);
+  const PRODUCTS_PER_PAGE = 12;
 
   const { addToWishlist, removeFromWishlist, isProductInWishlist, loading: wishlistLoading, wishlistItems, error: wishlistError } = useWishlist();
   const { currentUser: user, authLoading } = useUser();
@@ -62,6 +70,89 @@ const ShopPage = () => {
     };
   }, [isFilterMenuOpen]);
 
+  // Fetch products with pagination
+  const fetchProducts = useCallback(async (page = 1, append = false) => {
+    if (append) {
+      setIsLoadingMore(true);
+    } else {
+      setIsLoading(true);
+      setProducts([]);
+    }
+    setError(null);
+    
+    const params = new URLSearchParams(location.search);
+    const sortBy = params.get('sortBy') || 'newest';
+    const filterBy = params.get('filter') || 'all';
+    const query = params.get('q') || '';
+    const minPrice = params.get('minPrice') || '';
+    const maxPrice = params.get('maxPrice') || '';
+    const category = params.get('category') || '';
+    const rating = params.get('rating') || '';
+
+    let apiUrl;
+    const isSearchMode = query || minPrice || maxPrice || category || rating;
+    
+    if (isSearchMode) {
+      const searchParams = new URLSearchParams();
+      if (query) searchParams.append('query', query);
+      if (minPrice) searchParams.append('minPrice', minPrice);
+      if (maxPrice) searchParams.append('maxPrice', maxPrice);
+      if (category) searchParams.append('category', category);
+      if (rating) searchParams.append('minRating', rating);
+      if (sortBy) searchParams.append('sortBy', sortBy);
+      searchParams.append('page', page);
+      searchParams.append('limit', PRODUCTS_PER_PAGE);
+      
+      apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products/search?${searchParams.toString()}`;
+    } else {
+      apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products?sortBy=${sortBy}&filter=${filterBy}&page=${page}&limit=${PRODUCTS_PER_PAGE}`;
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        credentials: 'include',
+      });
+
+      let data;
+      if (response.headers.get("content-type")?.includes("application/json")) {
+        data = await response.json();
+      }
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/login');
+          throw new Error(data?.error || data?.message || 'Unauthorized access. Please login.');
+        }
+        throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
+      }
+      
+      const newProducts = data?.products || [];
+      
+      if (append) {
+        setProducts(prev => [...prev, ...newProducts]);
+      } else {
+        setProducts(newProducts);
+      }
+      
+      setHasMore(data?.pagination?.hasNextPage || false);
+      setTotalProducts(data?.pagination?.totalProducts || newProducts.length);
+      
+      if (data?.message && !data?.products) {
+        setSuccessMessage(data.message);
+      } else if (data?.products?.length > 0 && data?.success?.[0]) {
+        setSuccessMessage(data.success[0]);
+      }
+
+    } catch (err) {
+      setError(err.message || 'Failed to fetch products.');
+      console.error("Fetch products error:", err);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, [location.search, navigate]);
+
+  // Initial load and reset on search params change
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const sortBy = params.get('sortBy') || 'newest';
@@ -78,63 +169,40 @@ const ShopPage = () => {
     setPriceRange({ min: minPrice, max: maxPrice });
     setSelectedCategory(category);
     setMinRating(rating);
+    setCurrentPage(1);
+    setHasMore(true);
+    
+    fetchProducts(1, false);
+  }, [location.search, fetchProducts]);
 
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      let apiUrl;
-      const isSearchMode = query || minPrice || maxPrice || category || rating;
-      
-      if (isSearchMode) {
-        const searchParams = new URLSearchParams();
-        if (query) searchParams.append('query', query);
-        if (minPrice) searchParams.append('minPrice', minPrice);
-        if (maxPrice) searchParams.append('maxPrice', maxPrice);
-        if (category) searchParams.append('category', category);
-        if (rating) searchParams.append('minRating', rating);
-        if (sortBy) searchParams.append('sortBy', sortBy);
-        
-        apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products/search?${searchParams.toString()}`;
-      } else {
-        apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products?sortBy=${sortBy}&filter=${filterBy}`;
-      }
+  // Infinite scroll observer
+  useEffect(() => {
+    if (currentFilter === 'wishlist' || isLoading || isLoadingMore || !hasMore) {
+      return;
+    }
 
-      try {
-        const response = await fetch(apiUrl, {
-          credentials: 'include',
-        });
-
-        let data;
-        if (response.headers.get("content-type")?.includes("application/json")) {
-          data = await response.json();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          const nextPage = currentPage + 1;
+          setCurrentPage(nextPage);
+          fetchProducts(nextPage, true);
         }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            navigate('/login');
-            throw new Error(data?.error || data?.message || 'Unauthorized access. Please login.');
-          }
-          throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
-        }
-        
-        setProducts(data?.products || []);
-        if (data?.message && !data?.products) {
-            setSuccessMessage(data.message);
-        } else if (data?.products?.length > 0 && data?.success?.[0]) {
-            setSuccessMessage(data.success[0]);
-        }
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
 
-      } catch (err) {
-        setError(err.message || 'Failed to fetch products.');
-        console.error("Fetch products error:", err);
-      } finally {
-        setIsLoading(false);
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
       }
     };
-
-    fetchProducts();
-  }, [location.search, navigate]);
+  }, [currentPage, hasMore, isLoadingMore, isLoading, currentFilter, fetchProducts]);
 
   const handleSortChange = (e) => {
     const newSortBy = e.target.value;
@@ -574,7 +642,23 @@ const ShopPage = () => {
               No products found.
             </div>
           ) : displayProducts.length > 0 ? (
-            <HoverEffect items={productsForHoverEffect} className="py-0" />
+            <>
+              <HoverEffect items={productsForHoverEffect} className="py-0" />
+              
+              {/* Infinite Scroll Trigger & Loading Indicator */}
+              {currentFilter !== 'wishlist' && (
+                <>
+                  {isLoadingMore && (
+                    <div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-5">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <CardSkeleton key={`loading-${i}`} showImage={true} lines={3} />
+                      ))}
+                    </div>
+                  )}
+                  <div ref={observerTarget} className="h-4" />
+                </>
+              )}
+            </>
           ) : null}
         </div>
       </div>

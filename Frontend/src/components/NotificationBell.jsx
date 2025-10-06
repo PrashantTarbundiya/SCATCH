@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState([]);
@@ -11,14 +12,18 @@ const NotificationBell = () => {
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useUser();
 
   useEffect(() => {
-    fetchNotifications();
-    
-    // Auto-refresh every 1 minute silently
-    const interval = setInterval(() => fetchNotifications(false), 60000);
-    return () => clearInterval(interval);
-  }, []);
+    // Only fetch notifications if user is authenticated
+    if (isAuthenticated) {
+      fetchNotifications();
+      
+      // Auto-refresh every 1 minute silently
+      const interval = setInterval(() => fetchNotifications(false), 60000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   // Click outside to close
   useEffect(() => {
@@ -35,6 +40,9 @@ const NotificationBell = () => {
   }, [isOpen]);
 
   const fetchNotifications = async (showLoading = true) => {
+    // Don't fetch if not authenticated
+    if (!isAuthenticated) return;
+    
     if (loading && showLoading) return;
     
     if (showLoading) {
@@ -52,6 +60,11 @@ const NotificationBell = () => {
         setUnreadCount(response.data.unreadCount || response.data.notifications.filter(n => !n.isRead).length);
       }
     } catch (error) {
+      // Silently handle 401 errors (user not authenticated)
+      if (error.response?.status === 401) {
+        return;
+      }
+      
       console.error('Error fetching notifications:', error);
       if (showLoading) {
         setError('Failed to load notifications');
@@ -184,6 +197,11 @@ const NotificationBell = () => {
         return null;
     }
   };
+
+  // Don't render notification bell if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>
