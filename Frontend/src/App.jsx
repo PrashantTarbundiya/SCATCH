@@ -28,7 +28,6 @@ const OwnerProtectedRoute = lazy(() => import('./components/OwnerProtectedRoute'
 const UserProtectedRoute = lazy(() => import('./components/UserProtectedRoute'));
 
 import Header from './components/Header';
-import Footer from './components/Footer';
 
 // Loading component
 const PageLoader = () => (
@@ -89,8 +88,6 @@ function AppContent() {
         </Suspense>
       </main>
       
-      {/* Conditionally render Footer - exclude from admin routes and home page */}
-      {!isAdminRoute && !isHomePage && <Footer />}
     </>
   );
 }
