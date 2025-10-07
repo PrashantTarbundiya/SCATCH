@@ -1,10 +1,7 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+dotenv.config({ path: '../.env' });
 
-// Load environment variables - production environments handle this differently
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config({ path: '../.env' });
-}
 
 if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASS) {
   throw new Error('Email configuration is not complete. Ensure GMAIL_USER and GMAIL_APP_PASS are set in environment variables.');
