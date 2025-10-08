@@ -5,31 +5,20 @@ import Order from '../models/order-model.js';
 import User from '../models/users-model.js';
 import Product from '../models/product-model.js';
 import Coupon from '../models/coupon-model.js';
-import nodemailer from 'nodemailer';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
+import { sendOrderConfirmationEmail } from '../utils/nodemailer-transporter.js';
 
 // Modern color palette
 const colors = {
-  primary: '#2D3436',      // Dark charcoal
-  secondary: '#00B894',    // Mint green
-  accent: '#FDCB6E',       // Warm yellow
-  text: '#2D3436',         // Dark text
-  lightGray: '#DDD5D0',    // Light beige
+  primary: '#2D3436',
+  secondary: '#00B894',
+  accent: '#FDCB6E',
+  text: '#2D3436',
+  lightGray: '#DDD5D0',
   white: '#FFFFFF',
-  danger: '#E17055'        // Coral red
+  danger: '#E17055'
 };
-
-const orderEmailTransporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASS,
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-});
 
 async function generateModernInvoicePDF(order) {
   return new Promise((resolve, reject) => {
@@ -246,180 +235,7 @@ async function generateModernInvoicePDF(order) {
   });
 }
 
-async function sendModernOrderConfirmationEmail(userEmail, order, pdfBuffer) {
-  try {
-    let itemListHtml = '';
-    order.items.forEach(item => {
-      itemListHtml += `
-        <tr style="border-bottom: 1px solid #e0e0e0;">
-          <td style="padding: 12px 16px; color: #2D3436;">${item.nameAtPurchase}</td>
-          <td style="padding: 12px 16px; text-align: center; color: #2D3436;">${item.quantity}</td>
-          <td style="padding: 12px 16px; text-align: right; color: #2D3436;">₹${item.priceAtPurchase.toFixed(2)}</td>
-          <td style="padding: 12px 16px; text-align: right; color: #2D3436; font-weight: 600;">₹${(item.priceAtPurchase * item.quantity).toFixed(2)}</td>
-        </tr>
-      `;
-    });
 
-    const couponSection = order.couponDiscountAmount > 0 ? `
-      <div style="background: linear-gradient(135deg, #00B894, #00A085); padding: 16px; border-radius: 8px; margin: 20px 0; text-align: center;">
-        <h3 style="color: white; margin: 0; font-size: 16px;">🎉 You saved ₹${order.couponDiscountAmount.toFixed(2)} with coupon!</h3>
-        <p style="color: white; margin: 5px 0 0 0; opacity: 0.9;">Coupon code: ${order.appliedCouponCode}</p>
-      </div>
-    ` : '';
-
-    const mailOptions = {
-      from: `"Scatch - Premium Shopping" <${process.env.GMAIL_USER}>`,
-      to: userEmail,
-      subject: `🛍️ Order Confirmed - Your Scatch Purchase #${order._id.toString().slice(-8).toUpperCase()}`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Order Confirmation</title>
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 1.6; color: #2D3436; margin: 0; padding: 0; background-color: #f8f9fa;">
-          
-          <!-- Header -->
-          <div style="background: linear-gradient(135deg, #2D3436, #636e72); padding: 40px 20px; text-align: center;">
-            <div style="max-width: 600px; margin: 0 auto;">
-              <h1 style="color: white; font-size: 32px; margin: 0; font-weight: 700;">SCATCH</h1>
-              <p style="color: #ddd5d0; margin: 8px 0 0 0; font-size: 14px;">Premium Shopping Experience</p>
-            </div>
-          </div>
-
-          <!-- Main Content -->
-          <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; margin-top: -20px; position: relative; z-index: 1; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-            
-            <!-- Success Badge -->
-            <div style="text-align: center; padding: 30px 30px 20px 30px;">
-              <div style="background: linear-gradient(135deg, #00B894, #00A085); color: white; padding: 12px 24px; border-radius: 50px; display: inline-block; font-weight: 600; font-size: 16px;">
-                ✅ Order Confirmed!
-              </div>
-              <h2 style="color: #2D3436; margin: 20px 0 10px 0; font-size: 24px;">Thank you for your purchase!</h2>
-              <p style="color: #636e72; margin: 0; font-size: 16px;">Your order has been successfully placed and confirmed.</p>
-            </div>
-
-            <!-- Order Summary -->
-            <div style="padding: 0 30px 30px 30px;">
-              
-              <!-- Order Details Box -->
-              <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                  <tr>
-                    <td style="width: 50%; vertical-align: top;">
-                      <strong style="color: #2D3436;">Order ID:</strong>
-                      <br><span style="color: #636e72; font-family: monospace;">#${order._id.toString().slice(-8).toUpperCase()}</span>
-                    </td>
-                    <td style="width: 50%; vertical-align: top; text-align: right;">
-                      <strong style="color: #2D3436;">Order Date:</strong>
-                      <br><span style="color: #636e72;">${order.orderDate.toLocaleDateString('en-GB')}</span>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-
-              ${couponSection}
-
-              <!-- Items Table -->
-              <div style="margin: 25px 0;">
-                <h3 style="color: #2D3436; margin-bottom: 15px; font-size: 18px;">Order Items</h3>
-                <table style="width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <thead>
-                    <tr style="background: linear-gradient(135deg, #2D3436, #636e72);">
-                      <th style="padding: 16px; text-align: left; color: white; font-weight: 600;">Item</th>
-                      <th style="padding: 16px; text-align: center; color: white; font-weight: 600;">Qty</th>
-                      <th style="padding: 16px; text-align: right; color: white; font-weight: 600;">Price</th>
-                      <th style="padding: 16px; text-align: right; color: white; font-weight: 600;">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody style="background: white;">
-                    ${itemListHtml}
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Total -->
-              <div style="text-align: center; margin: 25px 0;">
-                <table style="margin: 0 auto;">
-                  <tr>
-                    <td>
-                      <div style="background: linear-gradient(135deg, #2D3436, #636e72); color: white; padding: 20px; border-radius: 8px; min-width: 200px; text-align: center;">
-                        <div style="font-size: 16px; margin-bottom: 8px;">Total Amount Paid</div>
-                        <div style="font-size: 28px; font-weight: 700;">₹${order.totalAmount.toFixed(2)}</div>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-
-              <!-- Shipping Address -->
-              <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 25px 0;">
-                <h3 style="color: #2D3436; margin: 0 0 15px 0; font-size: 16px;">📦 Shipping Address</h3>
-                <div style="color: #636e72; line-height: 1.6;">
-                  ${order.shippingAddress.street || ''}<br>
-                  ${order.shippingAddress.city || ''}, ${order.shippingAddress.postalCode || ''}<br>
-                  ${order.shippingAddress.country || ''}
-                </div>
-              </div>
-
-              <!-- Next Steps -->
-              <div style="background: linear-gradient(135deg, #FDCB6E, #F39C12); border-radius: 8px; padding: 20px; margin: 25px 0; text-align: center;">
-                <h3 style="color: white; margin: 0 0 10px 0; font-size: 18px;">What's Next?</h3>
-                <p style="color: white; margin: 0; opacity: 0.95;">We'll send you tracking information once your order ships. Your invoice is attached to this email.</p>
-              </div>
-
-            </div>
-
-            <!-- Footer -->
-            <div style="background: #2D3436; color: white; padding: 30px; text-align: center; border-radius: 0 0 12px 12px;">
-              <h3 style="margin: 0 0 15px 0; font-size: 20px;">Thank you for choosing Scatch!</h3>
-              <p style="margin: 0 0 15px 0; opacity: 0.8;">Need help? Contact us at <a href="mailto:scatchotp@gmail.com" style="color: #FDCB6E; text-decoration: none;">scatchotp@gmail.com</a></p>
-              <div style="margin-top: 20px;">
-                <a href="https://scatch-livid.vercel.app/" style="color: #FDCB6E; text-decoration: none; margin: 0 10px;">Visit Website</a> |
-                <a href="https://scatch-livid.vercel.app/track-order" style="color: #FDCB6E; text-decoration: none; margin: 0 10px;">Track Order</a> |
-                <a href="mailto:scatchotp@gmail.com" style="color: #FDCB6E; text-decoration: none; margin: 0 10px;">Support</a>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Footer Note -->
-          <div style="text-align: center; padding: 20px; color: #636e72; font-size: 12px;">
-            <p style="margin: 0;">This is an automated email. Please do not reply directly to this message.</p>
-          </div>
-
-        </body>
-        </html>
-      `,
-      attachments: [
-        {
-          filename: `scatch-invoice-${order._id.toString().slice(-8).toUpperCase()}.pdf`,
-          content: pdfBuffer,
-          contentType: 'application/pdf',
-        },
-      ],
-    };
-
-    // Verify transporter before sending
-    try {
-        await orderEmailTransporter.verify();
-    } catch (verifyError) {
-        console.error('Error verifying order email transporter:', verifyError);
-    }
-
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASS) {
-        console.error("CRITICAL: GMAIL_USER or GMAIL_APP_PASS not found for order confirmation email.");
-        throw new Error("Order email service is not configured correctly on the server.");
-    }
-
-    await orderEmailTransporter.sendMail(mailOptions);
-    console.log('Modern order confirmation email sent to:', userEmail);
-  } catch (error) {
-    console.error('Error sending order confirmation email:', error);
-  }
-}
 
 // Replace the old functions in your existing code
 export const createRazorpayOrder = async (req, res) => {
@@ -615,7 +431,7 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
     const pdfBuffer = await generateModernInvoicePDF(savedOrder);
 
     // Send modern order confirmation email
-    await sendModernOrderConfirmationEmail(user.email, savedOrder, pdfBuffer);
+    await sendOrderConfirmationEmail(user.email, savedOrder, pdfBuffer);
 
     // Clear user's cart
     if (user) {
