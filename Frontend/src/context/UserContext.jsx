@@ -60,22 +60,53 @@ export const UserProvider = ({ children }) => {
     authLoading,
   }), [currentUser, loginUser, logoutUser, authLoading]);
 
-  // Optional: Load user from localStorage on initial render for persistence
+  // Fetch user from backend on initial render using JWT cookie
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
+    const fetchCurrentUser = async () => {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        // console.log('User data loaded from localStorage in UserContext:', parsedUser); // DEBUG LOG
-        loginUser(parsedUser); // Use loginUser to set current user
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/me`, {
+          method: 'GET',
+          credentials: 'include', // Send cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.user) {
+            loginUser(data.user);
+          }
+        } else {
+          // If backend says not authenticated, check localStorage as fallback
+          const storedUser = localStorage.getItem('currentUser');
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              loginUser(parsedUser);
+            } catch (error) {
+              console.error("Failed to parse stored user:", error);
+              localStorage.removeItem('currentUser');
+            }
+          }
+        }
       } catch (error) {
-        console.error("Failed to parse stored user:", error);
-        localStorage.removeItem('currentUser'); // Clear corrupted data
+        console.error("Error fetching current user:", error);
+        // On network error, try localStorage as fallback
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            loginUser(parsedUser);
+          } catch (parseError) {
+            console.error("Failed to parse stored user:", parseError);
+            localStorage.removeItem('currentUser');
+          }
+        }
+      } finally {
+        setAuthLoading(false);
       }
-    }
-    // console.log('[UserContext] Finished initial auth check. authLoading: false, currentUser:', currentUser); // DEBUG LOG REMOVED
-    setAuthLoading(false); // Finished attempting to load user
-  }, []); // currentUser should not be in dependency array here to avoid re-running on every currentUser change by loginUser
+    };
+
+    fetchCurrentUser();
+  }, [loginUser]);
 
   return (
     <UserContext.Provider value={value}>

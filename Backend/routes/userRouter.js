@@ -5,40 +5,43 @@ import {
     registerUser,
     loginUser,
     logout,
+    getCurrentUser,
     getUserCart,
-    updateUserProfilePhoto, // Import the new controller function
-    updateUserProfile, // Import the new controller function for general profile updates
+    updateUserProfilePhoto,
+    updateUserProfile,
     forgotPassword,
     verifyOtpAndResetPassword
 } from '../controllers/authController.js';
-import isLoggedIn from '../middleware/isLoggedin.js'; // Assuming this is your auth middleware
-import { upload } from '../config/multer-config.js'; // Import multer upload middleware
+import { googleAuth, googleCallback } from '../controllers/googleAuthController.js';
+import isLoggedIn from '../middleware/isLoggedin.js';
+import { upload } from '../config/multer-config.js';
 
 router.get('/', (req, res) => {
     res.send("hey");
 });
 
-router.post('/send-otp', sendRegistrationOtp); // New route for sending OTP
+router.post('/send-otp', sendRegistrationOtp);
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.get('/google-auth', googleAuth);
+router.get('/google-callback', googleCallback);
+router.get('/me', isLoggedIn, getCurrentUser);
 router.get('/logout', logout);
 
 // Route to get user's cart
-// isLoggedIn middleware will protect this route and add req.user
 router.get('/cart', isLoggedIn, getUserCart);
 
 // Route to update user's profile photo
 router.post(
     '/profile/update-photo',
     isLoggedIn,
-    upload.single('profilePhoto'), // 'profilePhoto' should match the FormData key from frontend
+    upload.single('profilePhoto'), 
     updateUserProfilePhoto
 );
 
 // Route to update user's general profile information (fullname, phone, address)
 router.put('/profile/update', isLoggedIn, updateUserProfile);
 
-// Forgot password routes
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', verifyOtpAndResetPassword);
 

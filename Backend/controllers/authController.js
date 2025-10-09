@@ -216,6 +216,40 @@ export const loginUser = async (req, res) => {
     }
 }
 
+export const getCurrentUser = async (req, res) => {
+    try {
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ error: "User not authenticated." });
+        }
+
+        const user = await userModel.findById(req.user._id).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                _id: user._id,
+                email: user.email,
+                fullname: user.fullname,
+                phone: user.phone || '',
+                address: user.address || '',
+                profilePhoto: user.profilePhoto || '',
+                orders: user.orders || [],
+                cart: user.cart || [],
+                authProvider: user.authProvider || 'local',
+                googleId: user.googleId || null
+            }
+        });
+
+    } catch (error) {
+        console.error("Error fetching current user:", error);
+        res.status(500).json({ error: "Server error while fetching user data.", details: error.message });
+    }
+};
+
 export const logout = (req, res) => {
     const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
     

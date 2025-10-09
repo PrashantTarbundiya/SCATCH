@@ -7,12 +7,12 @@ import { UserProvider } from './context/UserContext.jsx';
 import { OwnerProvider } from './context/OwnerContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { WishlistProvider } from './context/WishlistContext.jsx';
-import { CsrfProvider } from './context/CsrfContext.jsx'; // Import CsrfProvider for CSRF protection
+import { CsrfProvider } from './context/CsrfContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider>
-      <CsrfProvider> {/* CSRF protection - fetches token on app load */}
+      <CsrfProvider>
         <UserProvider>
           <OwnerProvider>
             <WishlistProvider>

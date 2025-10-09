@@ -5,9 +5,9 @@ import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
 import { toast } from '../utils/toast';
 import PasswordInput from '../components/PasswordInput';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 
-// Renamed component to LoginPage to match App.jsx import
 const LoginPage = () => {
   const { theme } = useTheme(); // Consume theme
   const { setCurrentUser, isAuthenticated } = useUser(); // Get setCurrentUser from context
@@ -290,6 +290,18 @@ const LoginPage = () => {
                 </button>
               </CardItem>
             </form>
+
+            {/* Divider */}
+            <CardItem translateZ="5" className="flex items-center justify-center my-4 w-full">
+              <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+              <span className="px-4 text-sm text-gray-500 dark:text-gray-400">OR</span>
+              <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            </CardItem>
+
+            {/* Google Login Button */}
+            <div className="w-full relative" style={{ transform: 'translateZ(0)', zIndex: 10 }}>
+              <GoogleLoginButton />
+            </div>
             
             <CardItem translateZ="5" className="text-center mt-6 w-full">
               <p className="text-sm text-gray-600 dark:text-gray-400">
