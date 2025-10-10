@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { generateToken } from '../utils/generateToken.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { addToBlacklist } from '../utils/tokenBlacklist.js';
-import { generateOTP, sendRegistrationOTPEmail, sendOTPEmail, sendPasswordResetConfirmationEmail } from '../utils/nodemailer-transporter.js';
+import { generateOTP, sendRegistrationOTPEmail, sendOTPEmail, sendPasswordResetConfirmationEmail } from '../utils/email-service.js';
 
 let otpStore = {};
 let passwordResetOtpStore = {};
@@ -14,8 +14,8 @@ export const sendRegistrationOtp = async (req, res) => {
     try {
         const { email } = req.body;
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error("CRITICAL: EMAIL_USER or EMAIL_PASS not found in environment variables. Email sending will fail.");
+        if (!process.env.BREVO_API_KEY) {
+            console.error("CRITICAL: BREVO_API_KEY not found in environment variables.");
             return res.status(500).json({ error: "Email service is not configured correctly on the server." });
         }
 

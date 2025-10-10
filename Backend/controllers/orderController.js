@@ -7,7 +7,7 @@ import Product from '../models/product-model.js';
 import Coupon from '../models/coupon-model.js';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
-import { sendOrderConfirmationEmail } from '../utils/nodemailer-transporter.js';
+import { sendOrderConfirmationEmail } from '../utils/email-service.js';
 
 // Modern color palette
 const colors = {

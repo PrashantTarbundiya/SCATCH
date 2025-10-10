@@ -7,7 +7,7 @@ SCATCH is a full-stack web application built with the MERN stack (MongoDB, Expre
 ## 🚀 Features
 
 - ✅ User Registration & Login with JWT
-- 📩 Email-based OTP verification (using Gmail SMTP)
+- 📩 Email-based OTP verification (using Brevo)
 - 🧾 Session support with Express
 - ⚙️ Environment-specific configuration
 - 🔐 Secure credentials handling using `.env` files
@@ -26,7 +26,7 @@ SCATCH is a full-stack web application built with the MERN stack (MongoDB, Expre
 - Node.js + Express.js
 - MongoDB (with Mongoose)
 - JWT for authentication
-- Nodemailer for email OTP
+- Brevo for OTP delivery
 
 ---
 
@@ -74,12 +74,15 @@ VITE_API_BASE_URL= backend_app_uri
 ### 🖥️ Backend (`server/.env`)
 ```env
 PORT=3000
-MONGODB_URI = your_mongodb_uri 
-JWT_KEY= your_jwt_key
-EXPRESS_SESSION_SECRET= your_session_key
-FRONTEND_URI= your_frontend_uri
-GMAIL_USER= your_support_email
-GMAIL_APP_PASS= support_email_pass
+MONGODB_URI=your_mongodb_uri
+JWT_KEY=your_jwt_key
+EXPRESS_SESSION_SECRET=your_session_key
+FRONTEND_URI=your_frontend_uri
+
+# Email Service (Resend)
+EMAIL_FROM=Scatch <onboarding@resend.dev>
+RESEND_API_KEY=re_your_api_key_here
+
 NODE_ENV=production
 ```
 
