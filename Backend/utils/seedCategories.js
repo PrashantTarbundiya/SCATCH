@@ -14,7 +14,8 @@ const categories = [
         name: 'Men\'s Fashion',
         slug: 'mens-fashion',
         description: 'Clothing, shoes, and accessories for men',
-        icon: 'User',
+        image: 'https://api.iconify.design/mdi/tshirt-crew.svg?color=%234f46e5&width=80&height=80',
+        icon: 'tshirt-crew',
         isFeatured: true,
         sortOrder: 1
     },
@@ -22,7 +23,8 @@ const categories = [
         name: 'Women\'s Fashion',
         slug: 'womens-fashion',
         description: 'Clothing, shoes, and accessories for women',
-        icon: 'UserCheck',
+        image: 'https://api.iconify.design/mdi/hanger.svg?color=%23ec4899&width=80&height=80',
+        icon: 'hanger',
         isFeatured: true,
         sortOrder: 2
     },
@@ -30,7 +32,8 @@ const categories = [
         name: 'Electronics',
         slug: 'electronics',
         description: 'Phones, laptops, cameras, and gadgets',
-        icon: 'Smartphone',
+        image: 'https://api.iconify.design/mdi/devices.svg?color=%2306b6d4&width=80&height=80',
+        icon: 'devices',
         isFeatured: true,
         sortOrder: 3
     },
@@ -38,7 +41,8 @@ const categories = [
         name: 'Home & Kitchen',
         slug: 'home-kitchen',
         description: 'Furniture, appliances, and home decor',
-        icon: 'Home',
+        image: 'https://api.iconify.design/mdi/silverware-fork-knife.svg?color=%2310b981&width=80&height=80',
+        icon: 'silverware-fork-knife',
         isFeatured: true,
         sortOrder: 4
     },
@@ -46,7 +50,8 @@ const categories = [
         name: 'Sports & Outdoors',
         slug: 'sports-outdoors',
         description: 'Fitness equipment, outdoor gear, and sportswear',
-        icon: 'Activity',
+        image: 'https://api.iconify.design/mdi/basketball.svg?color=%23f59e0b&width=80&height=80',
+        icon: 'basketball',
         isFeatured: true,
         sortOrder: 5
     },
@@ -54,7 +59,8 @@ const categories = [
         name: 'Beauty & Personal Care',
         slug: 'beauty-personal-care',
         description: 'Skincare, makeup, and grooming products',
-        icon: 'Heart',
+        image: 'https://api.iconify.design/mdi/lipstick.svg?color=%23f43f5e&width=80&height=80',
+        icon: 'lipstick',
         isFeatured: true,
         sortOrder: 6
     },
@@ -62,7 +68,8 @@ const categories = [
         name: 'Books & Media',
         slug: 'books-media',
         description: 'Books, magazines, music, and movies',
-        icon: 'Book',
+        image: 'https://api.iconify.design/mdi/book-open-page-variant.svg?color=%238b5cf6&width=80&height=80',
+        icon: 'book-open-page-variant',
         isFeatured: false,
         sortOrder: 7
     },
@@ -70,7 +77,8 @@ const categories = [
         name: 'Toys & Games',
         slug: 'toys-games',
         description: 'Toys, board games, and puzzles for all ages',
-        icon: 'Gamepad2',
+        image: 'https://api.iconify.design/mdi/toy-brick.svg?color=%23ef4444&width=80&height=80',
+        icon: 'toy-brick',
         isFeatured: false,
         sortOrder: 8
     }
@@ -86,14 +94,14 @@ async function seedCategories() {
         console.log('Seeding categories...');
         const created = await Category.insertMany(categories);
         
-        console.log(`✅ Successfully seeded ${created.length} categories:`);
+        console.log(`Successfully seeded ${created.length} categories:`);
         created.forEach(cat => {
             console.log(`   - ${cat.name} (${cat.slug})`);
         });
         
         process.exit(0);
     } catch (error) {
-        console.error('❌ Error seeding categories:', error);
+        console.error('Error seeding categories:', error);
         process.exit(1);
     }
 }

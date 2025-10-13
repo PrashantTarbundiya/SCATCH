@@ -129,7 +129,11 @@ const ShopPage = () => {
       const newProducts = data?.products || [];
       
       if (append) {
-        setProducts(prev => [...prev, ...newProducts]);
+        setProducts(prev => {
+          const existingIds = new Set(prev.map(p => p._id));
+          const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p._id));
+          return [...prev, ...uniqueNewProducts];
+        });
       } else {
         setProducts(newProducts);
       }
@@ -582,36 +586,106 @@ const ShopPage = () => {
         
         {/* Main Content Area */}
         <div className="w-full flex flex-col gap-5">
-          {/* Search Bar and Filter Button (Always Visible) */}
-          <div className="w-full flex flex-col md:flex-row items-stretch md:items-center gap-3 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm overflow-hidden">
-            <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2 min-w-0">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products by name..."
-                className="flex-1 min-w-0 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
+          {/* Search Bar, Categories and Filter Button (Combined) */}
+          <div className="w-full bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+            {/* Search and Filter Row */}
+            <div className="flex items-stretch gap-2 mb-4">
+              <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2 min-w-0">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="flex-1 min-w-0 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md flex items-center gap-1.5 flex-shrink-0"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/>
+                  </svg>
+                  <span className="hidden sm:inline text-sm">Search</span>
+                </button>
+              </form>
+              
               <button
-                type="submit"
-                className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md flex items-center gap-2 flex-shrink-0"
+                onClick={() => setIsFilterMenuOpen(true)}
+                className="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                 </svg>
-                <span className="hidden md:inline">Search</span>
+                <span className="text-sm">Filter</span>
               </button>
-            </form>
-            
-            <button
-              onClick={() => setIsFilterMenuOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              Filter
-            </button>
+            </div>
+
+            {/* Categories Row */}
+            {categories.length > 0 && (
+              <div className="flex gap-3 overflow-x-auto pb-2 pt-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+                {/* All Category */}
+                <button
+                  onClick={() => {
+                    setSelectedCategory('');
+                    const params = new URLSearchParams(location.search);
+                    params.delete('category');
+                    navigate(`?${params.toString()}`);
+                  }}
+                  className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0"
+                >
+                  <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
+                    !selectedCategory ? 'border-blue-500 shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                  }`}>
+                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                      <span className="text-xl font-bold text-white">All</span>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-medium text-center line-clamp-2 transition-colors ${
+                    !selectedCategory ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                  }`}>All</span>
+                </button>
+                
+                {categories.map((category) => {
+                  const isActive = selectedCategory === category.slug;
+                  return (
+                    <button
+                      key={category._id}
+                      onClick={() => {
+                        const newCategory = isActive ? '' : category.slug;
+                        setSelectedCategory(newCategory);
+                        const params = new URLSearchParams(location.search);
+                        if (newCategory) {
+                          params.set('category', newCategory);
+                        } else {
+                          params.delete('category');
+                        }
+                        navigate(`?${params.toString()}`);
+                      }}
+                      className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0"
+                    >
+                      <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
+                        isActive ? 'border-blue-500 shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                      }`}>
+                        {category.image ? (
+                          <img
+                            src={category.image}
+                            alt={category.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+                            <span className="text-xl font-bold text-gray-500 dark:text-gray-400">{category.name.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <span className={`text-xs font-medium text-center line-clamp-2 transition-colors ${
+                        isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                      }`}>{category.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Products Display */}
