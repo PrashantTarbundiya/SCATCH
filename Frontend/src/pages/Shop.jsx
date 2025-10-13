@@ -17,7 +17,7 @@ const ShopPage = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
-  const [currentSort, setCurrentSort] = useState('newest');
+  const [currentSort, setCurrentSort] = useState('recommended');
   const [currentFilter, setCurrentFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
@@ -81,7 +81,7 @@ const ShopPage = () => {
     setError(null);
     
     const params = new URLSearchParams(location.search);
-    const sortBy = params.get('sortBy') || 'newest';
+    const sortBy = params.get('sortBy') || 'recommended';
     const filterBy = params.get('filter') || 'all';
     const query = params.get('q') || '';
     const minPrice = params.get('minPrice') || '';
@@ -104,6 +104,9 @@ const ShopPage = () => {
       searchParams.append('limit', PRODUCTS_PER_PAGE);
       
       apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products/search?${searchParams.toString()}`;
+    } else if (sortBy === 'recommended' || filterBy === 'recommended') {
+      // Use personalized recommendations
+      apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products/personalized?page=${page}&limit=${PRODUCTS_PER_PAGE}`;
     } else {
       apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products?sortBy=${sortBy}&filter=${filterBy}&page=${page}&limit=${PRODUCTS_PER_PAGE}`;
     }
@@ -159,7 +162,7 @@ const ShopPage = () => {
   // Initial load and reset on search params change
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const sortBy = params.get('sortBy') || 'newest';
+    const sortBy = params.get('sortBy') || 'recommended';
     const filterBy = params.get('filter') || 'all';
     const query = params.get('q') || '';
     const minPrice = params.get('minPrice') || '';
@@ -258,7 +261,7 @@ const ShopPage = () => {
     setPriceRange({ min: '', max: '' });
     setSelectedCategory('');
     setMinRating('');
-    navigate('/shop?sortBy=newest&filter=all');
+    navigate('/shop?sortBy=recommended&filter=all');
   };
 
   const handleAddToCart = async (productId) => {
@@ -445,6 +448,7 @@ const ShopPage = () => {
                 onChange={handleSortChange}
                 className="w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
               >
+                <option value="recommended">✨ Recommended for You</option>
                 <option value="newest">🆕 Newest First</option>
                 <option value="popular">🔥 Most Popular</option>
                 <option value="price_asc">💰 Price: Low to High</option>
@@ -535,6 +539,17 @@ const ShopPage = () => {
                 Quick Links
               </h4>
               <div className="space-y-2">
+                <Link
+                  onClick={() => setIsFilterMenuOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentFilter === 'recommended'
+                      ? 'bg-blue-500 text-white shadow-sm'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                  to="/shop?sortBy=recommended&filter=all"
+                >
+                  <span>✨</span> For You
+                </Link>
                 <Link
                   onClick={() => setIsFilterMenuOpen(false)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -703,7 +718,7 @@ const ShopPage = () => {
           ) : currentFilter === 'wishlist' && wishlistItems.length === 0 && !wishlistLoading ? (
             <div className="text-center py-20">
               <p className="text-xl mb-4 text-gray-700 dark:text-gray-300">Your wishlist is currently empty.</p>
-              <Link to="/shop?filter=all&sortBy=newest" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              <Link to="/shop?sortBy=recommended&filter=all" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                 Discover Products
               </Link>
             </div>

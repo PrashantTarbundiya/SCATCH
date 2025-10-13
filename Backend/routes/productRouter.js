@@ -6,6 +6,7 @@ import categoryModel from '../models/category-model.js';
 import isOwner from '../middleware/isOwner.js';
 import isLoggedin from '../middleware/isLoggedin.js';
 import { rateProduct, updateReview, deleteReview, getRecommendedProducts } from '../controllers/productController.js';
+import { getPersonalizedProducts } from '../controllers/recommendationController.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 router.post('/create', isOwner, upload.single("image"), async (req, res, next) => { // Added isOwner
@@ -70,6 +71,9 @@ router.post('/create', isOwner, upload.single("image"), async (req, res, next) =
     }
 });
 
+// Route to get personalized/recommended products
+router.get('/personalized', getPersonalizedProducts);
+
 // Route to get all products (with filtering, sorting, and pagination)
 router.get('/', async (req, res, next) => {
     try {
@@ -87,25 +91,34 @@ router.get('/', async (req, res, next) => {
         if (filter === 'discounted' || discounted === 'true') {
             query.discount = { $gt: 0 };
         }
-        // Add other specific filters if needed, e.g., based on category, availability (quantity > 0)
         if (filter === 'availability') {
             query.quantity = { $gt: 0 };
+        }
+        if (filter === 'newCollection' || filter === 'new') {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            query.createdAt = { $gte: thirtyDaysAgo };
         }
 
         // Sorting
         if (sortBy === 'popular') {
-            sortOptions.purchaseCount = -1; // Descending
-        } else if (sortBy === 'newest' || filter === 'new' || filter === 'newCollection') {
-            sortOptions.createdAt = -1; // Descending
+            sortOptions.purchaseCount = -1;
+        } else if (sortBy === 'price_asc') {
+            sortOptions.price = 1;
+        } else if (sortBy === 'price_desc') {
+            sortOptions.price = -1;
+        } else if (sortBy === 'rating') {
+            sortOptions.purchaseCount = -1; // Fallback, will sort by rating after
+        } else if (sortBy === 'newest' || filter === 'newCollection') {
+            sortOptions.createdAt = -1;
         } else {
-            // Default sort if no specific sortBy is provided, or add more options
-            sortOptions.createdAt = -1; // Default to newest
+            sortOptions.createdAt = -1;
         }
 
         // Get total count for pagination
         const totalProducts = await productModel.countDocuments(query);
 
-        const products = await productModel.find(query)
+        let products = await productModel.find(query)
             .sort(sortOptions)
             .skip(skip)
             .limit(limitNum)
@@ -114,6 +127,11 @@ router.get('/', async (req, res, next) => {
                 path: 'ratings.user',
                 select: 'username fullname'
             });
+        
+        // Sort by rating if requested (post-query since averageRating is virtual)
+        if (sortBy === 'rating') {
+            products.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+        }
         
         res.status(200).json({
             success: true,
