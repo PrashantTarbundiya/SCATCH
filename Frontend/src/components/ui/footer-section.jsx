@@ -33,10 +33,10 @@ const footerLinks = [
 	{
 		label: 'Contact',
 		links: [
-			{ title: 'Email: support@scatch.com', href: 'mailto:support@scatch.com' },
-			{ title: 'Phone: +91 1234567890', href: 'tel:+911234567890' },
-			{ title: 'Address: Mumbai, India', href: '#' },
-			{ title: 'Follow Us', href: '#', icon: InstagramIcon },
+			{ title: 'Email: scatchotp@gmail.com', href: 'mailto:scatchotp@gmail.com' },
+			{ title: 'Phone: +91 7984104910', href: 'tel:+917984104910' },
+			{ title: 'Address: Ahmedabad, India', href: '#' },
+			{ title: 'Follow Us', href: 'https://www.instagram.com/prashanttarbundiya/', icon: InstagramIcon },
 		],
 	},
 ];

@@ -28,6 +28,8 @@ const OwnerProtectedRoute = lazy(() => import('./components/OwnerProtectedRoute'
 const UserProtectedRoute = lazy(() => import('./components/UserProtectedRoute'));
 
 import Header from './components/Header';
+import AIAssistantButton from './components/AIAssistantButton';
+import { useUser } from './context/UserContext';
 
 // Loading component
 const PageLoader = () => (
@@ -38,11 +40,13 @@ const PageLoader = () => (
 
 function AppContent() {
   const location = useLocation();
+  const { isAuthenticated } = useUser();
   
   // Check if current route is an admin route or home page
   const isAdminRoute = location.pathname.startsWith('/admin') ||
                       location.pathname.startsWith('/create-product');
   const isHomePage = location.pathname === '/';
+  const isShopPage = location.pathname === '/shop';
 
   return (
     <>
@@ -88,6 +92,8 @@ function AppContent() {
         </Suspense>
       </main>
       
+      {/* AI Assistant - show only on shop page when user is logged in */}
+      {isShopPage && isAuthenticated && <AIAssistantButton />}
     </>
   );
 }

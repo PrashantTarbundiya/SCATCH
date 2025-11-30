@@ -36,6 +36,7 @@ import notificationRouter from './routes/notificationRouter.js';
 import cartRouter from './routes/cartRouter.js';
 import categoryRouter from './routes/categoryRouter.js';
 import analyticsRouter from './routes/analyticsRouter.js';
+import aiAssistantRouter from './routes/aiAssistantRouter.js';
 
 // Security Headers - Helmet
 app.use(helmet({
@@ -161,6 +162,7 @@ app.use('/notifications', notificationRouter);
 app.use('/cart', cartRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/analytics', analyticsRouter);
+app.use('/api/ai-assistant', aiAssistantRouter);
 
 
 app.use((err, req, res, next) => {
