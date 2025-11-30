@@ -51,10 +51,10 @@ const OwnerProtectedRoute = () => {
       <main className="transition-all duration-300 ml-0 md:ml-64">
         {/* Mobile menu button - show on mobile when sidebar is hidden */}
         {!sidebarVisible && isMobile && (
-          <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 shadow-sm">
+          <div className="bg-white dark:bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 shadow-sm">
             <button
               onClick={() => setSidebarVisible(true)}
-              className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+              className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-700 transition-all duration-200"
               aria-label="Open sidebar"
             >
               <div className="w-6 h-6 flex flex-col justify-center space-y-1.5">
@@ -76,3 +76,7 @@ const OwnerProtectedRoute = () => {
 };
 
 export default OwnerProtectedRoute;
+
+
+
+

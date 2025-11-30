@@ -16,12 +16,10 @@ export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInW
   const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
 
   return (
-    <div className="rounded-2xl h-full overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:border-slate-700 dark:group-hover:border-slate-500 relative z-20 transition-all duration-300 shadow-md hover:shadow-xl" style={{ width: 'calc(100% + 2px)' }}>
+    <div className="rounded-2xl h-full overflow-hidden bg-white dark:bg-[#2A1F47] border border-purple-500/20 group-hover:border-purple-500/50 relative z-20 transition-all duration-300 shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10 hover:shadow-purple-500/30" style={{ width: 'calc(100% + 2px)' }}>
       <div className="relative z-50 group"> {/* Added group class here for the overlay */}
-          <div // This is the image container, ensure it's relative for the wishlist icon
-            className={`w-full h-44 sm:h-52 flex items-center justify-center relative cursor-pointer`}
-            style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }}
-            // onClick for image navigation is fine, but wishlist button will have its own click
+          <div
+            className="w-full h-44 sm:h-52 flex items-center justify-center relative cursor-pointer bg-gray-100 dark:bg-[#2A1F47]/50"
           >
             {/* Wishlist button moved here, positioned absolutely */}
             <button
@@ -34,8 +32,8 @@ export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInW
                           ${(product.quantity > 0 || product.quantity === undefined)
                             ? isInWishlist
                               ? 'hover:bg-red-100 dark:hover:bg-red-900/30' // In wishlist: light red background on hover
-                              : 'hover:bg-gray-200/70 dark:hover:bg-gray-700/70' // Default (not in wishlist): gray background on hover
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed' // Disabled state
+                              : 'hover:bg-gray-200 dark:bg-[#2A1F47]/70 dark:hover:bg-gray-700/70' // Default (not in wishlist): gray background on hover
+                            : 'bg-gray-100 dark:bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl text-gray-400 dark:text-gray-500 cursor-not-allowed' // Disabled state
                           }`}
               disabled={(product.quantity === 0 && product.quantity !== undefined) || wishlistLoading}
             >
@@ -69,15 +67,11 @@ export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInW
             )}
           </div>
         <div
-          className="flex justify-between items-start px-2.5 py-2.5 sm:px-4 sm:py-4"
-          style={{
-            backgroundColor: product.panelcolor || (theme === 'dark' ? '#1f2937' : '#ffffff'),
-            color: product.textcolor || (theme === 'dark' ? '#e5e7eb' : '#111827'),
-          }}
+          className="flex justify-between items-start px-2.5 py-2.5 sm:px-4 sm:py-4 bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100"
         >
           <div className="flex-1 min-w-0 pr-1.5 sm:pr-2">
               <h3
-                className="font-semibold text-sm sm:text-base lg:text-lg truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="font-semibold text-sm sm:text-base lg:text-lg truncate cursor-pointer hover:text-purple-400 transition-colors"
                 onClick={useCallback(() => navigate(`/product/${product._id}`), [product._id, navigate])}
               >
                 {product.name}
@@ -85,7 +79,7 @@ export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInW
             <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap mt-0.5 sm:mt-1"> {/* Added mt-1 for slight spacing */}
               <h4 className="text-sm sm:text-base font-bold">₹ {finalPrice.toFixed(2)}</h4>
               {discountAmount > 0 && (
-                <h4 className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-through">
+                <h4 className="text-xs sm:text-sm text-purple-300 line-through">
                   {originalPrice.toFixed(2)}
                 </h4>
               )}
@@ -101,8 +95,8 @@ export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInW
             title={(product.quantity > 0 || product.quantity === undefined) ? "Add to cart" : "Out of stock"}
             className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full transition-colors flex-shrink-0
                         ${(product.quantity > 0 || product.quantity === undefined)
-                          ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`}
+                          ? 'bg-blue-600 dark:bg-purple-600 text-gray-900 dark:text-white hover:bg-blue-700 dark:hover:bg-purple-700'
+                          : 'bg-gray-300 dark:bg-purple-900/30 text-gray-500 dark:text-purple-400 cursor-not-allowed'}`}
             disabled={product.quantity === 0 && product.quantity !== undefined}
           >
             <i className="ri-add-line text-lg sm:text-xl"></i>
@@ -131,7 +125,7 @@ export const HoverEffect = memo(({ items, className }) => {
           <AnimatePresence>
             {hoveredIndex === idx && (
               <motion.span
-                className="absolute inset-0 h-full w-full bg-neutral-200/80 dark:bg-slate-800/80 block rounded-3xl"
+                className="absolute inset-0 h-full w-full bg-purple-500/10 block rounded-3xl"
                 layoutId="hoverBackground" // This layoutId should ideally be unique if multiple HoverEffects are on one page.
                                           // For now, assuming one instance or careful usage.
                 initial={{ opacity: 0 }}
@@ -163,3 +157,7 @@ export const HoverEffect = memo(({ items, className }) => {
     </div>
   );
 });
+
+
+
+

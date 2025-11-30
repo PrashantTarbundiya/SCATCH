@@ -42,8 +42,8 @@ const ProductRecommendations = ({ productId }) => {
 
   if (isLoading) {
     return (
-      <div className="mt-8 pt-6 border-t dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">You might also like</h3>
+      <div className="mt-8 pt-6 border-t border-purple-500/20">
+        <h3 className="text-lg font-semibold text-purple-100 mb-4">You might also like</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <CardSkeleton key={i} showImage={true} lines={2} />
@@ -58,8 +58,8 @@ const ProductRecommendations = ({ productId }) => {
   }
 
   return (
-    <div className="mt-8 pt-6 border-t dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">You might also like</h3>
+    <div className="mt-8 pt-6 border-t border-purple-500/20">
+      <h3 className="text-lg font-semibold text-purple-100 mb-4">You might also like</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {recommendations.map((product) => {
           const originalPrice = parseFloat(product.price) || 0;
@@ -70,7 +70,7 @@ const ProductRecommendations = ({ productId }) => {
           return (
           <div
             key={product._id}
-            className="group rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-slate-700 dark:hover:border-slate-500 relative"
+            className="group rounded-2xl shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10 hover:shadow-purple-500/30 transition-all duration-300 overflow-hidden bg-white dark:bg-[#2A1F47] border border-purple-500/20 hover:border-purple-500/50 relative"
           >
             {/* Wishlist icon - top left */}
             {isProductInWishlist(product._id) && (
@@ -88,10 +88,7 @@ const ProductRecommendations = ({ productId }) => {
             )}
 
             <Link to={`/product/${product._id}`} className="block">
-              <div
-                className="w-full h-44 flex items-center justify-center relative"
-                style={{ backgroundColor: product.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }}
-              >
+              <div className="w-full h-44 flex items-center justify-center relative bg-white dark:bg-white dark:bg-[#2A1F47]/50">
                 {discountPercentage > 0 && (
                   <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
                     {`${discountPercentage}% OFF`}
@@ -103,13 +100,7 @@ const ProductRecommendations = ({ productId }) => {
                   className="h-40 w-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div
-                className="p-3"
-                style={{
-                  backgroundColor: product.panelcolor || (theme === 'dark' ? '#1f2937' : '#ffffff'),
-                  color: product.textcolor || (theme === 'dark' ? '#e5e7eb' : '#111827')
-                }}
-              >
+              <div className="p-3 bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100">
                 <h4 className="text-sm font-medium truncate mb-2">
                   {product.name}
                 </h4>
@@ -141,7 +132,7 @@ const ProductRecommendations = ({ productId }) => {
                   console.error('Failed to add to cart:', err);
                 }
               }}
-              className="absolute bottom-3 right-3 w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 shadow-lg"
+              className="absolute bottom-3 right-3 w-8 h-8 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 shadow-lg dark:shadow-purple-500/20"
               title="Add to cart"
             >
               <i className="ri-add-line text-sm"></i>
@@ -157,3 +148,8 @@ const ProductRecommendations = ({ productId }) => {
 };
 
 export default ProductRecommendations;
+
+
+
+
+

@@ -208,17 +208,17 @@ const EditCoupon = () => {
 
   return (
     <div className="w-full">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">Edit Coupon</h1>
-        <p className="text-slate-600 dark:text-slate-400">Modify coupon details</p>
+      <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 mb-8 border border-purple-500/20">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-100 mb-2">Edit Coupon</h1>
+        <p className="text-purple-300">Modify coupon details</p>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-slate-200 dark:border-slate-700">
+      <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-8 border border-purple-500/20">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Coupon Code *
               </label>
               <input
@@ -226,13 +226,13 @@ const EditCoupon = () => {
                 name="code"
                 value={formData.code}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
               {errors.code && <p className="text-red-500 text-sm mt-1">{errors.code}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Description
               </label>
               <input
@@ -240,7 +240,7 @@ const EditCoupon = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
@@ -248,14 +248,14 @@ const EditCoupon = () => {
           {/* Discount Configuration */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Discount Type *
               </label>
               <select
                 name="discountType"
                 value={formData.discountType}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               >
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed Amount (₹)</option>
@@ -263,7 +263,7 @@ const EditCoupon = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Discount Value *
               </label>
               <input
@@ -273,14 +273,14 @@ const EditCoupon = () => {
                 onChange={handleChange}
                 step="0.01"
                 min="0"
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
               {errors.discountValue && <p className="text-red-500 text-sm mt-1">{errors.discountValue}</p>}
             </div>
 
             {formData.discountType === 'percentage' && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-purple-200 mb-2">
                   Max Discount (₹)
                 </label>
                 <input
@@ -290,7 +290,7 @@ const EditCoupon = () => {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
                 />
               </div>
             )}
@@ -298,14 +298,14 @@ const EditCoupon = () => {
 
           {/* Application Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-purple-200 mb-2">
               Apply To *
             </label>
             <select
               name="applicationType"
               value={formData.applicationType}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
             >
               <option value="all">All Products</option>
               <option value="categories">Specific Categories</option>
@@ -315,7 +315,7 @@ const EditCoupon = () => {
           {/* Category Selection */}
           {formData.applicationType === 'categories' && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Select Categories *
               </label>
               <select
@@ -324,7 +324,7 @@ const EditCoupon = () => {
                 value={formData.applicableCategories}
                 onChange={handleChange}
                 disabled={categoriesLoading}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 min-h-[150px]"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500 min-h-[150px]"
               >
                 {categoriesLoading ? (
                   <option disabled>Loading categories...</option>
@@ -338,7 +338,7 @@ const EditCoupon = () => {
                   <option disabled>No categories available</option>
                 )}
               </select>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-sm text-purple-400 mt-1">
                 Hold Ctrl (Cmd on Mac) to select multiple categories
               </p>
               {errors.applicableCategories && <p className="text-red-500 text-sm mt-1">{errors.applicableCategories}</p>}
@@ -348,7 +348,7 @@ const EditCoupon = () => {
           {/* Purchase Requirements */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Minimum Purchase Amount (₹)
               </label>
               <input
@@ -358,12 +358,12 @@ const EditCoupon = () => {
                 onChange={handleChange}
                 step="0.01"
                 min="0"
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Usage Limit
               </label>
               <input
@@ -372,7 +372,7 @@ const EditCoupon = () => {
                 value={formData.usageLimit}
                 onChange={handleChange}
                 min="1"
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
@@ -380,7 +380,7 @@ const EditCoupon = () => {
           {/* Date Range */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Start Date *
               </label>
               <input
@@ -388,12 +388,12 @@ const EditCoupon = () => {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-purple-200 mb-2">
                 Expiry Date *
               </label>
               <input
@@ -401,7 +401,7 @@ const EditCoupon = () => {
                 name="expiryDate"
                 value={formData.expiryDate}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-purple-500/30 rounded-xl bg-[#1E1538] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500"
               />
               {errors.expiryDate && <p className="text-red-500 text-sm mt-1">{errors.expiryDate}</p>}
             </div>
@@ -415,9 +415,9 @@ const EditCoupon = () => {
                 name="oneTimePerUser"
                 checked={formData.oneTimePerUser}
                 onChange={handleChange}
-                className="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                className="h-5 w-5 text-blue-600 border-purple-500/30 rounded focus:ring-2 focus:ring-purple-500"
               />
-              <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="ml-3 text-sm font-medium text-purple-200">
                 One time use per user
               </span>
             </label>
@@ -428,9 +428,9 @@ const EditCoupon = () => {
                 name="isActive"
                 checked={formData.isActive}
                 onChange={handleChange}
-                className="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                className="h-5 w-5 text-blue-600 border-purple-500/30 rounded focus:ring-2 focus:ring-purple-500"
               />
-              <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="ml-3 text-sm font-medium text-purple-200">
                 Active
               </span>
             </label>
@@ -441,14 +441,14 @@ const EditCoupon = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg transition-all duration-200 hover:scale-105 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Updating...' : 'Update Coupon'}
             </button>
             <button
               type="button"
               onClick={() => navigate('/admin/coupons')}
-              className="px-8 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-xl shadow-lg transition-all duration-200 font-semibold"
+              className="px-8 py-3 bg-slate-200 dark:bg-white dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-purple-200 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 font-semibold"
             >
               Cancel
             </button>
@@ -460,3 +460,10 @@ const EditCoupon = () => {
 };
 
 export default EditCoupon;
+
+
+
+
+
+
+

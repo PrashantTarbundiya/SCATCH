@@ -381,9 +381,9 @@ const ShopPage = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full min-h-screen flex flex-col py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
+      <div className="w-full min-h-screen flex flex-col py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 px-4 md:px-6 lg:px-8">
         {/* Search Bar Skeleton */}
-        <div className="w-full mb-5 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+        <div className="w-full mb-5 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4 rounded-xl shadow-sm">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="flex-1 flex gap-2">
               <div className="flex-1 h-12 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
@@ -405,7 +405,7 @@ const ShopPage = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen flex flex-col items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 px-4 md:px-6 lg:px-8">
+      <div className="w-full min-h-screen flex flex-col items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 px-4 md:px-6 lg:px-8">
         
         {/* Overlay */}
         {isFilterMenuOpen && (
@@ -415,22 +415,22 @@ const ShopPage = () => {
         {/* Slide-in Filter Menu (Unified for Mobile and Desktop) */}
         <div
           ref={filterMenuRef}
-          className={`fixed top-0 right-0 h-full w-[85%] max-w-sm md:max-w-md bg-white dark:bg-gray-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto overflow-x-hidden ${
+          className={`fixed top-0 right-0 h-full w-[85%] max-w-sm md:max-w-md bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto overflow-x-hidden ${
             isFilterMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
           {/* Filter Menu Header */}
-          <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 p-5 flex items-center justify-between shadow-md z-10">
+          <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-purple-600 dark:to-fuchsia-600 p-5 flex items-center justify-between shadow-md dark:shadow-purple-500/20 z-10">
             <div>
-              <h3 className="text-lg font-bold text-white">Filters & Search</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Filters & Search</h3>
               <p className="text-xs text-blue-100 mt-0.5">Refine your results</p>
             </div>
             <button
               onClick={() => setIsFilterMenuOpen(false)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 dark:bg-[#2A1F47]/20 hover:bg-white/30 dark:hover:bg-[#2A1F47]/30 text-white transition-colors"
               aria-label="Close menu"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -440,13 +440,13 @@ const ShopPage = () => {
           <div className="p-5 space-y-5">
             {/* Sort By */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
                 Sort By
               </label>
               <select
                 value={currentSort}
                 onChange={handleSortChange}
-                className="w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
+                className="w-full border border-purple-500/30 px-3 py-2.5 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
               >
                 <option value="recommended">✨ Recommended for You</option>
                 <option value="newest">🆕 Newest First</option>
@@ -459,7 +459,7 @@ const ShopPage = () => {
 
             {/* Price Range */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
                 Price Range
               </label>
               <div className="flex gap-2">
@@ -468,27 +468,27 @@ const ShopPage = () => {
                   placeholder="Min"
                   value={priceRange.min}
                   onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-                  className="w-1/2 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
+                  className="w-1/2 px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={priceRange.max}
                   onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-                  className="w-1/2 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
+                  className="w-1/2 px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
                 />
               </div>
             </div>
 
             {/* Category */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
                 Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
+                className="w-full px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
               >
                 <option value="">All Categories</option>
                 {categories.map((cat) => (
@@ -501,13 +501,13 @@ const ShopPage = () => {
 
             {/* Rating */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
                 Minimum Rating
               </label>
               <select
                 value={minRating}
                 onChange={(e) => setMinRating(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 px-3 py-2.5 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all"
+                className="w-full border border-purple-500/30 px-3 py-2.5 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
               >
                 <option value="">Any Rating</option>
                 <option value="4">⭐⭐⭐⭐ 4+ Stars</option>
@@ -521,7 +521,7 @@ const ShopPage = () => {
             <div className="w-full flex gap-2 pt-2">
               <button
                 onClick={() => { handlePriceFilterApply(); setIsFilterMenuOpen(false); }}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold text-sm transition-all shadow-sm hover:shadow-md"
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold text-sm transition-all shadow-sm hover:shadow-md dark:shadow-purple-500/20"
               >
                 Apply Filters
               </button>
@@ -534,8 +534,8 @@ const ShopPage = () => {
             </div>
 
             {/* Quick Links */}
-            <div className="w-full pt-5 border-t border-gray-200 dark:border-gray-700">
-              <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
+            <div className="w-full pt-5 border-t border-purple-500/20">
+              <h4 className="text-xs font-semibold text-gray-700 dark:text-purple-200 mb-3 uppercase tracking-wide">
                 Quick Links
               </h4>
               <div className="space-y-2">
@@ -544,7 +544,7 @@ const ShopPage = () => {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     currentFilter === 'recommended'
                       ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                   to="/shop?sortBy=recommended&filter=all"
                 >
@@ -555,7 +555,7 @@ const ShopPage = () => {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     currentFilter === 'newCollection'
                       ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                   to="/shop?filter=newCollection&sortBy=newest"
                 >
@@ -566,7 +566,7 @@ const ShopPage = () => {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     currentFilter === 'discounted'
                       ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                   to="/shop?filter=discounted&sortBy=popular"
                 >
@@ -577,7 +577,7 @@ const ShopPage = () => {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     currentFilter === 'wishlist'
                       ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                   to="/shop?filter=wishlist&sortBy=newest"
                 >
@@ -588,7 +588,7 @@ const ShopPage = () => {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     currentFilter === 'availability'
                       ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                   to="/shop?filter=availability&sortBy=newest"
                 >
@@ -602,7 +602,7 @@ const ShopPage = () => {
         {/* Main Content Area */}
         <div className="w-full flex flex-col gap-5">
           {/* Search Bar, Categories and Filter Button (Combined) */}
-          <div className="w-full bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+          <div className="w-full bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4 rounded-xl shadow-sm">
             {/* Search and Filter Row */}
             <div className="flex items-stretch gap-2 mb-4">
               <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2 min-w-0">
@@ -611,11 +611,11 @@ const ShopPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search products..."
-                  className="flex-1 min-w-0 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                  className="flex-1 min-w-0 px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-sm"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md flex items-center gap-1.5 flex-shrink-0"
+                  className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md dark:shadow-purple-500/20 flex items-center gap-1.5 flex-shrink-0"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/>
@@ -626,7 +626,7 @@ const ShopPage = () => {
               
               <button
                 onClick={() => setIsFilterMenuOpen(true)}
-                className="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0"
+                className="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-purple-600 dark:to-fuchsia-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md dark:shadow-purple-500/20 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -649,14 +649,14 @@ const ShopPage = () => {
                   className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0"
                 >
                   <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
-                    !selectedCategory ? 'border-blue-500 shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    !selectedCategory ? 'border-blue-500 shadow-lg dark:shadow-purple-500/20' : 'border-purple-500/30 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}>
                     <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                      <span className="text-xl font-bold text-white">All</span>
+                      <span className="text-xl font-bold text-gray-900 dark:text-white">All</span>
                     </div>
                   </div>
                   <span className={`text-xs font-medium text-center line-clamp-2 transition-colors ${
-                    !selectedCategory ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                    !selectedCategory ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-purple-200'
                   }`}>All</span>
                 </button>
                 
@@ -679,7 +679,7 @@ const ShopPage = () => {
                       className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0"
                     >
                       <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
-                        isActive ? 'border-blue-500 shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                        isActive ? 'border-blue-500 shadow-lg dark:shadow-purple-500/20' : 'border-purple-500/30 hover:border-gray-400 dark:hover:border-gray-500'
                       }`}>
                         {category.image ? (
                           <img
@@ -689,12 +689,12 @@ const ShopPage = () => {
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                            <span className="text-xl font-bold text-gray-500 dark:text-gray-400">{category.name.charAt(0)}</span>
+                            <span className="text-xl font-bold text-gray-600 dark:text-gray-600 dark:text-purple-300">{category.name.charAt(0)}</span>
                           </div>
                         )}
                       </div>
                       <span className={`text-xs font-medium text-center line-clamp-2 transition-colors ${
-                        isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                        isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-purple-200'
                       }`}>{category.name}</span>
                     </button>
                   );
@@ -706,8 +706,8 @@ const ShopPage = () => {
           {/* Products Display */}
           {currentFilter === 'wishlist' && !user && !authLoading ? (
             <div className="text-center py-20">
-              <p className="text-xl mb-4 text-gray-700 dark:text-gray-300">Please login to view your wishlist.</p>
-              <Link to="/login" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              <p className="text-xl mb-4 text-gray-700 dark:text-gray-700 dark:text-purple-200">Please login to view your wishlist.</p>
+              <Link to="/login" className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                 Login
               </Link>
             </div>
@@ -717,8 +717,8 @@ const ShopPage = () => {
             </div>
           ) : currentFilter === 'wishlist' && wishlistItems.length === 0 && !wishlistLoading ? (
             <div className="text-center py-20">
-              <p className="text-xl mb-4 text-gray-700 dark:text-gray-300">Your wishlist is currently empty.</p>
-              <Link to="/shop?sortBy=recommended&filter=all" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+              <p className="text-xl mb-4 text-gray-700 dark:text-gray-700 dark:text-purple-200">Your wishlist is currently empty.</p>
+              <Link to="/shop?sortBy=recommended&filter=all" className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                 Discover Products
               </Link>
             </div>
@@ -727,7 +727,7 @@ const ShopPage = () => {
               Error: {error}
             </div>
           ) : !isLoading && !error && displayProducts.length === 0 ? (
-            <div className="text-center col-span-full py-10 text-gray-600 dark:text-gray-400">
+            <div className="text-center col-span-full py-10 text-gray-600 dark:text-gray-600 dark:text-purple-300">
               No products found.
             </div>
           ) : displayProducts.length > 0 ? (
@@ -756,3 +756,10 @@ const ShopPage = () => {
 };
 
 export default ShopPage;
+
+
+
+
+
+
+

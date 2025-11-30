@@ -35,16 +35,16 @@ const AdminOrderStatusUpdate = ({ order, onStatusUpdate }) => {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-xl border border-slate-200 dark:border-slate-600">
-      <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Update Order Status</h3>
+    <div className="bg-[#1E1538]/50 p-6 rounded-xl border border-slate-200 dark:border-slate-600">
+      <h3 className="text-lg font-semibold mb-4 text-purple-100">Update Order Status</h3>
       
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Status</label>
+          <label className="block text-sm font-semibold mb-2 text-purple-200">Status</label>
           <select 
             value={status} 
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-purple-500/30 rounded-xl bg-[#2A1F47] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           >
             {statuses.map(s => (
               <option key={s} value={s}>{s}</option>
@@ -53,22 +53,22 @@ const AdminOrderStatusUpdate = ({ order, onStatusUpdate }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Tracking Number (Optional)</label>
+          <label className="block text-sm font-semibold mb-2 text-purple-200">Tracking Number (Optional)</label>
           <input
             type="text"
             value={trackingNumber}
             onChange={(e) => setTrackingNumber(e.target.value)}
-            className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-purple-500/30 rounded-xl bg-[#2A1F47] text-purple-100 placeholder-slate-400 dark:placeholder-gray-500 dark:placeholder-slate-500 focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter tracking number"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Note (Optional)</label>
+          <label className="block text-sm font-semibold mb-2 text-purple-200">Note (Optional)</label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 border border-purple-500/30 rounded-xl bg-[#2A1F47] text-purple-100 placeholder-slate-400 dark:placeholder-gray-500 dark:placeholder-slate-500 focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Add a note about this status update"
             rows="2"
           />
@@ -77,7 +77,7 @@ const AdminOrderStatusUpdate = ({ order, onStatusUpdate }) => {
         <button
           onClick={handleUpdate}
           disabled={loading}
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Updating...' : 'Update Status'}
         </button>
@@ -87,3 +87,7 @@ const AdminOrderStatusUpdate = ({ order, onStatusUpdate }) => {
 };
 
 export default AdminOrderStatusUpdate;
+
+
+
+

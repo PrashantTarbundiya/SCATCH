@@ -114,22 +114,22 @@ const AdminSalesPage = () => {
   return (
     <div className="w-full">
       {/* Header Section */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+      <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 mb-8 border border-purple-500/20">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">Sales Analytics</h1>
-            <p className="text-slate-600 dark:text-slate-400">Track and analyze your sales performance</p>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-100 mb-2">Sales Analytics</h1>
+            <p className="text-purple-300">Track and analyze your sales performance</p>
           </div>
           
           {/* Date Range Filters */}
           <div className="flex flex-col gap-3">
             {/* Time Period Dropdown */}
             <div className="flex flex-col">
-              <label className="text-xs text-slate-600 dark:text-slate-400 mb-1">Time Period</label>
+              <label className="text-xs text-purple-300 mb-1">Time Period</label>
               <select
                 value={dateRangePreset}
                 onChange={(e) => handlePresetChange(e.target.value)}
-                className="px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-3 bg-[#1E1538] border border-purple-500/30 rounded-xl text-sm font-medium text-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               >
                 <option value="all">All Time</option>
                 <option value="1m">Past Month</option>
@@ -144,21 +144,21 @@ const AdminSalesPage = () => {
             {dateRangePreset === 'custom' && (
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="flex flex-col">
-                  <label className="text-xs text-slate-600 dark:text-slate-400 mb-1">Start Date</label>
+                  <label className="text-xs text-purple-300 mb-1">Start Date</label>
                   <input
                     type="date"
                     value={dateRange.startDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                    className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+                    className="px-3 py-2 border border-purple-500/30 rounded-lg bg-[#1E1538] text-purple-100 text-sm"
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-xs text-slate-600 dark:text-slate-400 mb-1">End Date</label>
+                  <label className="text-xs text-purple-300 mb-1">End Date</label>
                   <input
                     type="date"
                     value={dateRange.endDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                    className="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+                    className="px-3 py-2 border border-purple-500/30 rounded-lg bg-[#1E1538] text-purple-100 text-sm"
                   />
                 </div>
               </div>
@@ -209,15 +209,15 @@ const AdminSalesPage = () => {
             {/* Analytics Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Top Products */}
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Top Products</h3>
+              <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 border border-purple-500/20">
+                <h3 className="text-xl font-semibold mb-4 text-purple-100">Top Products</h3>
                 <div className="space-y-3">
                   {analytics.topProducts.length > 0 ? analytics.topProducts.slice(0, 5).map((product, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <div key={index} className="flex justify-between items-center p-3 bg-[#1E1538] rounded-lg">
                       <div className="flex-1">
-                        <p className="font-medium text-slate-800 dark:text-white">{product.name}</p>
+                        <p className="font-medium text-purple-100">{product.name}</p>
                         <div className="flex gap-3 mt-1">
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Sold: {product.quantity} units</p>
+                          <p className="text-sm text-purple-300">Sold: {product.quantity} units</p>
                           {product.category && (
                             <p className="text-sm text-blue-600 dark:text-blue-400">• {product.category}</p>
                           )}
@@ -226,25 +226,25 @@ const AdminSalesPage = () => {
                       <p className="font-semibold text-green-600 dark:text-green-400">₹{product.revenue.toFixed(2)}</p>
                     </div>
                   )) : (
-                    <p className="text-slate-600 dark:text-slate-400 text-center py-4">No products data available</p>
+                    <p className="text-purple-300 text-center py-4">No products data available</p>
                   )}
                 </div>
               </div>
 
               {/* Top Customers */}
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Top Customers</h3>
+              <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 border border-purple-500/20">
+                <h3 className="text-xl font-semibold mb-4 text-purple-100">Top Customers</h3>
                 <div className="space-y-3">
                   {analytics.topCustomers.length > 0 ? analytics.topCustomers.map((customer, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <div key={index} className="flex justify-between items-center p-3 bg-[#1E1538] rounded-lg">
                       <div>
-                        <p className="font-medium text-slate-800 dark:text-white">{customer.name}</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">{customer.orderCount} orders • Avg: ₹{customer.avgOrderValue.toFixed(2)}</p>
+                        <p className="font-medium text-purple-100">{customer.name}</p>
+                        <p className="text-sm text-purple-300">{customer.orderCount} orders • Avg: ₹{customer.avgOrderValue.toFixed(2)}</p>
                       </div>
                       <p className="font-semibold text-blue-600 dark:text-blue-400">₹{customer.totalSpent.toFixed(2)}</p>
                     </div>
                   )) : (
-                    <p className="text-slate-600 dark:text-slate-400 text-center py-4">No customer data available</p>
+                    <p className="text-purple-300 text-center py-4">No customer data available</p>
                   )}
                 </div>
               </div>
@@ -253,42 +253,42 @@ const AdminSalesPage = () => {
             {/* Revenue by Date & Sales by Category */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
               {/* Revenue by Date */}
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Revenue Trend</h3>
+              <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 border border-purple-500/20">
+                <h3 className="text-xl font-semibold mb-4 text-purple-100">Revenue Trend</h3>
                 <div className="space-y-3">
                   {analytics.revenueByDate.length > 0 ? analytics.revenueByDate.slice(-6).map((item, index) => (
                     <div key={index} className="flex justify-between items-center">
-                      <span className="text-slate-600 dark:text-slate-400">{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      <span className="text-purple-300">{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                       <div className="flex items-center">
-                        <div className="w-32 bg-slate-200 dark:bg-slate-700 rounded-full h-2 mr-3">
+                        <div className="w-32 bg-[#1E1538] rounded-full h-2 mr-3">
                           <div
                             className="bg-blue-500 h-2 rounded-full"
                             style={{ width: `${(item.revenue / Math.max(...analytics.revenueByDate.map(r => r.revenue))) * 100}%` }}
                           ></div>
                         </div>
-                        <span className="font-semibold text-slate-800 dark:text-white">₹{item.revenue.toFixed(2)}</span>
+                        <span className="font-semibold text-purple-100">₹{item.revenue.toFixed(2)}</span>
                       </div>
                     </div>
                   )) : (
-                    <p className="text-slate-600 dark:text-slate-400 text-center py-4">No revenue data available</p>
+                    <p className="text-purple-300 text-center py-4">No revenue data available</p>
                   )}
                 </div>
               </div>
 
               {/* Sales by Category */}
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Sales by Category</h3>
+              <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 border border-purple-500/20">
+                <h3 className="text-xl font-semibold mb-4 text-purple-100">Sales by Category</h3>
                 <div className="space-y-3">
                   {analytics.salesByCategory.length > 0 ? analytics.salesByCategory.slice(0, 5).map((cat, index) => (
                     <div key={index} className="flex justify-between items-center">
                       <div>
-                        <span className="text-slate-800 dark:text-white font-medium">{cat.name}</span>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">{cat.quantity} items • {cat.orderCount} orders</p>
+                        <span className="text-purple-100 font-medium">{cat.name}</span>
+                        <p className="text-sm text-purple-300">{cat.quantity} items • {cat.orderCount} orders</p>
                       </div>
                       <span className="font-semibold text-green-600 dark:text-green-400">₹{cat.revenue.toFixed(2)}</span>
                     </div>
                   )) : (
-                    <p className="text-slate-600 dark:text-slate-400 text-center py-4">No category data available</p>
+                    <p className="text-purple-300 text-center py-4">No category data available</p>
                   )}
                 </div>
               </div>
@@ -296,14 +296,14 @@ const AdminSalesPage = () => {
 
             {/* Order Status */}
             <div className="grid grid-cols-1 gap-6 mb-8">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">Orders by Status</h3>
+              <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 border border-purple-500/20">
+                <h3 className="text-xl font-semibold mb-4 text-purple-100">Orders by Status</h3>
                 <div className="space-y-3">
                   {Object.keys(analytics.orderStats.byOrderStatus).length > 0 ? Object.entries(analytics.orderStats.byOrderStatus).map(([status, count]) => (
                     <div key={status} className="flex justify-between items-center">
-                      <span className="text-slate-600 dark:text-slate-400">{status}</span>
+                      <span className="text-purple-300">{status}</span>
                       <div className="flex items-center">
-                        <div className="w-24 bg-slate-200 dark:bg-slate-700 rounded-full h-2 mr-3">
+                        <div className="w-24 bg-[#1E1538] rounded-full h-2 mr-3">
                           <div
                             className={`h-2 rounded-full ${
                               status === 'Delivered' ? 'bg-green-500' :
@@ -314,11 +314,11 @@ const AdminSalesPage = () => {
                             style={{ width: `${(count / analytics.overview.totalOrders) * 100}%` }}
                           ></div>
                         </div>
-                        <span className="font-semibold text-slate-800 dark:text-white">{count}</span>
+                        <span className="font-semibold text-purple-100">{count}</span>
                       </div>
                     </div>
                   )) : (
-                    <p className="text-slate-600 dark:text-slate-400 text-center py-4">No order status data available</p>
+                    <p className="text-purple-300 text-center py-4">No order status data available</p>
                   )}
                 </div>
               </div>
@@ -331,3 +331,10 @@ const AdminSalesPage = () => {
 };
 
 export default AdminSalesPage;
+
+
+
+
+
+
+

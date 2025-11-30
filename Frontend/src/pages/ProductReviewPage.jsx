@@ -180,11 +180,11 @@ const ProductReviewPage = () => {
   if (isLoading) return <ProductDetailSkeleton />;
   if (error && !product) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900">
+      <div className="w-full min-h-screen flex flex-col items-center justify-center pt-20 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E]">
         <p className="text-red-600 dark:text-red-400 text-xl mb-4">Error: {error}</p>
         <button 
           onClick={() => navigate('/shop')} 
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-blue-600 dark:bg-purple-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors"
         >
           Back to Shop
         </button>
@@ -193,17 +193,17 @@ const ProductReviewPage = () => {
   }
   if (!product) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-100 dark:bg-gray-900">
-        <p className="text-gray-700 dark:text-gray-300 text-lg">Product not found.</p>
+      <div className="w-full min-h-screen flex items-center justify-center pt-20 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E]">
+        <p className="text-gray-700 dark:text-purple-200 text-lg">Product not found.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12 px-4 md:px-8 lg:px-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] pt-24 pb-12 px-4 md:px-8 lg:px-16">
 
 
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto">
+      <div className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-6 rounded-lg shadow-xl w-full max-w-4xl mx-auto">
         {/* Product Header */}
         <div className="flex items-center gap-4 mb-6 pb-6 border-b dark:border-gray-700">
           <img 
@@ -219,7 +219,7 @@ const ProductReviewPage = () => {
                   const starType = i < (product.averageRating || 0) ? 'fill' : 'line';
                   return <i key={`avg-star-${i}`} className={`ri-star-${starType} text-yellow-400 text-lg`}></i>;
                 })}
-                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                <span className="ml-2 text-sm text-gray-600 dark:text-gray-600 dark:text-purple-300">
                   ({(product.averageRating || 0).toFixed(1)} rating)
                   {product.ratings && product.ratings.length > 0 && (
                     <span className="ml-1">({product.ratings.length} reviews)</span>
@@ -245,7 +245,7 @@ const ProductReviewPage = () => {
             
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 dark:text-gray-300">Your Rating:</span>
+                <span className="text-sm text-gray-600 text-gray-700 dark:text-gray-700 dark:text-purple-200">Your Rating:</span>
                 <div className="flex">
                   {[...Array(5)].map((_, i) => {
                     const starType = i < userRating ? 'fill' : 'line';
@@ -264,13 +264,13 @@ const ProductReviewPage = () => {
                 value={reviewText} 
                 onChange={(e) => setReviewText(e.target.value)} 
                 placeholder="Share your thoughts about the product..." 
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-blue-500 focus:border-blue-500" 
+                className="w-full p-3 border border-purple-500/30 rounded-md bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
                 rows="4" 
                 disabled={isSubmittingReview}
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-purple-200 mb-2">
                   Upload images (up to 5):
                 </label>
                 <input 
@@ -278,7 +278,7 @@ const ProductReviewPage = () => {
                   accept="image/*" 
                   multiple 
                   onChange={handleImageChange} 
-                  className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800 disabled:opacity-50" 
+                  className="block w-full text-sm text-gray-600 dark:text-purple-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800 disabled:opacity-50" 
                   disabled={isSubmittingReview} 
                 />
                 {reviewImagePreviews.length > 0 && (
@@ -315,7 +315,7 @@ const ProductReviewPage = () => {
                 <button 
                   onClick={handleReviewSubmit} 
                   disabled={isSubmittingReview || userRating === 0} 
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-blue-600 dark:bg-purple-600 hover:bg-blue-700 dark:hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmittingReview ? 'Submitting...' : (editingReview ? 'Update Review' : 'Submit Review')}
                 </button>
@@ -329,7 +329,7 @@ const ProductReviewPage = () => {
                       setReviewImagePreviews([]);
                     }} 
                     disabled={isSubmittingReview} 
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition-colors"
+                    className="bg-gray-300 dark:bg-[#2A1F47] hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition-colors"
                   >
                     Cancel
                   </button>
@@ -339,7 +339,7 @@ const ProductReviewPage = () => {
           </div>
         ) : (
           <div className="mb-8 p-6 border dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/30 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-600 dark:text-purple-300">
               {currentUser ? "You must purchase this product to write a review." : "Please log in to write a review."}
             </p>
           </div>
@@ -363,10 +363,10 @@ const ProductReviewPage = () => {
                           return <i key={`review-star-${review._id}-${i}`} className={`ri-star-${starType} text-yellow-400 text-lg`}></i>;
                         })}
                       </div>
-                      <span className="font-semibold text-gray-700 dark:text-gray-200">
+                      <span className="font-semibold text-gray-700 text-gray-900 dark:text-gray-900 dark:text-purple-100">
                         {review.user ? (review.user.fullname || review.user.username || `User...${review.user._id.toString().slice(-4)}`) : 'Anonymous'}
                       </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                      <span className="text-sm text-gray-600 dark:text-gray-600 dark:text-purple-300">
                         {new Date(review.createdAt).toLocaleDateString()}
                       </span>
                     </div>
@@ -392,7 +392,7 @@ const ProductReviewPage = () => {
                   </div>
                   
                   {review.reviewText && (
-                    <p className="text-gray-700 dark:text-gray-300 mb-3">{review.reviewText}</p>
+                    <p className="text-gray-700 dark:text-purple-200 mb-3">{review.reviewText}</p>
                   )}
                   
                   {review.reviewImage && review.reviewImage.length > 0 && (
@@ -413,7 +413,7 @@ const ProductReviewPage = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-400 text-lg">No reviews yet. Be the first to review!</p>
+              <p className="text-gray-600 dark:text-purple-300 text-lg">No reviews yet. Be the first to review!</p>
             </div>
           )}
         </div>
@@ -423,3 +423,10 @@ const ProductReviewPage = () => {
 };
 
 export default ProductReviewPage;
+
+
+
+
+
+
+

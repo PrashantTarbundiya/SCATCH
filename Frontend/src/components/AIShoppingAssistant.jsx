@@ -37,7 +37,7 @@ export default function AIShoppingAssistant() {
       <h1 className="text-3xl font-bold mb-8">🤖 AI Shopping Assistant</h1>
 
       {/* Combo Suggestions */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white dark:bg-[#2A1F47] rounded-lg shadow-md dark:shadow-purple-500/20 p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Get Product Combo Suggestions</h2>
         <form onSubmit={handleComboSuggestion} className="space-y-4">
           <input
@@ -59,7 +59,7 @@ export default function AIShoppingAssistant() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            className="w-full bg-blue-600 dark:bg-purple-600 text-white py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-purple-700 disabled:bg-gray-400"
           >
             {loading ? 'Thinking...' : 'Get Suggestions'}
           </button>
@@ -67,7 +67,7 @@ export default function AIShoppingAssistant() {
       </div>
 
       {/* Ask Questions */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-white dark:bg-[#2A1F47] rounded-lg shadow-md dark:shadow-purple-500/20 p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Ask Product Questions</h2>
         <form onSubmit={handleAskQuestion} className="space-y-4">
           <textarea
@@ -97,3 +97,8 @@ export default function AIShoppingAssistant() {
     </div>
   );
 }
+
+
+
+
+

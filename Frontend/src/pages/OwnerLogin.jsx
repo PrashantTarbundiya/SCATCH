@@ -94,9 +94,9 @@ const OwnerLoginPage = () => {
     <>
 
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
+      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
         <CardContainer containerClassName="py-0" className="w-full max-w-md">
-          <CardBody className="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
+          <CardBody className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
             <CardItem
               as="h3"
               translateZ="50"
@@ -107,17 +107,17 @@ const OwnerLoginPage = () => {
             <CardItem
               as="h4"
               translateZ="40"
-              className="text-xl md:text-2xl capitalize mb-6 text-center text-gray-600 dark:text-gray-400 w-full"
+              className="text-xl md:text-2xl capitalize mb-6 text-center text-purple-300 w-full"
             >
               Login to your owner account
             </CardItem>
             
             <form autoComplete="off" onSubmit={handleSubmit} className="w-full">
               <CardItem translateZ="30" className="mb-4 w-full">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <label htmlFor="email" className="block text-sm font-medium text-purple-200 mb-1">Email Address</label>
                 <input
                   id="email"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   type="email"
                   placeholder="owner@example.com"
                   name="email"
@@ -128,10 +128,10 @@ const OwnerLoginPage = () => {
                 />
               </CardItem>
               <CardItem translateZ="20" className="mb-6 w-full">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <label htmlFor="password" className="block text-sm font-medium text-purple-200 mb-1">Password</label>
                 <PasswordInput
                   id="password"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -151,7 +151,7 @@ const OwnerLoginPage = () => {
             </form>
             
             <CardItem translateZ="5" className="text-center mt-6 w-full">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-purple-300">
                 Not an owner?
                 <Link
                   to="/login"
@@ -169,3 +169,10 @@ const OwnerLoginPage = () => {
 };
 
 export default OwnerLoginPage;
+
+
+
+
+
+
+

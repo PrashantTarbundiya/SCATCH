@@ -220,9 +220,9 @@ const LoginPage = () => {
     <>
 
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
+      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
         <CardContainer containerClassName="py-0" className="w-full max-w-md">
-          <CardBody className="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto for content fit */}
+          <CardBody className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto for content fit */}
             <CardItem
               as="h3"
               translateZ="50"
@@ -233,17 +233,17 @@ const LoginPage = () => {
             <CardItem
               as="h4"
               translateZ="40"
-              className="text-xl md:text-2xl capitalize mb-6 text-center text-gray-600 dark:text-gray-400 w-full"
+              className="text-xl md:text-2xl capitalize mb-6 text-center text-purple-300 w-full"
             >
               Login to your account
             </CardItem>
             
             <form autoComplete="off" onSubmit={handleSubmit} className="w-full">
               <CardItem translateZ="30" className="mb-4 w-full">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <label htmlFor="email" className="block text-sm font-medium text-purple-200 mb-1">Email Address</label>
                 <input
                   id="email"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   type="email"
                   placeholder="you@example.com"
                   name="email"
@@ -254,10 +254,10 @@ const LoginPage = () => {
                 />
               </CardItem>
               <CardItem translateZ="20" className="mb-6 w-full">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <label htmlFor="password" className="block text-sm font-medium text-purple-200 mb-1">Password</label>
                 <PasswordInput
                   id="password"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -283,7 +283,7 @@ const LoginPage = () => {
               <CardItem translateZ="10" className="w-full">
                 <button
                   type="submit"
-                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Logging In...' : 'Login'}
@@ -293,9 +293,9 @@ const LoginPage = () => {
 
             {/* Divider */}
             <CardItem translateZ="5" className="flex items-center justify-center my-4 w-full">
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
-              <span className="px-4 text-sm text-gray-500 dark:text-gray-400">OR</span>
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+              <div className="flex-grow border-t border-purple-500/30"></div>
+              <span className="px-4 text-sm text-gray-600 dark:text-purple-300">OR</span>
+              <div className="flex-grow border-t border-purple-500/30"></div>
             </CardItem>
 
             {/* Google Login Button */}
@@ -304,7 +304,7 @@ const LoginPage = () => {
             </div>
             
             <CardItem translateZ="5" className="text-center mt-6 w-full">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-purple-300">
                 Don't have an account?
                 <Link
                   to="/register"
@@ -386,12 +386,12 @@ const ForgotPasswordModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className={`p-6 rounded-lg shadow-xl w-full max-w-md ${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}`}>
+      <div className={`p-6 rounded-lg shadow-xl w-full max-w-md ${theme === 'dark' ? 'bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl text-gray-100' : 'bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100'}`}>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">
             {step === 1 ? 'Forgot Password' : 'Reset Password'}
           </h2>
-          <button onClick={onClose} className={`text-2xl ${theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900'}`}>&times;</button>
+          <button onClick={onClose} className={`text-2xl ${theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900 dark:text-purple-100'}`}>&times;</button>
         </div>
 
         {error && <p className="text-red-500 dark:text-red-400 text-sm mb-3 p-2 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded text-center">{error}</p>}
@@ -408,13 +408,13 @@ const ForgotPasswordModal = ({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:ring-blue-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
                 disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-150 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold py-2 px-4 rounded-md transition duration-150 disabled:opacity-50"
               disabled={isLoading || otpResendTimer > 0}
             >
               {isLoading ? 'Sending OTP...' : (otpResendTimer > 0 ? `Resend OTP in ${formatTime(otpResendTimer)}` : 'Send OTP')}
@@ -434,7 +434,7 @@ const ForgotPasswordModal = ({
                 placeholder="6-digit OTP"
                 required
                 maxLength="6"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:ring-blue-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
                 disabled={isLoading}
               />
                <div className="text-right mt-1">
@@ -460,7 +460,7 @@ const ForgotPasswordModal = ({
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:ring-blue-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
                 disabled={isLoading}
               />
             </div>
@@ -471,7 +471,7 @@ const ForgotPasswordModal = ({
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 required
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-500 focus:ring-blue-500' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
                 disabled={isLoading}
               />
               {newPassword && confirmNewPassword && newPassword !== confirmNewPassword && (
@@ -480,7 +480,7 @@ const ForgotPasswordModal = ({
             </div>
             <button
               type="submit"
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition duration-150 disabled:opacity-50"
+              className="w-full bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-150 disabled:opacity-50"
               disabled={isLoading || (newPassword !== confirmNewPassword) || !newPassword}
             >
               {isLoading ? 'Resetting Password...' : 'Reset Password'}
@@ -493,3 +493,10 @@ const ForgotPasswordModal = ({
 };
 
 export default LoginPage;
+
+
+
+
+
+
+

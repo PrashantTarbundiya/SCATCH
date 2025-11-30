@@ -112,14 +112,14 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ease-in-out">
-            <div className="bg-white dark:bg-neutral-800 p-6 sm:p-8 rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-white dark:bg-neutral-800 p-6 sm:p-8 rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white">
                         {mode === 'create' ? 'Create New Coupon' : 'Edit Coupon'}
                     </h2>
                     <button 
                         onClick={onClose} 
-                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                        className="text-purple-300 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                         aria-label="Close modal"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -133,7 +133,7 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                 ) : (
                 <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                     <div>
-                        <label htmlFor="code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Coupon Code</label>
+                        <label htmlFor="code" className="block text-sm font-medium text-purple-200 mb-1">Coupon Code</label>
                         <input
                             type="text"
                             name="code"
@@ -141,41 +141,41 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                             value={formData.code}
                             onChange={handleChange}
                             required
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 dark:placeholder-gray-400 dark:placeholder-neutral-500"
                             placeholder="E.g., SUMMER25"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (Optional)</label>
+                        <label htmlFor="description" className="block text-sm font-medium text-purple-200 mb-1">Description (Optional)</label>
                         <textarea
                             name="description"
                             id="description"
                             rows="2"
                             value={formData.description}
                             onChange={handleChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 dark:placeholder-gray-400 dark:placeholder-neutral-500"
                             placeholder="E.g., 25% off all summer items"
                         ></textarea>
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="discountType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Discount Type</label>
+                            <label htmlFor="discountType" className="block text-sm font-medium text-purple-200 mb-1">Discount Type</label>
                             <select
                                 name="discountType"
                                 id="discountType"
                                 value={formData.discountType}
                                 onChange={handleChange}
                                 required
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-gray-900 dark:text-purple-100"
                             >
                                 <option value="percentage">Percentage</option>
                                 <option value="fixedAmount">Fixed Amount</option>
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="discountValue" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Discount Value</label>
+                            <label htmlFor="discountValue" className="block text-sm font-medium text-purple-200 mb-1">Discount Value</label>
                             <input
                                 type="number"
                                 name="discountValue"
@@ -185,7 +185,7 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                                 required
                                 step="0.01"
                                 min="0"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 dark:placeholder-gray-400 dark:placeholder-neutral-500"
                                 placeholder={formData.discountType === 'percentage' ? "E.g., 25 (for 25%)" : "E.g., 10 (for $10 off)"}
                             />
                         </div>
@@ -193,7 +193,7 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="validFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valid From</label>
+                            <label htmlFor="validFrom" className="block text-sm font-medium text-purple-200 mb-1">Valid From</label>
                             <input
                                 type="date"
                                 name="validFrom"
@@ -201,11 +201,11 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                                 value={formData.validFrom}
                                 onChange={handleChange}
                                 required
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-gray-900 dark:text-purple-100"
                             />
                         </div>
                         <div>
-                            <label htmlFor="validUntil" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valid Until</label>
+                            <label htmlFor="validUntil" className="block text-sm font-medium text-purple-200 mb-1">Valid Until</label>
                             <input
                                 type="date"
                                 name="validUntil"
@@ -213,14 +213,14 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                                 value={formData.validUntil}
                                 onChange={handleChange}
                                 required
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-gray-900 dark:text-purple-100"
                             />
                         </div>
                     </div>
 
                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="minPurchaseAmount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min. Purchase Amount (Optional)</label>
+                            <label htmlFor="minPurchaseAmount" className="block text-sm font-medium text-purple-200 mb-1">Min. Purchase Amount (Optional)</label>
                             <input
                                 type="number"
                                 name="minPurchaseAmount"
@@ -229,12 +229,12 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                                 onChange={handleChange}
                                 step="0.01"
                                 min="0"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 dark:placeholder-gray-400 dark:placeholder-neutral-500"
                                 placeholder="E.g., 50 (for $50 minimum)"
                             />
                         </div>
                         <div>
-                            <label htmlFor="usageLimit" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Usage Limit (Optional)</label>
+                            <label htmlFor="usageLimit" className="block text-sm font-medium text-purple-200 mb-1">Usage Limit (Optional)</label>
                             <input
                                 type="number"
                                 name="usageLimit"
@@ -243,7 +243,7 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                                 onChange={handleChange}
                                 min="1"
                                 step="1"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-neutral-500"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-white dark:bg-neutral-700 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 dark:placeholder-gray-400 dark:placeholder-neutral-500"
                                 placeholder="E.g., 100 (leave blank for unlimited)"
                             />
                         </div>
@@ -256,9 +256,9 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                             type="checkbox"
                             checked={formData.isActive}
                             onChange={handleChange}
-                            className="h-4 w-4 text-blue-600 border-gray-300 dark:border-neutral-600 rounded focus:ring-blue-500 bg-white dark:bg-neutral-700"
+                            className="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-300 dark:border-neutral-600 rounded focus:ring-2 focus:ring-purple-500 bg-white dark:bg-white dark:bg-neutral-700"
                         />
-                        <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                        <label htmlFor="isActive" className="ml-2 block text-sm text-purple-100 text-gray-700 dark:text-purple-200">
                             Coupon is Active
                         </label>
                     </div>
@@ -268,14 +268,14 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
                             type="button"
                             onClick={onClose}
                             disabled={isSubmitting}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-neutral-800 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 text-sm font-medium text-purple-200 bg-gray-100 dark:bg-white dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-neutral-800 transition-colors disabled:opacity-50"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-neutral-800 transition-colors disabled:opacity-50"
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-purple-600 hover:bg-blue-700 dark:hover:bg-purple-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-2 focus:ring-purple-500 dark:focus:ring-offset-neutral-800 transition-colors disabled:opacity-50"
                         >
                             {isSubmitting ? (mode === 'create' ? 'Creating...' : 'Saving...') : (mode === 'create' ? 'Create Coupon' : 'Save Changes')}
                         </button>
@@ -288,3 +288,7 @@ const CouponFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'creat
 };
 
 export default CouponFormModal;
+
+
+
+

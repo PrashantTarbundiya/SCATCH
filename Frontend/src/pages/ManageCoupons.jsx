@@ -134,7 +134,7 @@ const ManageCoupons = () => {
     if (now < startDate) return { text: 'Scheduled', color: 'bg-yellow-500' };
     if (now > expiryDate) return { text: 'Expired', color: 'bg-red-500' };
     if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) return { text: 'Used Up', color: 'bg-red-500' };
-    return { text: 'Active', color: 'bg-green-500' };
+    return { text: 'Active', color: 'bg-green-500 dark:bg-green-600' };
   };
 
   if (loading) {
@@ -165,17 +165,17 @@ const ManageCoupons = () => {
   return (
     <div className="w-full">
       {/* Header Section */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+      <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 mb-8 border border-purple-500/20">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">Manage Coupons</h1>
-            <p className="text-slate-600 dark:text-slate-400">Create and manage discount coupons for your store</p>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-100 mb-2">Manage Coupons</h1>
+            <p className="text-purple-300">Create and manage discount coupons for your store</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full lg:w-auto">
             <select
               value={filterActive}
               onChange={(e) => setFilterActive(e.target.value)}
-              className="px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-4 py-3 bg-[#1E1538] border border-purple-500/30 rounded-xl text-sm font-medium text-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
               <option value="all">All Coupons</option>
               <option value="active">Active Only</option>
@@ -183,7 +183,7 @@ const ManageCoupons = () => {
             </select>
             <Link
               to="/admin/create-coupon"
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg transition-all duration-200 hover:scale-105 text-sm font-semibold text-center"
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 text-sm font-semibold text-center"
             >
               Create New Coupon
             </Link>
@@ -192,11 +192,11 @@ const ManageCoupons = () => {
       </div>
 
       {coupons.length === 0 && !loading && (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-12 border border-slate-200 dark:border-slate-700 text-center">
-          <p className="text-slate-600 dark:text-slate-400 text-lg mb-4">No coupons found.</p>
+        <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-12 border border-purple-500/20 text-center">
+          <p className="text-purple-300 text-lg mb-4">No coupons found.</p>
           <Link
             to="/admin/create-coupon"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg transition-all duration-200 hover:scale-105 text-sm font-semibold"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 text-sm font-semibold"
           >
             Create Your First Coupon
           </Link>
@@ -212,7 +212,7 @@ const ManageCoupons = () => {
           return (
             <div
               key={coupon._id}
-              className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-2xl"
+              className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 border border-purple-500/20 overflow-hidden transition-all duration-300 hover:shadow-2xl"
             >
               <div className="p-6">
                 <div className="flex flex-col lg:flex-row justify-between gap-6">
@@ -221,40 +221,40 @@ const ManageCoupons = () => {
                     <div className="flex items-start gap-4 mb-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-2xl font-bold text-slate-800 dark:text-white font-mono">{coupon.code}</h3>
+                          <h3 className="text-2xl font-bold text-purple-100 font-mono">{coupon.code}</h3>
                           <span className={`${status.color} text-white text-xs px-3 py-1 rounded-full font-semibold`}>
                             {status.text}
                           </span>
                         </div>
                         {coupon.description && (
-                          <p className="text-slate-600 dark:text-slate-400 mb-3">{coupon.description}</p>
+                          <p className="text-purple-300 mb-3">{coupon.description}</p>
                         )}
                         
                         {/* Discount Info */}
                         <div className="flex flex-wrap gap-4 mb-3">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-500 dark:text-slate-400">Discount:</span>
+                            <span className="text-sm text-purple-400">Discount:</span>
                             <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                               {coupon.discountType === 'percentage' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}`}
                             </span>
                           </div>
                           {coupon.maxDiscountAmount && (
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-slate-500 dark:text-slate-400">Max:</span>
-                              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">₹{coupon.maxDiscountAmount}</span>
+                              <span className="text-sm text-purple-400">Max:</span>
+                              <span className="text-sm font-semibold text-purple-200">₹{coupon.maxDiscountAmount}</span>
                             </div>
                           )}
                           {coupon.minPurchaseAmount > 0 && (
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-slate-500 dark:text-slate-400">Min Purchase:</span>
-                              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">₹{coupon.minPurchaseAmount}</span>
+                              <span className="text-sm text-purple-400">Min Purchase:</span>
+                              <span className="text-sm font-semibold text-purple-200">₹{coupon.minPurchaseAmount}</span>
                             </div>
                           )}
                         </div>
 
                         {/* Application Type */}
                         <div className="flex flex-wrap gap-2 mb-3">
-                          <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full">
+                          <span className="text-xs bg-[#1E1538] text-purple-200 px-3 py-1 rounded-full">
                             {coupon.applicationType === 'all' ? 'All Products' : 
                              coupon.applicationType === 'categories' ? `${coupon.applicableCategories.length} Categories` : 
                              `${coupon.applicableProducts.length} Products`}
@@ -269,7 +269,7 @@ const ManageCoupons = () => {
                         {/* Categories Display */}
                         {coupon.applicationType === 'categories' && coupon.applicableCategories.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-3">
-                            <span className="text-xs text-slate-500 dark:text-slate-400">Categories:</span>
+                            <span className="text-xs text-purple-400">Categories:</span>
                             {coupon.applicableCategories.map((cat) => (
                               <span key={cat._id} className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">
                                 {cat.name}
@@ -284,15 +284,15 @@ const ManageCoupons = () => {
                   {/* Right Section - Stats & Actions */}
                   <div className="lg:w-64 flex flex-col gap-4">
                     {/* Usage Stats */}
-                    <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
+                    <div className="bg-[#1E1538] rounded-xl p-4">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-slate-600 dark:text-slate-400">Usage</span>
-                        <span className="text-sm font-semibold text-slate-800 dark:text-white">
+                        <span className="text-sm text-purple-300">Usage</span>
+                        <span className="text-sm font-semibold text-purple-100">
                           {coupon.usedCount}{coupon.usageLimit ? `/${coupon.usageLimit}` : ''}
                         </span>
                       </div>
                       {coupon.usageLimit && (
-                        <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
+                        <div className="w-full bg-[#0F0A1E] rounded-full h-2">
                           <div
                             className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${Math.min(usagePercentage, 100)}%` }}
@@ -300,12 +300,12 @@ const ManageCoupons = () => {
                         </div>
                       )}
                       
-                      <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
-                        <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400 mb-1">
+                      <div className="mt-3 pt-3 border-t border-purple-500/20">
+                        <div className="flex justify-between text-xs text-purple-300 mb-1">
                           <span>Start:</span>
                           <span>{formatDate(coupon.startDate)}</span>
                         </div>
-                        <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
+                        <div className="flex justify-between text-xs text-purple-300">
                           <span>Expires:</span>
                           <span>{formatDate(coupon.expiryDate)}</span>
                         </div>
@@ -316,7 +316,7 @@ const ManageCoupons = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleSendNotification(coupon._id, coupon.code)}
-                        className="flex-1 text-xs bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-2 py-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 font-medium flex items-center justify-center gap-1"
+                        className="flex-1 text-xs bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-2 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 font-medium flex items-center justify-center gap-1"
                         title="Send notification to all users"
                       >
                         <Bell className="w-3 h-3" />
@@ -324,13 +324,13 @@ const ManageCoupons = () => {
                       </button>
                       <Link
                         to={`/admin/edit-coupon/${coupon._id}`}
-                        className="flex-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-2 py-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 font-medium text-center"
+                        className="flex-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-2 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 font-medium text-center"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => initiateDeleteCoupon(coupon._id)}
-                        className="flex-1 text-xs bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-2 py-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 font-medium"
+                        className="flex-1 text-xs bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-2 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 font-medium"
                       >
                         Delete
                       </button>
@@ -346,15 +346,15 @@ const ManageCoupons = () => {
       {/* Confirm Delete Dialog */}
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full">
+          <div className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-6 rounded-lg shadow-xl max-w-sm w-full">
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Confirm Deletion</h3>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">
+            <p className="mb-6 text-gray-700 dark:text-purple-200">
               Are you sure you want to delete this coupon? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelDeleteCoupon}
-                className="px-4 py-2 rounded text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 rounded text-purple-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               >
                 No, Cancel
               </button>
@@ -373,3 +373,10 @@ const ManageCoupons = () => {
 };
 
 export default ManageCoupons;
+
+
+
+
+
+
+

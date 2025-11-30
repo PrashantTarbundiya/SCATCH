@@ -152,7 +152,7 @@ function EditProfilePage() {
   };
 
   if (authLoading || pageLoading) {
-    return <div className="container mx-auto p-4 pt-20 text-center text-gray-700 dark:text-gray-300">Loading editor...</div>;
+    return <div className="container mx-auto p-4 pt-20 text-center text-gray-700 dark:text-gray-700 dark:text-purple-200">Loading editor...</div>;
   }
 
   // If there's an error and the page is not loading, and the user is not authenticated (after auth check)
@@ -162,9 +162,9 @@ function EditProfilePage() {
 
 
   return (
-    <div className="container mx-auto p-4 pt-20 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-lg mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">Edit Profile</h2>
+    <div className="container mx-auto p-4 pt-20 min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300">
+      <div className="max-w-lg mx-auto bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-lg dark:shadow-purple-500/20 rounded-lg p-8">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-purple-100">Edit Profile</h2>
         {error && <p className="text-red-500 dark:text-red-400 text-center mb-4">{error}</p>}
         {success && <p className="text-green-500 dark:text-green-400 text-center mb-4">{success}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -172,9 +172,9 @@ function EditProfilePage() {
             <img
               src={formData.profilePhotoUrl}
               alt="Profile Preview"
-              className="w-32 h-32 rounded-full object-cover mb-4 border border-gray-300 dark:border-gray-600"
+              className="w-32 h-32 rounded-full object-cover mb-4 border border-purple-500/30"
             />
-            <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+            <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 dark:text-purple-200 cursor-pointer">
               Change Profile Photo
             </label>
             <input
@@ -196,7 +196,7 @@ function EditProfilePage() {
          </div>
 
          <div>
-           <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+           <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-purple-200">
              Name
            </label>
            <input
@@ -205,13 +205,13 @@ function EditProfilePage() {
              id="name"
              value={formData.name || ''}
              onChange={handleChange}
-             className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100 dark:bg-gray-700 dark:text-gray-300"
-             disabled // Assuming name is not editable or fetched from a non-editable source
+             className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-200"
+             disabled
            />
          </div>
 
          <div>
-           <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+           <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-purple-200">
              Email
            </label>
            <input
@@ -219,13 +219,13 @@ function EditProfilePage() {
              name="email"
              id="email"
              value={formData.email || ''}
-             className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100 dark:bg-gray-700 dark:text-gray-300"
-             disabled // Email is typically not editable
+             className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-200"
+             disabled
            />
          </div>
 
          <div>
-           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-purple-200">
              Phone Number
            </label>
            <input
@@ -234,13 +234,13 @@ function EditProfilePage() {
              id="phone"
              value={formData.phone}
              onChange={handleChange}
-             className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+             className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
              placeholder="Enter your phone number"
            />
          </div>
 
          <div>
-           <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+           <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-purple-200">
              Address
            </label>
            <textarea
@@ -249,7 +249,7 @@ function EditProfilePage() {
              rows="3"
              value={formData.address}
              onChange={handleChange}
-             className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+             className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
              placeholder="Enter your address"
            ></textarea>
          </div>
@@ -258,14 +258,14 @@ function EditProfilePage() {
            <button
              type="button"
              onClick={() => navigate('/profile')}
-             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 dark:focus:ring-gray-400"
+             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-900 dark:text-purple-100 bg-purple-900/50 hover:bg-purple-900/70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:bg-gray-600 dark:hover:bg-gray-500 dark:focus:ring-gray-400"
            >
              Cancel
            </button>
            <button
              type="submit"
              disabled={submitLoading || !isAuthenticated} // Disable if not authenticated
-             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-600"
+             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-2 focus:ring-purple-500 disabled:opacity-50 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-600"
            >
              {submitLoading ? 'Saving...' : 'Save Changes'}
             </button>
@@ -277,3 +277,11 @@ function EditProfilePage() {
 }
 
 export default EditProfilePage;
+
+
+
+
+
+
+
+

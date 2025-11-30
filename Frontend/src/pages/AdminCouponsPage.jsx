@@ -146,17 +146,17 @@ const AdminCouponsPage = () => {
       // The parent div with padding and margin for sidebar is now in OwnerProtectedRoute.jsx
       // This div should just be a simple container for its own content.
       <div className="w-full">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-white dark:bg-slate-800 rounded-2xl shadow-lg dark:shadow-purple-500/20 p-6 mb-8 border border-slate-200 dark:border-slate-700">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
             <div>
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">
                         Manage Coupons
                     </h1>
-                    <p className="text-slate-600 dark:text-slate-400">Create and manage discount coupons for your store</p>
+                    <p className="text-slate-600 dark:text-gray-600 dark:text-slate-400">Create and manage discount coupons for your store</p>
                 </div>
                 <button
                     onClick={handleOpenCreateModal}
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 hover:scale-105 w-full sm:w-auto"
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg dark:shadow-purple-500/20 transition-all duration-200 hover:scale-105 w-full sm:w-auto"
                 >
                     Create New Coupon
                 </button>
@@ -173,13 +173,13 @@ const AdminCouponsPage = () => {
             {error && <p className="text-center text-red-500 bg-red-100 dark:bg-red-900 dark:text-red-300 p-3 rounded-md">{error}</p>}
             
             {!isLoading && !error && coupons.length === 0 && (
-                <p className="text-center text-gray-600 dark:text-gray-300">No coupons found. Create one!</p>
+                <p className="text-center text-gray-600 text-gray-700 dark:text-purple-200">No coupons found. Create one!</p>
             )}
 
             {!isLoading && !error && coupons.length > 0 && (
-                <div className="overflow-x-auto bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div className="overflow-x-auto bg-white dark:bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
                     <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                        <thead className="bg-slate-50 dark:bg-slate-700">
+                        <thead className="bg-slate-50 dark:bg-white dark:bg-slate-700">
                             <tr>
                                 <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Code</th>
                                 <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider hidden sm:table-cell">Type</th>
@@ -190,7 +190,7 @@ const AdminCouponsPage = () => {
                                 <th scope="col" className="px-3 md:px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                        <tbody className="bg-white dark:bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                             {coupons.map((coupon) => {
                                 // Determine status display
                                 let statusText = 'Active';
@@ -198,7 +198,7 @@ const AdminCouponsPage = () => {
                                 
                                 if (!coupon.isActive) {
                                     statusText = 'Inactive';
-                                    statusClass = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100';
+                                    statusClass = 'bg-gray-100 dark:bg-[#2A1F47] text-gray-800 dark:bg-gray-700 dark:text-gray-100';
                                 } else if (coupon.isExpired) {
                                     statusText = 'Expired';
                                     statusClass = 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100';
@@ -216,7 +216,7 @@ const AdminCouponsPage = () => {
                                     : `${coupon.timesUsed || 0}/∞`;
                                 
                                 return (
-                                    <tr key={coupon._id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
+                                    <tr key={coupon._id} className="hover:bg-slate-50 dark:hover:bg-white dark:bg-slate-700 transition-all duration-200">
                                         <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">{coupon.code}</td>
                                         <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 hidden sm:table-cell">{coupon.discountType}</td>
                                         <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 font-medium">
@@ -282,3 +282,10 @@ const AdminCouponsPage = () => {
 };
 
 export default AdminCouponsPage;
+
+
+
+
+
+
+

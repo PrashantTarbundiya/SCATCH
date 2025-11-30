@@ -329,7 +329,7 @@ export const HeroSection = () => {
   const lightningProps = getLightningProps();
 
   return (
-    <div className="relative w-full h-screen bg-white dark:bg-black text-gray-900 dark:text-white overflow-hidden">
+    <div className="relative w-full h-screen bg-white dark:bg-black text-purple-100 overflow-hidden">
       <div className="relative z-20 w-full px-4 sm:px-6 lg:px-8 py-6 h-full">
         <motion.div
           variants={containerVariants}
@@ -339,7 +339,7 @@ export const HeroSection = () => {
         >
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-7xl font-light mb-2 text-gray-900 dark:text-white"
+            className="text-4xl sm:text-5xl md:text-7xl font-light mb-2 text-gray-900 dark:text-purple-100"
           >
             Scatch
           </motion.h1>
@@ -356,7 +356,7 @@ export const HeroSection = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => window.location.href = '/shop'}
-            className="mt-8 px-6 sm:px-8 py-3 bg-gray-800/10 dark:bg-white/10 backdrop-blur-sm rounded-full hover:bg-gray-800/20 dark:hover:bg-white/20 transition-colors cursor-pointer text-sm sm:text-base text-gray-900 dark:text-white"
+            className="mt-8 px-6 sm:px-8 py-3 bg-[#1E1538]/60 backdrop-blur-xl/10 dark:bg-white/10 backdrop-blur-sm rounded-full hover:bg-[#1E1538]/60 backdrop-blur-xl/20 dark:hover:bg-white/20 transition-colors cursor-pointer text-sm sm:text-base text-gray-900 dark:text-purple-100"
           >
             Start Shopping
           </motion.button>
@@ -393,3 +393,7 @@ export const HeroSection = () => {
     </div>
   );
 };
+
+
+
+

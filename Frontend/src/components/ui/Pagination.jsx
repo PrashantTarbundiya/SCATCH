@@ -73,9 +73,9 @@ const Pagination = ({
           animate={{ opacity: 1, y: 0 }}
           className="text-sm text-gray-600 dark:text-gray-400"
         >
-          Showing <span className="font-semibold text-gray-900 dark:text-white">{startItem}</span> to{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">{endItem}</span> of{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">{totalItems}</span> products
+          Showing <span className="font-semibold text-gray-900 dark:text-purple-100">{startItem}</span> to{' '}
+          <span className="font-semibold text-gray-900 dark:text-purple-100">{endItem}</span> of{' '}
+          <span className="font-semibold text-gray-900 dark:text-purple-100">{totalItems}</span> products
         </motion.div>
       )}
 
@@ -83,7 +83,7 @@ const Pagination = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex items-center gap-1 md:gap-2 bg-white dark:bg-gray-800 p-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+        className="flex items-center gap-1 md:gap-2 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
       >
         {/* First Page Button */}
         {showFirstLast && (
@@ -114,7 +114,7 @@ const Pagination = ({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 py-1 text-gray-500 dark:text-gray-400"
+                  className="px-2 py-1 text-gray-600 dark:text-purple-300"
                 >
                   ...
                 </span>
@@ -180,8 +180,8 @@ const PaginationButton = ({
       whileTap={!disabled && !active ? { scale: 0.95 } : {}}
       className={cn(
         "relative min-w-[2.5rem] px-3 py-2 rounded-lg font-medium text-sm transition-all duration-200 flex items-center justify-center",
-        active && "bg-blue-500 text-white shadow-md",
-        !active && !disabled && "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600",
+        active && "bg-blue-500 text-white shadow-md dark:shadow-purple-500/20",
+        !active && !disabled && "bg-white dark:bg-[#2A1F47] text-purple-200 hover:bg-gray-200 dark:hover:bg-gray-600",
         disabled && "opacity-40 cursor-not-allowed",
         !disabled && !active && "hover:shadow-sm",
         className
@@ -193,3 +193,7 @@ const PaginationButton = ({
 };
 
 export default Pagination;
+
+
+
+

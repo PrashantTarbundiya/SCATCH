@@ -190,17 +190,17 @@ const CreateProductPage = () => {
 
       {/* Removed the outer flex container and the internal aside (sidebar) */}
       {/* The main content area will now take full width within the space provided by OwnerProtectedRoute */}
-      <main className="w-full bg-white dark:bg-gray-800 p-6 sm:p-8 shadow rounded-lg transition-colors duration-300">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">
+      <main className="w-full bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-6 sm:p-8 shadow rounded-lg transition-colors duration-300">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-purple-100">
             {isEditMode ? 'Edit Product' : 'Create New Product'}
           </h2>
           <form autoComplete="off" onSubmit={handleSubmit}>
             {/* Product Details Section */}
-            <div className="mb-8 p-4 border border-gray-200 dark:border-gray-700 rounded-md">
-              <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Product Details</h3>
+            <div className="mb-8 p-4 border border-purple-500/20 rounded-md">
+              <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-purple-200">Product Details</h3>
 
               <div className="mb-4">
-                <label htmlFor="image" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="image" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">
                   Product Image{isEditMode ? '' : '*'}
                 </label>
                 {imagePreview && (
@@ -213,7 +213,7 @@ const CreateProductPage = () => {
                   name="image"
                   type="file"
                   onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800"
+                  className="block w-full text-sm text-purple-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800"
                   required={!isEditMode} // Required only if not in edit mode (or if no image was previously set, backend should handle)
                   disabled={isLoading}
                 />
@@ -221,7 +221,7 @@ const CreateProductPage = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label htmlFor="name" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Product Name*</label>
+                  <label htmlFor="name" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Product Name*</label>
                   <input
                     id="name"
                     name="name"
@@ -229,13 +229,13 @@ const CreateProductPage = () => {
                     placeholder="e.g., Cool T-Shirt"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
                     required
                     disabled={isLoading}
                   />
                 </div>
                 <div>
-                  <label htmlFor="price" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Product Price (₹)*</label>
+                  <label htmlFor="price" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Product Price (₹)*</label>
                   <input
                     id="price"
                     name="price"
@@ -243,7 +243,7 @@ const CreateProductPage = () => {
                     placeholder="e.g., 999"
                     value={formData.price}
                     onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
                     required
                     disabled={isLoading}
                   />
@@ -251,7 +251,7 @@ const CreateProductPage = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label htmlFor="discount" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Discount (%)</label>
+                  <label htmlFor="discount" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Discount (%)</label>
                   <input
                     id="discount"
                     name="discount"
@@ -259,12 +259,12 @@ const CreateProductPage = () => {
                     placeholder="e.g., 10 for 10%"
                     value={formData.discount}
                     onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
                     disabled={isLoading}
                   />
                 </div>
                 <div>
-                  <label htmlFor="quantity" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Quantity*</label>
+                  <label htmlFor="quantity" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Quantity*</label>
                   <input
                     id="quantity"
                     name="quantity"
@@ -272,20 +272,20 @@ const CreateProductPage = () => {
                     placeholder="e.g., 100"
                     value={formData.quantity}
                     onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
+                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
                     required
                     min="0"
                     disabled={isLoading}
                   />
                 </div>
                 <div>
-                  <label htmlFor="category" className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Category*</label>
+                  <label htmlFor="category" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Category*</label>
                   <select
                     id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="border border-gray-300 dark:border-gray-600 p-2 rounded w-full focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-gray-900 dark:text-purple-100"
                     required
                     disabled={isLoading || categoriesLoading}
                   >
@@ -310,7 +310,7 @@ const CreateProductPage = () => {
 
 
             <button
-              className="px-6 py-2.5 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+              className="px-6 py-2.5 rounded-md bg-blue-600 dark:bg-purple-600 text-white font-semibold hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
               type="submit"
               disabled={isLoading}
             >
@@ -324,3 +324,11 @@ const CreateProductPage = () => {
 };
 
 export default CreateProductPage;
+
+
+
+
+
+
+
+

@@ -9,7 +9,7 @@ const Skeleton = ({ className = '', width = 'w-full', height = 'h-4', rounded = 
 
 // Card skeleton for product cards, coupon cards, etc.
 export const CardSkeleton = ({ showImage = true, lines = 3 }) => (
-  <div className="border border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden bg-white dark:bg-gray-800 p-4">
+  <div className="border border-gray-200 dark:border-gray-700 rounded-lg shadow-md dark:shadow-purple-500/20 overflow-hidden bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4">
     {showImage && (
       <Skeleton width="w-full" height="h-48" rounded="rounded-lg" className="mb-4" />
     )}
@@ -28,9 +28,9 @@ export const CardSkeleton = ({ showImage = true, lines = 3 }) => (
 
 // Table skeleton for admin tables
 export const TableSkeleton = ({ rows = 5, columns = 6 }) => (
-  <div className="overflow-x-auto bg-white dark:bg-neutral-800 shadow-lg rounded-lg">
+  <div className="overflow-x-auto bg-white dark:bg-white dark:bg-neutral-800 shadow-lg dark:shadow-purple-500/20 rounded-lg">
     <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-      <thead className="bg-gray-50 dark:bg-neutral-700">
+      <thead className="bg-gray-50 dark:bg-white dark:bg-neutral-700">
         <tr>
           {Array.from({ length: columns }).map((_, i) => (
             <th key={i} className="px-6 py-3">
@@ -39,7 +39,7 @@ export const TableSkeleton = ({ rows = 5, columns = 6 }) => (
           ))}
         </tr>
       </thead>
-      <tbody className="bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
+      <tbody className="bg-white dark:bg-white dark:bg-neutral-800 divide-y divide-gray-200 dark:divide-neutral-700">
         {Array.from({ length: rows }).map((_, rowIndex) => (
           <tr key={rowIndex}>
             {Array.from({ length: columns }).map((_, colIndex) => (
@@ -113,7 +113,7 @@ export const ProfileSkeleton = () => (
 export const StatsSkeleton = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     {Array.from({ length: 4 }).map((_, i) => (
-      <div key={i} className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <div key={i} className="p-6 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 rounded-lg shadow-lg dark:shadow-purple-500/20">
         <div className="flex items-center justify-between mb-4">
           <Skeleton width="w-8" height="h-8" rounded="rounded-full" />
           <Skeleton width="w-12" height="h-4" />
@@ -182,7 +182,7 @@ export const CartSkeleton = () => (
       ))}
     </div>
     
-    <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+    <div className="mt-8 p-6 bg-gray-50 dark:bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl rounded-lg">
       <div className="space-y-3">
         <div className="flex justify-between">
           <Skeleton width="w-20" height="h-4" />
@@ -217,3 +217,7 @@ export const PageSkeleton = ({ title = true, content = 5 }) => (
 );
 
 export default Skeleton;
+
+
+
+

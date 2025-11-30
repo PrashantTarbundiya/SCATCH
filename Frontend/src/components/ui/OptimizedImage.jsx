@@ -37,3 +37,7 @@ const OptimizedImage = memo(({ src, alt, className, onClick, ...props }) => {
 OptimizedImage.displayName = 'OptimizedImage';
 
 export default OptimizedImage;
+
+
+
+

@@ -7,7 +7,7 @@ const AdminSidebar = () => {
     const navigate = useNavigate();
     
     const linkStyle = 'flex items-center px-3 py-2 mx-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors';
-    const activeLinkStyle = 'bg-blue-600 text-white';
+    const activeLinkStyle = 'bg-blue-600 dark:bg-purple-600 text-gray-900 dark:text-white';
 
     const handleMobileNavClick = () => {
         if (window.innerWidth < 768) {
@@ -28,10 +28,10 @@ const AdminSidebar = () => {
     };
 
     return (
-        <aside className="w-64 min-h-screen bg-gray-800 text-gray-100 shadow-xl fixed top-0 left-0 transition-all duration-300 z-50 border-r border-gray-700 translate-x-0">
+        <aside className="w-64 min-h-screen bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl text-gray-100 shadow-xl fixed top-0 left-0 transition-all duration-300 z-50 border-r border-gray-700 translate-x-0">
             {/* Header with logo */}
             <div className="flex items-center p-4 border-b border-gray-700">
-                <h2 className="text-xl font-semibold text-white">SCATCH Admin</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">SCATCH Admin</h2>
             </div>
 
             {/* Navigation Menu */}
@@ -103,3 +103,7 @@ const AdminSidebar = () => {
 };
 
 export default AdminSidebar;
+
+
+
+

@@ -227,17 +227,17 @@ const AllProductsPage = () => {
       {/* Main content for Product Management */}
       <div className="w-full flex flex-col gap-6">
         {/* Action Bar - Specific to Product Management */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-8 border border-slate-200 dark:border-slate-700">
+        <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 mb-8 border border-purple-500/20">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">Product Management</h1>
-              <p className="text-slate-600 dark:text-slate-400">Manage your product inventory and settings</p>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-100 mb-2">Product Management</h1>
+              <p className="text-purple-300">Manage your product inventory and settings</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full lg:w-auto">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-4 py-3 bg-[#1E1538] border border-purple-500/30 rounded-xl text-sm font-medium text-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 disabled={categoriesLoading}
               >
                 <option value="">
@@ -252,21 +252,21 @@ const AllProductsPage = () => {
                   <option value="" disabled>No categories available</option>
                 )}
               </select>
-              <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer bg-slate-50 dark:bg-slate-700 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-all duration-200">
+              <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer bg-[#1E1538] px-4 py-3 rounded-xl hover:bg-[#2A1F47] transition-all duration-200">
                 <input
                   id="outOfStockFilter"
                   type="checkbox"
                   checked={showOutOfStockOnly}
                   onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
-                  className="h-5 w-5 text-blue-600 border-slate-300 rounded-lg focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-slate-800 dark:bg-slate-700 dark:border-slate-600"
+                  className="h-5 w-5 text-purple-600 border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500"
                 />
-                <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <span className="ml-3 text-sm font-medium text-purple-200">
                   Show Out of Stock Only
                 </span>
               </label>
               <button
                 onClick={handleDeleteAll}
-                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg transition-all duration-200 hover:scale-105 text-sm font-semibold w-full sm:w-auto"
+                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 text-sm font-semibold w-full sm:w-auto"
               >
                 Delete All Products
               </button>
@@ -275,7 +275,7 @@ const AllProductsPage = () => {
         </div>
 
         {products.length === 0 && !loading && (
-          <p className="text-gray-600 dark:text-gray-400">No products found.</p>
+          <p className="text-gray-600 dark:text-purple-300">No products found.</p>
         )}
 
         {/* Product List */}
@@ -295,11 +295,11 @@ const AllProductsPage = () => {
             return (
             <div
               key={product._id}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg dark:shadow-xl overflow-hidden bg-white dark:bg-slate-800 transition-all duration-300 hover:shadow-2xl md:hover:scale-105 flex flex-col group relative"
+              className="w-full border border-purple-500/20 rounded-2xl shadow-lg shadow-purple-500/20 overflow-hidden bg-[#2A1F47] transition-all duration-300 hover:shadow-2xl md:hover:scale-105 flex flex-col group relative"
             >
               <div
                 className="w-full h-52 flex items-center justify-center relative" // Added relative for discount badge positioning
-                style={{ backgroundColor: product.bgcolor ||(theme === 'dark' ? '#374151' : '#f0f0f0') }} // Default BG based on theme or product.bgcolor
+                style={{ backgroundColor: product.bgcolor || '#1E1538' }} // Default BG based on theme or product.bgcolor
               >
                 {product.image && typeof product.image === 'string' ? (
                   <img
@@ -308,7 +308,7 @@ const AllProductsPage = () => {
                     className="h-[12rem] w-full object-contain" // Matched Shop page image style, added w-full
                   />
                 ) : (
-                  <span className="text-gray-400 dark:text-gray-500">No Image</span>
+                  <span className="text-purple-300">No Image</span>
                 )}
                  {/* Discount Badge - Show only if discount > 0 */}
                 {discountPercentage > 0 && (
@@ -320,8 +320,8 @@ const AllProductsPage = () => {
               <div
                 className="flex flex-col justify-between items-start px-4 py-4 flex-grow"
                 style={{
-                  backgroundColor: product.panelcolor || (theme === 'dark' ? '#1f2937' : '#ffffff'), // product.panelcolor or theme default
-                  color: product.textcolor || (theme === 'dark' ? '#e5e7eb' : '#111827'), // product.textcolor or theme default
+                  backgroundColor: product.panelcolor || '#2A1F47', // product.panelcolor or theme default
+                  color: product.textcolor || '#E9D5FF', // product.textcolor or theme default
                 }}
               >
                 <div className="mb-10">
@@ -329,12 +329,12 @@ const AllProductsPage = () => {
                   <div className="flex items-baseline gap-2"> {/* items-baseline for better alignment */}
                     <h4 className="text-md font-bold">₹ {finalPrice.toFixed(2)}</h4>
                     {discountAmount > 0 && (
-                      <h4 className="text-sm text-gray-500 dark:text-gray-400 line-through">
+                      <h4 className="text-sm text-purple-300 line-through">
                         {originalPrice.toFixed(2)}
                       </h4>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-sm text-purple-300 mt-1">
                     Quantity Left: {product.quantity !== undefined ? product.quantity : 'N/A'}
                   </p>
                   <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">
@@ -345,13 +345,13 @@ const AllProductsPage = () => {
                 <div className="absolute bottom-4 right-4 mt-auto pt-2 flex justify-end gap-2 opacity-100 visible md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible transition-all duration-300">
                     <Link
                         to={`/admin/edit-product/${product._id}`}
-                        className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl shadow-lg transition-all duration-200 md:hover:scale-105 font-medium"
+                        className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 md:hover:scale-105 font-medium"
                     >
                         Edit
                     </Link>
                     <button
                         onClick={() => initiateDeleteProduct(product._id)}
-                        className="text-xs bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-xl shadow-lg transition-all duration-200 md:hover:scale-105 font-medium"
+                        className="text-xs bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 md:hover:scale-105 font-medium"
                     >
                         Delete
                     </button>
@@ -377,15 +377,15 @@ const AllProductsPage = () => {
 
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Confirm Deletion</h3>
-            <p className="mb-6 text-gray-700 dark:text-gray-300">
+          <div className="bg-[#1E1538]/90 backdrop-blur-xl border border-purple-500/20 p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-4 text-purple-100">Confirm Deletion</h3>
+            <p className="mb-6 text-purple-200">
               Are you sure you want to delete this product? This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelDeleteProduct}
-                className="px-4 py-2 rounded text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 rounded text-purple-200 bg-[#2A1F47] hover:bg-[#3A2F57] transition-colors"
               >
                 No, Cancel
               </button>
@@ -404,3 +404,11 @@ const AllProductsPage = () => {
 };
 
 export default AllProductsPage;
+
+
+
+
+
+
+
+

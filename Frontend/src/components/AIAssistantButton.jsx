@@ -62,7 +62,7 @@ export default function AIAssistantButton() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-50 hover:scale-110"
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-full shadow-lg dark:shadow-purple-500/20 hover:shadow-xl transition-all z-50 hover:scale-110"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -72,7 +72,7 @@ export default function AIAssistantButton() {
       {/* Chat Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setIsOpen(false)}>
-          <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-h-[85vh] flex flex-col transition-colors" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-2xl bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 rounded-xl shadow-2xl max-h-[85vh] flex flex-col transition-colors" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-t-xl flex justify-between items-center">
               <h3 className="font-semibold text-lg">💡 AI Shopping Assistant</h3>
@@ -106,7 +106,7 @@ export default function AIAssistantButton() {
                       placeholder="What do you want to buy?"
                       value={itemName}
                       onChange={(e) => setItemName(e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none transition"
+                      className="w-full px-4 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:outline-none outline-none transition"
                       required
                     />
                     <input
@@ -114,13 +114,13 @@ export default function AIAssistantButton() {
                       placeholder="Your budget (₹)"
                       value={budget}
                       onChange={(e) => setBudget(e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none transition"
+                      className="w-full px-4 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:outline-none outline-none transition"
                       required
                     />
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-lg disabled:bg-gray-400 font-medium transition shadow-sm"
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-lg disabled:opacity-50 font-medium transition shadow-sm"
                     >
                       {loading ? '🤔 Thinking...' : '✨ Get Suggestions'}
                     </button>
@@ -128,8 +128,8 @@ export default function AIAssistantButton() {
 
                   {/* Combo Response */}
                   {comboResponse && (
-                    <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm">
-                      <div className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{comboResponse}</div>
+                    <div className="bg-white dark:bg-[#2A1F47] border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm">
+                      <div className="text-sm text-gray-900 dark:text-purple-100 whitespace-pre-wrap leading-relaxed">{comboResponse}</div>
                     </div>
                   )}
                 </div>
@@ -145,14 +145,14 @@ export default function AIAssistantButton() {
                     )}
                     {chatHistory.map((msg, idx) => (
                       <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] px-4 py-3 rounded-lg shadow-sm ${msg.role === 'user' ? 'bg-emerald-500 text-white rounded-br-none' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none'}`}>
+                        <div className={`max-w-[85%] px-4 py-3 rounded-lg shadow-sm ${msg.role === 'user' ? 'bg-emerald-500 text-white rounded-br-none' : 'bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 rounded-bl-none'}`}>
                           <div className="text-sm whitespace-pre-wrap leading-relaxed" style={{wordBreak: 'break-word'}}>{msg.content}</div>
                         </div>
                       </div>
                     ))}
                     {loading && (
                       <div className="flex justify-start">
-                        <div className="bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg">
+                        <div className="bg-white dark:bg-[#2A1F47] px-4 py-2 rounded-lg">
                           <div className="flex space-x-2">
                             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
@@ -164,19 +164,19 @@ export default function AIAssistantButton() {
                   </div>
 
                   {/* Chat Input */}
-                  <form onSubmit={handleAskQuestion} className="flex gap-2 sticky bottom-0 bg-white dark:bg-gray-800 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <form onSubmit={handleAskQuestion} className="flex gap-2 sticky bottom-0 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 pt-3 border-t border-gray-200 dark:border-gray-700">
                     <input
                       type="text"
                       placeholder="Ask anything about products..."
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none transition"
+                      className="flex-1 px-4 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:outline-none outline-none transition"
                       required
                     />
                     <button
                       type="submit"
                       disabled={loading}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-lg disabled:bg-gray-400 font-medium transition shadow-sm"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-lg disabled:opacity-50 font-medium transition shadow-sm"
                     >
                       Send
                     </button>
@@ -190,3 +190,10 @@ export default function AIAssistantButton() {
     </>
   );
 }
+
+
+
+
+
+
+

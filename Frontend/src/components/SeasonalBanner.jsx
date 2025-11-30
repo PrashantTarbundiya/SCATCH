@@ -14,7 +14,7 @@ const SeasonalBanner = () => {
       startDate: '2024-12-01',
       endDate: '2024-12-31',
       bgColor: 'bg-gradient-to-r from-blue-600 to-purple-600',
-      textColor: 'text-white'
+      textColor: 'text-gray-900 dark:text-white'
     },
     {
       id: 'new_year',
@@ -23,7 +23,7 @@ const SeasonalBanner = () => {
       startDate: '2024-12-25',
       endDate: '2025-01-15',
       bgColor: 'bg-gradient-to-r from-yellow-500 to-orange-500',
-      textColor: 'text-white'
+      textColor: 'text-gray-900 dark:text-white'
     },
     {
       id: 'valentine',
@@ -32,7 +32,7 @@ const SeasonalBanner = () => {
       startDate: '2024-02-01',
       endDate: '2024-02-14',
       bgColor: 'bg-gradient-to-r from-pink-500 to-red-500',
-      textColor: 'text-white'
+      textColor: 'text-gray-900 dark:text-white'
     }
   ];
 
@@ -73,7 +73,7 @@ const SeasonalBanner = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <button className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full text-sm font-medium transition-colors">
+            <button className="bg-white dark:bg-white dark:bg-[#2A1F47]/20 hover:bg-white dark:bg-white dark:bg-[#2A1F47]/30 px-4 py-2 rounded-full text-sm font-medium transition-colors">
               Shop Now
             </button>
             <button
@@ -108,3 +108,7 @@ const SeasonalBanner = () => {
 };
 
 export default SeasonalBanner;
+
+
+
+

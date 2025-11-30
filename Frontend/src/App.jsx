@@ -53,7 +53,7 @@ function AppContent() {
       {/* Conditionally render Header - exclude from admin routes */}
       {!isAdminRoute && <Header />}
       
-      <main className={isAdminRoute ? "w-full" : isHomePage ? "w-full" : "py-8 w-full"}>
+      <main className={isAdminRoute ? "w-full" : isHomePage ? "w-full" : "py-8 w-full bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] min-h-screen"}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
           <Route path="/" element={<Home />} />
@@ -107,3 +107,6 @@ function App() {
 }
 
 export default App;
+
+
+

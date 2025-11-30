@@ -509,9 +509,9 @@ const handleClearCart = async () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300">
+      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100">
         <p className="text-xl mb-4">Please log in to view your cart.</p>
-        <Link to="/login" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+        <Link to="/login" className="px-4 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded shadow-lg dark:shadow-purple-500/20 hover:shadow-purple-500/30">
           Go to Login
         </Link>
       </div>
@@ -519,23 +519,23 @@ const handleClearCart = async () => {
   }
   
   if (error) {
-    return <div className="w-full min-h-screen flex items-center justify-center py-20 bg-gray-50 dark:bg-gray-900 text-red-500 dark:text-red-400"><p>Error loading cart: {error}</p></div>;
+    return <div className="w-full min-h-screen flex items-center justify-center py-20 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-red-400"><p>Error loading cart: {error}</p></div>;
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300">
+      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100">
         <div className="text-center max-w-md">
           <div className="mb-6">
-            <svg className="mx-auto h-24 w-24 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="mx-auto h-24 w-24 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h15M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </div>
           <h2 className="text-2xl md:text-3xl font-semibold mb-4">Your Shopping Cart is Empty</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm md:text-base">Looks like you haven't added anything to your cart yet. Start shopping to fill it up!</p>
+          <p className="text-purple-200 mb-8 text-sm md:text-base">Looks like you haven't added anything to your cart yet. Start shopping to fill it up!</p>
           <Link 
             to="/shop" 
-            className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg transition-all font-medium shadow-lg dark:shadow-purple-500/20 hover:shadow-purple-500/30 transform hover:scale-105 duration-200"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -548,11 +548,11 @@ const handleClearCart = async () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex items-start py-10 md:py-20 gap-6 md:gap-10 flex-col lg:flex-row bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-300 transition-colors duration-300 px-4 md:px-6 lg:px-8"> {/* Added theme bg, text, removed most horizontal padding, added some back for content spacing */}
+    <div className="w-full min-h-screen flex items-start py-10 md:py-20 gap-6 md:gap-10 flex-col lg:flex-row bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100 transition-colors duration-300 px-4 md:px-6 lg:px-8">
       {/* Left Section - Cart Items */}
       <div className="w-full lg:w-[60%] flex flex-col gap-5">
         <div className="flex justify-between items-center mb-5">
-          <h2 className="text-2xl font-semibold">Shopping Cart ({cartItems.length} items)</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-purple-100">Shopping Cart ({cartItems.length} items)</h2>
           {cartItems.length > 0 && (
             <button
               onClick={handleClearCart}
@@ -565,7 +565,7 @@ const handleClearCart = async () => {
         </div>
         
         {cartItems.map((item, index) => (
-          <div key={item._id || index} className="flex flex-col sm:flex-row gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 shadow-sm transition-colors duration-300">
+          <div key={item._id || index} className="flex flex-col sm:flex-row gap-4 p-4 border border-purple-500/20 rounded-md bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10 transition-colors duration-300">
             {/* Product Image */}
             <div
               className="w-full sm:w-32 h-32 flex justify-center items-center rounded-md overflow-hidden self-center sm:self-start"
@@ -581,7 +581,7 @@ const handleClearCart = async () => {
             {/* Product Details */}
             <div className="flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">{item.name || 'Unnamed Product'}</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-purple-100">{item.name || 'Unnamed Product'}</h3>
                 {(() => {
                   const originalPrice = Number(item.price) || 0;
                   const fixedDiscountAmount = Number(item.discount) || 0; // Treat as fixed amount
@@ -589,10 +589,10 @@ const handleClearCart = async () => {
 
                   return (
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-lg font-semibold text-gray-900 dark:text-white">₹{finalPricePerUnit.toFixed(2)}</span>
+                      <span className="text-lg font-semibold text-gray-900 dark:text-purple-100">₹{finalPricePerUnit.toFixed(2)}</span>
                       {fixedDiscountAmount > 0 && ( // Show if there's any discount
                         <>
-                          <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+                          <span className="text-sm text-purple-300 line-through">
                             ₹{originalPrice.toFixed(2)}
                           </span>
                           <span className="text-sm text-green-600 dark:text-green-400">
@@ -610,16 +610,16 @@ const handleClearCart = async () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleQuantityChange(item._id, (item.quantity || 0) - 1)}
-                    disabled={(item.quantity || 0) <= 1 || isLoading} // Disable if quantity is 1 or less (0 will remove)
-                    className="w-8 h-8 bg-gray-200 dark:bg-gray-700 flex rounded-full items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={(item.quantity || 0) <= 1 || isLoading}
+                    className="w-8 h-8 bg-gray-200 dark:bg-gray-700 flex rounded-full items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-purple-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Minus size={16} />
                   </button>
-                  <div className="px-3 py-1 bg-gray-100 dark:bg-gray-600 rounded-md text-gray-800 dark:text-gray-200">{item.quantity || 0}</div>
+                  <div className="px-3 py-1 bg-gray-100 dark:bg-gray-600 rounded-md text-gray-900 dark:text-purple-100">{item.quantity || 0}</div>
                   <button
                     onClick={() => handleQuantityChange(item._id, (item.quantity || 0) + 1)}
-                    disabled={(item.quantity || 0) >= MAX_QUANTITY || isLoading} // Disable if quantity is at max or more
-                    className="w-8 h-8 bg-gray-200 dark:bg-gray-700 flex rounded-full items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={(item.quantity || 0) >= MAX_QUANTITY || isLoading}
+                    className="w-8 h-8 bg-gray-200 dark:bg-gray-700 flex rounded-full items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-purple-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus size={16} />
                   </button>
@@ -639,33 +639,33 @@ const handleClearCart = async () => {
       </div>
       
       {/* Right Section - Price Breakdown */}
-      <div className="w-full lg:w-[40%] bg-white dark:bg-gray-800 p-6 rounded-md h-fit sticky top-10 md:top-28 shadow-sm transition-colors duration-300"> {/* Adjusted top, theme bg */}
-        <h3 className="text-xl font-semibold mb-5 text-gray-900 dark:text-white">Price Breakdown</h3>
+      <div className="w-full lg:w-[40%] bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-6 rounded-md h-fit sticky top-10 md:top-28 shadow-sm transition-colors duration-300"> {/* Adjusted top, theme bg */}
+        <h3 className="text-xl font-semibold mb-5 text-gray-900 dark:text-purple-100">Price Breakdown</h3>
 
         {/* Shipping Address Form */}
         <div className="mb-6">
-          <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-white">Shipping Address</h4>
+          <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-purple-100">Shipping Address</h4>
           <div className="space-y-3">
             <div>
-              <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Street Address</label>
-              <input type="text" name="street" id="street" value={shippingAddress.street} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+              <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-purple-200">Street Address</label>
+              <input type="text" name="street" id="street" value={shippingAddress.street} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
             </div>
             <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
-              <input type="text" name="city" id="city" value={shippingAddress.city} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-purple-200">City</label>
+              <input type="text" name="city" id="city" value={shippingAddress.city} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
             </div>
             <div>
-              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Postal Code</label>
-              <input type="text" name="postalCode" id="postalCode" value={shippingAddress.postalCode} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-purple-200">Postal Code</label>
+              <input type="text" name="postalCode" id="postalCode" value={shippingAddress.postalCode} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
             </div>
             <div>
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
-              <input type="text" name="country" id="country" value={shippingAddress.country} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200" />
+              <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-purple-200">Country</label>
+              <input type="text" name="country" id="country" value={shippingAddress.country} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
             </div>
           </div>
         </div>
         
-        <div className="space-y-3 text-gray-700 dark:text-gray-300">
+        <div className="space-y-3 text-gray-700 dark:text-purple-200">
           <div className="flex justify-between">
             <span>Total MRP ({cartItems.length} items)</span>
             <span>₹{totalMRP.toFixed(2)}</span>
@@ -688,8 +688,8 @@ const handleClearCart = async () => {
         </div>
 
         {/* Coupon Code Section */}
-        <div className="my-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <label htmlFor="couponCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <div className="my-4 pt-4 border-t border-purple-500/20">
+          <label htmlFor="couponCode" className="block text-sm font-medium text-purple-200 mb-1">
             Have a Coupon Code?
           </label>
           <div className="flex gap-2">
@@ -699,24 +699,24 @@ const handleClearCart = async () => {
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
               placeholder="Enter Coupon Code"
-              className="flex-grow w-[85px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+              className="flex-grow w-[85px] px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-100 placeholder-gray-400 dark:placeholder-purple-300/50"
               disabled={isApplyingCoupon}
             />
             <button
               onClick={handleApplyCoupon}
               disabled={isApplyingCoupon || !couponCode.trim()}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-md shadow-sm hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isApplyingCoupon ? 'Applying...' : 'Apply'}
             </button>
           </div>
           {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
           {appliedCoupon && (
-            <div className="mt-2 p-2 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-md">
-              <p className="text-sm text-green-700 dark:text-green-300">
+            <div className="mt-2 p-2 bg-green-900/30 border border-green-500/30 rounded-md">
+              <p className="text-sm text-green-300">
                 Coupon "<strong>{appliedCoupon.code}</strong>" applied! ({appliedCoupon.description || (appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}% off` : `₹${appliedCoupon.discountValue} off`)})
               </p>
-              <p className="text-sm text-green-700 dark:text-green-300">
+              <p className="text-sm text-green-300">
                 Discount: -₹{couponDiscountAmount.toFixed(2)}
               </p>
             </div>
@@ -730,11 +730,11 @@ const handleClearCart = async () => {
           </div>
         )}
 
-        <div className="border-t border-gray-300 dark:border-gray-700 my-4"></div>
+        <div className="border-t border-purple-500/20 my-4"></div>
         
-        <div className="flex justify-between text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="flex justify-between text-lg font-semibold text-gray-900 dark:text-purple-100">
           <span>Total Amount</span>
-          <span className="text-green-600 dark:text-green-400">₹{finalBill.toFixed(2)}</span>
+          <span className="text-green-400">₹{finalBill.toFixed(2)}</span>
         </div>
         
         {paymentError && (
@@ -744,13 +744,13 @@ const handleClearCart = async () => {
         <button
           onClick={handlePlaceOrder}
           disabled={isLoading || paymentLoading || cartItems.length === 0}
-          className="w-full bg-green-600 text-white py-3 rounded-md mt-5 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-green-600 text-white py-3 rounded-md mt-5 hover:bg-green-700 transition-colors shadow-lg dark:shadow-purple-500/20 hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {paymentLoading ? 'Processing Payment...' : 'Place Order & Pay'}
         </button>
         
         <div className="mt-4 space-y-2">
-          <Link to="/shop" className="block w-full text-center border border-gray-300 dark:border-gray-600 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors">
+          <Link to="/shop" className="block w-full text-center border border-purple-500/30 py-2 rounded-md hover:bg-purple-900/30 text-purple-200 transition-colors">
             Continue Shopping
           </Link>
         </div>
@@ -760,3 +760,10 @@ const handleClearCart = async () => {
 };
 
 export default ShoppingCart;
+
+
+
+
+
+
+

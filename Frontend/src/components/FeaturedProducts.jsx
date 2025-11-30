@@ -99,7 +99,7 @@ const FeaturedProducts = () => {
 
   if (isLoading) {
     return (
-      <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="h-10 w-64 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg mx-auto mb-4"></div>
@@ -117,7 +117,7 @@ const FeaturedProducts = () => {
 
   if (error) {
     return (
-      <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+      <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E]">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-red-500 dark:text-red-400">Failed to load featured products</p>
         </div>
@@ -130,11 +130,11 @@ const FeaturedProducts = () => {
   }
 
   return (
-    <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-purple-100 mb-4">
             Featured Products
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
@@ -149,7 +149,7 @@ const FeaturedProducts = () => {
         <div className="text-center mt-12">
           <Link
             to="/shop?sortBy=popular&filter=all"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg dark:shadow-purple-500/20"
           >
             View All Products
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

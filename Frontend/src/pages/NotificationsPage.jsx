@@ -52,8 +52,8 @@ const NotificationsPage = () => {
     switch (priority) {
       case 'high': return 'border-l-red-500 bg-red-50 dark:bg-red-900/20';
       case 'medium': return 'border-l-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
-      case 'low': return 'border-l-gray-500 bg-gray-50 dark:bg-gray-900/20';
-      default: return 'border-l-gray-500 bg-gray-50 dark:bg-gray-900/20';
+      case 'low': return 'border-l-gray-500 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E]/20';
+      default: return 'border-l-gray-500 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E]/20';
     }
   };
 
@@ -94,7 +94,7 @@ const NotificationsPage = () => {
                   navigator.clipboard.writeText(data.couponCode);
                   // You could add a toast notification here
                 }}
-                className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 transition-colors"
+                className="text-xs bg-blue-600 dark:bg-purple-600 text-white px-2 py-1 rounded hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors"
               >
                 Copy
               </button>
@@ -148,13 +148,13 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 md:py-8 pt-20 md:pt-24">
+    <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] py-6 md:py-8 pt-20 md:pt-24">
       <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-purple-100 flex flex-wrap items-center gap-2 sm:gap-3">
                 <i className="ri-notification-3-line"></i>
                 <span>Notifications</span>
                 {unreadCount > 0 && (
@@ -163,7 +163,7 @@ const NotificationsPage = () => {
                   </span>
                 )}
               </h1>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-purple-300 mt-1 sm:mt-2">
                 Stay updated with your latest activities and offers
               </p>
             </div>
@@ -173,7 +173,7 @@ const NotificationsPage = () => {
                 <>
                   <button
                     onClick={handleMarkAllAsRead}
-                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
+                    className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600 dark:bg-purple-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base"
                   >
                     <i className="ri-check-double-line"></i>
                     <span className="hidden sm:inline">Mark All Read</span>
@@ -208,8 +208,8 @@ const NotificationsPage = () => {
                 onClick={() => setFilter(key)}
                 className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-colors text-xs sm:text-sm ${
                   filter === key
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'bg-blue-600 dark:bg-purple-600 text-gray-900 dark:text-white'
+                    : 'bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <i className={icon}></i>
@@ -243,10 +243,10 @@ const NotificationsPage = () => {
           ) : filteredNotifications.length === 0 ? (
             <div className="text-center py-12">
               <i className="ri-notification-off-line text-6xl text-gray-400 mb-4"></i>
-              <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-medium text-gray-900 dark:text-purple-100 mb-2">
                 {filter === 'all' ? 'No notifications yet' : `No ${filter.replace('_', ' ')} notifications`}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-purple-300">
                 {filter === 'all' 
                   ? "We'll notify you about important updates and offers"
                   : `You don't have any ${filter.replace('_', ' ')} notifications`
@@ -264,7 +264,7 @@ const NotificationsPage = () => {
                   transition={{ delay: index * 0.05 }}
                   className={`${getPriorityColor(notification.priority, notification.type)} ${
                     !notification.isRead ? 'ring-2 ring-blue-500/20' : ''
-                  } hover:shadow-md transition-all cursor-pointer`}
+                  } hover:shadow-md dark:shadow-purple-500/20 transition-all cursor-pointer`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="p-4 sm:p-6">
@@ -276,7 +276,7 @@ const NotificationsPage = () => {
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 sm:mb-2">
-                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">
+                            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-purple-100 break-words">
                               {notification.title}
                             </h3>
                             {!notification.isRead && (
@@ -284,7 +284,7 @@ const NotificationsPage = () => {
                             )}
                           </div>
                           
-                          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-2 sm:mb-3 leading-relaxed">
+                          <p className="text-sm sm:text-base text-gray-700 dark:text-purple-200 mb-2 sm:mb-3 leading-relaxed">
                             {notification.message}
                           </p>
                           
@@ -301,7 +301,7 @@ const NotificationsPage = () => {
                                   />
                                 )}
                                 <div className="flex-1">
-                                  <p className="font-medium text-gray-900 dark:text-white">
+                                  <p className="font-medium text-gray-900 dark:text-purple-100">
                                     {notification.product.name}
                                   </p>
                                   {notification.product.price && (
@@ -315,7 +315,7 @@ const NotificationsPage = () => {
                           )}
                           
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200 dark:border-gray-600">
-                            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               {new Date(notification.createdAt).toLocaleString()}
                             </span>
                             {notification.actionUrl && (
@@ -341,7 +341,7 @@ const NotificationsPage = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-2 sm:px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
+                className="px-2 sm:px-3 py-2 rounded-lg bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 border border-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
               >
                 <i className="ri-arrow-left-line"></i>
               </button>
@@ -353,7 +353,7 @@ const NotificationsPage = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(pagination.pages, prev + 1))}
                 disabled={currentPage === pagination.pages}
-                className="px-2 sm:px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
+                className="px-2 sm:px-3 py-2 rounded-lg bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 border border-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 text-sm sm:text-base"
               >
                 <i className="ri-arrow-right-line"></i>
               </button>
@@ -366,3 +366,10 @@ const NotificationsPage = () => {
 };
 
 export default NotificationsPage;
+
+
+
+
+
+
+

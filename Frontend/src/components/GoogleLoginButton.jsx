@@ -10,7 +10,7 @@ const GoogleLoginButton = () => {
     <div className="w-full flex justify-center">
       <button
         onClick={handleGoogleLogin}
-        className="w-full max-w-md flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="w-full max-w-md flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-purple-500/30 rounded-lg hover:bg-gray-50 transition-colors"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path
@@ -37,3 +37,7 @@ const GoogleLoginButton = () => {
 };
 
 export default GoogleLoginButton;
+
+
+
+

@@ -264,9 +264,9 @@ const RegisterPage = () => {
     <>
 
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
+      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
         <CardContainer containerClassName="py-0" className="w-full max-w-md"> {/* Reverted to max-w-md */}
-          <CardBody className="bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
+          <CardBody className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
             <CardItem
               as="h3"
               translateZ="60"
@@ -277,7 +277,7 @@ const RegisterPage = () => {
             <CardItem
               as="h4"
               translateZ="50"
-              className="text-xl md:text-2xl mb-6 text-center text-gray-600 dark:text-gray-400 w-full"
+              className="text-xl md:text-2xl mb-6 text-center text-purple-300 w-full"
             >
               Create your account
             </CardItem>
@@ -285,10 +285,10 @@ const RegisterPage = () => {
             {/* Main Registration Form */}
             <form onSubmit={handleInitialRegisterSubmit} className="w-full">
               <CardItem translateZ="40" className="mb-4 w-full">
-                <label htmlFor="fullname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                <label htmlFor="fullname" className="block text-sm font-medium text-purple-200 mb-1">Full Name</label>
                 <input
                   id="fullname"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   type="text"
                   placeholder="John Doe"
                   name="fullname"
@@ -299,10 +299,10 @@ const RegisterPage = () => {
                 />
               </CardItem>
               <CardItem translateZ="30" className="mb-4 w-full">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                <label htmlFor="email" className="block text-sm font-medium text-purple-200 mb-1">Email Address</label>
                 <input
                   id="email"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   type="email"
                   placeholder="you@example.com"
                   name="email"
@@ -313,10 +313,10 @@ const RegisterPage = () => {
                 />
               </CardItem>
               <CardItem translateZ="20" className="mb-6 w-full">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <label htmlFor="password" className="block text-sm font-medium text-purple-200 mb-1">Password</label>
                 <PasswordInput
                   id="password"
-                  className="bg-gray-100 dark:bg-gray-700 block w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -327,7 +327,7 @@ const RegisterPage = () => {
               <CardItem translateZ="10" className="w-full">
                 <button
                   type="submit" // This button now triggers OTP sending
-                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
                   disabled={isOtpSending || showOtpModal || !formData.email || !formData.fullname || !formData.password}
                 >
                   {isOtpSending ? 'Sending OTP...' : 'Register'}
@@ -337,9 +337,9 @@ const RegisterPage = () => {
 
             {/* Divider */}
             <CardItem translateZ="5" className="flex items-center justify-center my-4 w-full">
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
-              <span className="px-4 text-sm text-gray-500 dark:text-gray-400">OR</span>
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+              <div className="flex-grow border-t border-purple-500/30"></div>
+              <span className="px-4 text-sm text-gray-600 dark:text-purple-300">OR</span>
+              <div className="flex-grow border-t border-purple-500/30"></div>
             </CardItem>
 
             {/* Google Login Button */}
@@ -348,7 +348,7 @@ const RegisterPage = () => {
             </div>
             
             <CardItem translateZ="5" className="text-center mt-6 w-full">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-purple-300">
                 Already have an account?
                 <Link
                   to="/login"
@@ -365,9 +365,9 @@ const RegisterPage = () => {
       {/* OTP Verification Modal */}
       {showOtpModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-          <div className={`relative p-8 border w-full max-w-md shadow-lg rounded-md ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300'}`}>
+          <div className={`relative p-8 border w-full max-w-md shadow-lg dark:shadow-purple-500/20 rounded-md ${theme === 'dark' ? 'bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border-gray-700' : 'bg-white dark:bg-[#2A1F47] border-gray-300 dark:border-purple-500/30'}`}>
             {/* Removed the explicit close button */}
-            <h3 className={`text-2xl text-center mb-6 font-light ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>Verify Your Email</h3>
+            <h3 className={`text-2xl text-center mb-6 font-light ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900 dark:text-purple-100'}`}>Verify Your Email</h3>
             <p className={`mb-2 text-center text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
               An OTP has been sent to {formData.email}.
             </p>
@@ -400,7 +400,7 @@ const RegisterPage = () => {
                     onChange={(e) => handleOtpDigitChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onFocus={(e) => e.target.select()}
-                    className={`w-10 h-12 text-center text-xl font-semibold border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : 'bg-gray-100 text-gray-900 border-gray-300'} transition-colors`}
+                    className={`w-10 h-12 text-center text-xl font-semibold border rounded-md focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : 'bg-gray-100 dark:bg-[#2A1F47] text-purple-100 border-gray-300 dark:border-purple-500/30'} transition-colors`}
                     disabled={isLoading}
                     autoComplete="off"
                   />
@@ -408,7 +408,7 @@ const RegisterPage = () => {
               </div>
               <button
                 type="submit"
-                className="px-5 rounded-md py-3 bg-green-500 text-white w-full cursor-pointer hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50"
+                className="px-5 rounded-md py-3 bg-green-500 dark:bg-green-600 text-white w-full cursor-pointer hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50"
                 disabled={isLoading || otpDigits.join('').length !== 6}
               >
                 {isLoading ? 'Verifying & Registering...' : 'Verify & Create Account'}
@@ -431,3 +431,10 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+
+
+
+
+
+
+

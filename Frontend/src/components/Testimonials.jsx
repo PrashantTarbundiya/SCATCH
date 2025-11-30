@@ -62,7 +62,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700"
+      className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border-purple-500/20 rounded-2xl p-6 shadow-lg dark:shadow-purple-500/20 hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700"
     >
       <div className="flex items-center gap-4 mb-4">
         <img
@@ -71,7 +71,7 @@ const TestimonialCard = ({ testimonial, index }) => {
           className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
         />
         <div className="flex-1">
-          <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-purple-100">
             {testimonial.name}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -82,7 +82,7 @@ const TestimonialCard = ({ testimonial, index }) => {
       
       <StarRating rating={testimonial.rating} />
       
-      <p className="mt-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+      <p className="mt-4 text-purple-200 leading-relaxed">
         "{testimonial.content}"
       </p>
       
@@ -108,7 +108,7 @@ const Testimonials = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-purple-100 mb-4">
             What Our Customers Say
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
@@ -158,3 +158,7 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
+
+
+
+
