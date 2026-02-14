@@ -4,7 +4,7 @@ const SEO = ({
     title,
     description,
     keywords,
-    image = '/src/assets/logo2.png',
+    image = '/logo2.png',
     type = 'website',
     canonicalUrl,
     schema

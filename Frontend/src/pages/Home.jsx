@@ -13,7 +13,7 @@ const Home = () => {
     "@type": "Organization",
     "name": "Scatch",
     "url": "https://scatch-livid.vercel.app",
-    "logo": "https://scatch-livid.vercel.app/src/assets/logo2.png",
+    "logo": "https://scatch-livid.vercel.app/logo2.png",
     "sameAs": [
       "https://x.com/prashant130406",
       "http://instagram.com/prashanttarbundiya/"
