@@ -28,6 +28,7 @@ const OwnerProtectedRoute = lazy(() => import('./components/OwnerProtectedRoute'
 const UserProtectedRoute = lazy(() => import('./components/UserProtectedRoute'));
 
 import Header from './components/Header';
+import MobileBottomNav from './components/MobileBottomNav';
 import AIAssistantButton from './components/AIAssistantButton';
 import { useUser } from './context/UserContext';
 
@@ -94,6 +95,9 @@ function AppContent() {
 
       {/* AI Assistant - show only on shop page when user is logged in */}
       {isShopPage && isAuthenticated && <AIAssistantButton />}
+
+      {/* Mobile Bottom Navigation - Visible on mobile for all routes (content adjusts checks internally) */}
+      <MobileBottomNav />
     </>
   );
 }

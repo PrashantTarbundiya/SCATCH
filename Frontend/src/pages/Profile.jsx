@@ -6,7 +6,7 @@ import { ProfileSkeleton } from '../components/ui/SkeletonLoader.jsx';
 import OrderStatusTracker from '../components/OrderStatusTracker';
 
 function ProfilePage() {
-  const { currentUser: user, setCurrentUser: setUser, isAuthenticated, authLoading } = useUser();
+  const { currentUser: user, setCurrentUser: setUser, isAuthenticated, authLoading, logoutUser } = useUser();
   const [profileData, setProfileData] = useState(null);
   const [pageLoading, setPageLoading] = useState(true); // Renamed from 'loading' to avoid conflict
   const [error, setError] = useState('');
@@ -14,6 +14,13 @@ function ProfilePage() {
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState('');
   const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
+
+  const handleUserLogout = async () => {
+    const result = await logoutUser();
+    if (result.success) {
+      window.location.href = '/login';
+    }
+  };
 
   // Placeholder for fetching user profile data
   useEffect(() => {
@@ -129,13 +136,22 @@ function ProfilePage() {
               <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-2">{profileData.name}</h1>
               <p className="text-lg font-bold text-gray-600 uppercase tracking-widest">{profileData.email}</p>
             </div>
-            <Link
-              to="/profile/edit"
-              className="w-full md:w-auto bg-white text-black font-black uppercase tracking-wider py-3 px-6 border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-2"
-            >
-              <i className="ri-edit-2-line text-xl"></i>
-              <span>Edit Profile</span>
-            </Link>
+            <div className="flex flex-col gap-3 w-full md:w-auto">
+              <Link
+                to="/profile/edit"
+                className="w-full bg-white text-black font-black uppercase tracking-wider py-3 px-6 border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-2"
+              >
+                <i className="ri-edit-2-line text-xl"></i>
+                <span>Edit Profile</span>
+              </Link>
+              <button
+                onClick={handleUserLogout}
+                className="w-full bg-red-500 text-white font-black uppercase tracking-wider py-3 px-6 border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-2"
+              >
+                <i className="ri-logout-box-line text-xl"></i>
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -198,8 +214,8 @@ function ProfilePage() {
                             </p>
                           </div>
                           <span className={`self-start sm:self-center px-4 py-1 text-xs font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${order.paymentStatus === 'paid' ? 'bg-green-400 text-black' :
-                              order.paymentStatus === 'pending' ? 'bg-yellow-400 text-black' :
-                                'bg-red-400 text-white'
+                            order.paymentStatus === 'pending' ? 'bg-yellow-400 text-black' :
+                              'bg-red-400 text-white'
                             }`}>
                             {order.paymentStatus}
                           </span>

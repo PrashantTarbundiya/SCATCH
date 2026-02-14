@@ -1,10 +1,11 @@
 import React from 'react';
-import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { NavLink, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useOwner } from '../context/OwnerContext';
 
 const AdminSidebar = () => {
     const { logoutOwnerContext } = useOwner();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Neo-brutalist Link Styles
     const linkStyle = 'flex items-center px-4 py-3 mx-2 mb-2 font-black uppercase text-sm border-2 border-transparent transition-all hover:border-black hover:bg-yellow-300 hover:shadow-neo-sm hover:-translate-y-[2px] hover:-translate-x-[2px] text-gray-800';
@@ -43,8 +44,12 @@ const AdminSidebar = () => {
                     <li>
                         <NavLink
                             to="/admin"
-                            end
-                            className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
+                            className={({ isActive }) => {
+                                // Custom check: Active only if exactly /admin or starting with /admin/edit-product
+                                // This prevents it from being active on /admin/sales, /admin/orders, etc.
+                                const isProductsActive = location.pathname === '/admin' || location.pathname.startsWith('/admin/edit-product');
+                                return isProductsActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle;
+                            }}
                         >
                             <i className="ri-dashboard-line text-xl mr-3"></i>
                             <span>Products</span>
