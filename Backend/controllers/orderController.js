@@ -319,7 +319,26 @@ export const createRazorpayOrder = async (req, res) => {
   }
 };
 
-export const verifyPaymentAndPlaceOrder = async (req, res) => {
+// --- FCFS Order Processing Queue ---
+// Create a queue with concurrency 1 to ensure sequential processing
+import { queue } from 'async';
+
+const orderProcessingQueue = queue(async (task, callback) => {
+  const { req, res } = task;
+  try {
+    await processOrder(req, res);
+  } catch (error) {
+    console.error('Error in order processing queue:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, message: 'Internal server error during order processing.' });
+    }
+  } finally {
+    callback();
+  }
+}, 1);
+
+// The actual order processing logic (refactored from verifyPaymentAndPlaceOrder)
+const processOrder = async (req, res) => {
   try {
     const {
       razorpay_order_id,
@@ -332,7 +351,7 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
       couponDiscount: frontendCalculatedCouponDiscount
     } = req.body;
 
-    const userId = req.user.id;
+    const userId = req.user.id; // User is already attached by middleware
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !items || items.length === 0 || !totalAmount) {
       return res.status(400).json({ success: false, message: 'Missing required payment or order details.' });
@@ -436,18 +455,26 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
 
     // Update product stock and purchase count
     for (const item of savedOrder.items) {
+      // Find the product first to check stock
       const product = await Product.findById(item.product);
+
       if (!product) {
         console.error(`Product with ID ${item.product} not found during stock update for order ${savedOrder._id}`);
-        continue;
+        continue; // Or handle as error
       }
 
+      // Check if enough stock exists BEFORE trying to update
       if (product.quantity < item.quantity) {
-        console.error(`CRITICAL: Insufficient stock for product ${product.name} (ID: ${item.product}) for order ${savedOrder._id}. Required: ${item.quantity}, Available: ${product.quantity}`);
+        console.error(`Stock mismatch for product ${product.name}. Req: ${item.quantity}, Avail: ${product.quantity}`);
         await Order.findByIdAndUpdate(savedOrder._id, { paymentStatus: 'failed_stock_issue', status: 'Failed - Stock Issue' });
-        throw new Error(`Insufficient stock for product ${product.name}. Please contact support regarding order ${savedOrder._id}.`);
+        return res.status(409).json({
+          success: false,
+          message: `Insufficient stock for ${product.name}. Your payment will be refunded.`,
+          error: 'Stock Limit Exceeded'
+        });
       }
 
+      // Atomic update
       const updateResult = await Product.updateOne(
         { _id: item.product, quantity: { $gte: item.quantity } },
         {
@@ -459,9 +486,13 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
       );
 
       if (updateResult.modifiedCount === 0) {
-        console.error(`CRITICAL: Failed to update stock for product ${product.name} (ID: ${item.product}) due to race condition or insufficient stock for order ${savedOrder._id}.`);
+        console.error(`Race condition hit for product ${product.name} (ID: ${item.product}). Order ${savedOrder._id}.`);
         await Order.findByIdAndUpdate(savedOrder._id, { paymentStatus: 'failed_stock_issue', status: 'Failed - Stock Issue' });
-        throw new Error(`Could not reserve stock for product ${product.name}. Please contact support regarding order ${savedOrder._id}.`);
+        return res.status(409).json({
+          success: false,
+          message: `Insufficient stock for ${product.name}. Your payment will be refunded.`,
+          error: 'Stock Limit Exceeded'
+        });
       }
     }
 
@@ -478,8 +509,6 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
     if (user) {
       user.cart = [];
       await user.save();
-    } else {
-      console.error(`User not found when trying to clear cart for order ${savedOrder._id}`);
     }
 
     res.status(200).json({
@@ -489,9 +518,21 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error verifying payment and placing order:', error);
-    res.status(500).json({ success: false, message: 'Internal server error.', error: error.message });
+    console.error('Error in processOrder:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, message: 'Internal server error.', error: error.message });
+    }
   }
+};
+
+export const verifyPaymentAndPlaceOrder = (req, res) => {
+  // Push the request context to the queue
+  orderProcessingQueue.push({ req, res }, (err) => {
+    if (err) {
+      console.error('Queue processing error:', err);
+      // Response is handled inside the queue worker or processOrder
+    }
+  });
 };
 
 export const getUserOrders = async (req, res) => {
