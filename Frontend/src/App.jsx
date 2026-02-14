@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import './App.css';
+
 
 // Lazy load components
 const Home = lazy(() => import('./pages/Home'));
@@ -41,10 +41,10 @@ const PageLoader = () => (
 function AppContent() {
   const location = useLocation();
   const { isAuthenticated } = useUser();
-  
+
   // Check if current route is an admin route or home page
   const isAdminRoute = location.pathname.startsWith('/admin') ||
-                      location.pathname.startsWith('/create-product');
+    location.pathname.startsWith('/create-product');
   const isHomePage = location.pathname === '/';
   const isShopPage = location.pathname === '/shop';
 
@@ -52,46 +52,46 @@ function AppContent() {
     <>
       {/* Conditionally render Header - exclude from admin routes */}
       {!isAdminRoute && <Header />}
-      
-      <main className={isAdminRoute ? "w-full" : isHomePage ? "w-full" : "py-8 w-full bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] min-h-screen"}>
+
+      <main className={isAdminRoute ? "w-full" : "min-h-screen w-full bg-background text-foreground"}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/owner-login" element={<OwnerLoginPage />} />
-          
-          {/* Protected User Routes */}
-          <Route element={<UserProtectedRoute />}>
-            <Route path="/shop" element={<ShopPage />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/profile/edit" element={<EditProfilePage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/product/:productId" element={<ProductDetailPage />} />
-            <Route path="/product/:productId/reviews" element={<ProductReviewPage />} />
-          </Route>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/owner-login" element={<OwnerLoginPage />} />
 
-          {/* Protected Owner Routes */}
-          <Route element={<OwnerProtectedRoute />}>
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/sales" element={<AdminSalesPage />} />
-            <Route path="/create-product" element={<CreateProduct />} />
-            <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
-            <Route path="/admin/coupons" element={<ManageCoupons />} />
-            <Route path="/admin/create-coupon" element={<CreateCoupon />} />
-            <Route path="/admin/edit-coupon/:couponId" element={<EditCoupon />} />
-            <Route path="/admin/orders" element={<AdminOrdersPage />} />
+            {/* Protected User Routes */}
+            <Route element={<UserProtectedRoute />}>
+              <Route path="/shop" element={<ShopPage />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile/edit" element={<EditProfilePage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/product/:productId" element={<ProductDetailPage />} />
+              <Route path="/product/:productId/reviews" element={<ProductReviewPage />} />
+            </Route>
 
-          </Route>
-          
-          {/* Catch-all route for 404 Not Found */}
-          <Route path="*" element={<NotFoundPage />} />
+            {/* Protected Owner Routes */}
+            <Route element={<OwnerProtectedRoute />}>
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/sales" element={<AdminSalesPage />} />
+              <Route path="/create-product" element={<CreateProduct />} />
+              <Route path="/admin/edit-product/:productId" element={<CreateProduct />} />
+              <Route path="/admin/coupons" element={<ManageCoupons />} />
+              <Route path="/admin/create-coupon" element={<CreateCoupon />} />
+              <Route path="/admin/edit-coupon/:couponId" element={<EditCoupon />} />
+              <Route path="/admin/orders" element={<AdminOrdersPage />} />
+
+            </Route>
+
+            {/* Catch-all route for 404 Not Found */}
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </main>
-      
+
       {/* AI Assistant - show only on shop page when user is logged in */}
       {isShopPage && isAuthenticated && <AIAssistantButton />}
     </>

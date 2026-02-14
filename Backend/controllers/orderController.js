@@ -9,7 +9,7 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import { sendOrderConfirmationEmail } from '../utils/email-service.js';
 
-// Modern color palette
+// Modern color palette (kept for backward compatibility if needed, though replaced in function)
 const colors = {
   primary: '#2D3436',
   secondary: '#00B894',
@@ -22,18 +22,18 @@ const colors = {
 
 async function generateModernInvoicePDF(order) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ 
-      margin: 30, 
+    const doc = new PDFDocument({
+      margin: 40,
       size: 'A4',
       layout: 'portrait',
       bufferPages: true,
       info: {
-        Title: `Invoice - ${order._id}`,
-        Author: 'Scatch',
+        Title: `INVOICE - ${order._id}`,
+        Author: 'SCATCH',
         Subject: 'Order Invoice'
       }
     });
-    
+
     let buffers = [];
     doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
@@ -46,209 +46,250 @@ async function generateModernInvoicePDF(order) {
     const pageHeight = doc.page.height;
     const margin = 40;
 
-    // Modern header background
-    doc.rect(0, 0, pageWidth, 120)
-       .fill(colors.primary);
+    // Neo-brutalist styling constants
+    const colors = {
+      black: '#000000',
+      white: '#FFFFFF',
+      yellow: '#FFEB3B',
+      blue: '#3B82F6',
+      red: '#EF4444',
+      gray: '#F3F4F6'
+    };
 
-    // Brand logo placeholder (you'll need to replace with actual logo path)
-    // doc.image('path/to/your/logo.png', margin, 25, { width: 80, height: 40 });
-    
-    // Company name as text (replace with logo when available)
+    // Helper to draw a box with hard shadow
+    const drawBox = (x, y, w, h, bgColor = colors.white, borderColor = colors.black, shadow = true) => {
+      if (shadow) {
+        doc.rect(x + 4, y + 4, w, h).fill(colors.black); // Hard shadow
+      }
+      doc.rect(x, y, w, h).fillAndStroke(bgColor, borderColor);
+      doc.lineWidth(2).stroke(borderColor); // Thick borders
+    };
+
+    // --- Header ---
+    const logoY = 40;
+    doc.fontSize(36)
+      .font('Helvetica-Bold')
+      .fillColor(colors.black)
+      .text('SCATCH', margin, logoY);
+
+    doc.fontSize(10)
+      .font('Helvetica-Bold')
+      .text('NEO-SHOPPING EXPERIENCE', margin, logoY + 35);
+
+    // Invoice Details Box
+    const invoiceBoxW = 200;
+    const invoiceBoxH = 85;
+    const invoiceBoxX = pageWidth - margin - invoiceBoxW;
+    const invoiceBoxY = 30;
+
+    drawBox(invoiceBoxX, invoiceBoxY, invoiceBoxW, invoiceBoxH, colors.white, colors.black, true);
+
+    doc.fillColor(colors.black)
+      .fontSize(20)
+      .font('Helvetica-Bold')
+      .text('INVOICE', invoiceBoxX + 15, invoiceBoxY + 15);
+
+    doc.fontSize(10)
+      .font('Helvetica-Bold')
+      .text(`#${order._id.toString().slice(-8).toUpperCase()}`, invoiceBoxX + 15, invoiceBoxY + 45)
+      .text(`DATE: ${order.orderDate.toLocaleDateString('en-GB')}`, invoiceBoxX + 15, invoiceBoxY + 60);
+
+    // --- Billing & Shipping ---
+    let currentY = 140;
+    const sectionW = (pageWidth - (margin * 2) - 20) / 2;
+
+    // Bill To Section
+    drawBox(margin, currentY, sectionW, 110, colors.white, colors.black, true);
+
+    // Label Strip
+    doc.rect(margin, currentY, sectionW, 25).fill(colors.black);
     doc.fillColor(colors.white)
-       .fontSize(28)
-       .font('Helvetica-Bold')
-       .text('SCATCH', margin, 35);
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text('BILL TO', margin + 10, currentY + 7);
 
-    // Tagline
-    doc.fontSize(12)
-       .font('Helvetica')
-       .text('Premium Shopping Experience', margin, 70);
+    doc.fillColor(colors.black)
+      .fontSize(10)
+      .font('Helvetica-Bold')
+      .text((order.user.fullname || order.user.username).toUpperCase(), margin + 10, currentY + 35, { width: sectionW - 20, ellipsis: true });
 
-    // Invoice title
-    doc.fillColor(colors.accent)
-       .fontSize(24)
-       .font('Helvetica-Bold')
-       .text('INVOICE', pageWidth - 150, 35, { width: 110, align: 'right' });
+    doc.font('Courier')
+      .fontSize(10);
 
-    // Invoice details in header
-    doc.fillColor(colors.white)
-       .fontSize(10)
-       .font('Helvetica')
-       .text(`Invoice #${order._id.toString().slice(-8).toUpperCase()}`, pageWidth - 150, 70, { width: 110, align: 'right' })
-       .text(`Date: ${order.orderDate.toLocaleDateString('en-GB')}`, pageWidth - 150, 85, { width: 110, align: 'right' });
+    // Move to next line naturally
+    let billAddrY = currentY + 50;
+    doc.text(order.user.email, margin + 10, billAddrY, { width: sectionW - 20 });
 
-    // Reset Y position after header
-    let currentY = 150;
-
-    // Billing section
-    doc.fillColor(colors.text)
-       .fontSize(14)
-       .font('Helvetica-Bold')
-       .text('BILL TO:', margin, currentY);
-
-    currentY += 25;
-    doc.fontSize(12)
-       .font('Helvetica')
-       .fillColor(colors.text)
-       .text(order.user.fullname || order.user.username, margin, currentY);
-
-    currentY += 15;
-    doc.text(order.user.email, margin, currentY);
-
+    // Ship To Section
     if (order.shippingAddress) {
-      currentY += 15;
-      doc.text(`${order.shippingAddress.street || ''}`, margin, currentY);
-      currentY += 15;
-      doc.text(`${order.shippingAddress.city || ''}, ${order.shippingAddress.postalCode || ''}`, margin, currentY);
-      currentY += 15;
-      doc.text(`${order.shippingAddress.country || ''}`, margin, currentY);
+      const shipX = margin + sectionW + 20;
+      drawBox(shipX, currentY, sectionW, 110, colors.white, colors.black, true);
+
+      doc.rect(shipX, currentY, sectionW, 25).fill(colors.black);
+      doc.fillColor(colors.white)
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text('SHIP TO', shipX + 10, currentY + 7);
+
+      doc.fillColor(colors.black)
+        .font('Courier')
+        .fontSize(10);
+
+      // Dynamic address positioning
+      let addrY = currentY + 35;
+      const addrWidth = sectionW - 20;
+
+      const street = (order.shippingAddress.street || '').toUpperCase();
+      const cityState = `${(order.shippingAddress.city || '').toUpperCase()}, ${(order.shippingAddress.postalCode || '').toUpperCase()}`;
+      const country = (order.shippingAddress.country || '').toUpperCase();
+
+      doc.text(street, shipX + 10, addrY, { width: addrWidth });
+      addrY += doc.heightOfString(street, { width: addrWidth }) + 2;
+
+      doc.text(cityState, shipX + 10, addrY, { width: addrWidth });
+      addrY += doc.heightOfString(cityState, { width: addrWidth }) + 2;
+
+      doc.text(country, shipX + 10, addrY, { width: addrWidth });
     }
 
-    // Order details box
-    currentY += 30;
-    const boxWidth = pageWidth - 2 * margin;
-    const boxHeight = 30;
-    doc.rect(margin, currentY, boxWidth, boxHeight)
-       .fill(colors.lightGray);
+    // --- Order Details Banner ---
+    currentY += 130;
+    const detailsH = 40;
+    drawBox(margin, currentY, pageWidth - (margin * 2), detailsH, colors.yellow, colors.black, true);
 
-    // Calculate column widths for proper alignment
-    const col1Width = boxWidth * 0.33;
-    const col2Width = boxWidth * 0.33;
-    const col3Width = boxWidth * 0.34;
+    const colW = (pageWidth - (margin * 2)) / 3;
+    doc.fillColor(colors.black)
+      .font('Helvetica-Bold')
+      .fontSize(10);
 
-    doc.fillColor(colors.primary)
-       .fontSize(10)
-       .font('Helvetica-Bold')
-       .text('Order ID:', margin + 10, currentY + 8, { width: col1Width - 10 })
-       .text('Payment ID:', margin + col1Width, currentY + 8, { width: col2Width })
-       .text('Status:', margin + col1Width + col2Width, currentY + 8, { width: col3Width });
+    doc.text('ORDER ID', margin + 10, currentY + 8)
+      .text('PAYMENT ID', margin + colW, currentY + 8)
+      .text('STATUS', margin + (colW * 2), currentY + 8);
 
-    doc.font('Helvetica')
-       .text(order.razorpayOrderId, margin + 10, currentY + 20, { width: col1Width - 10, ellipsis: true })
-       .text(order.razorpayPaymentId.slice(-16), margin + col1Width, currentY + 20, { width: col2Width, ellipsis: true })
-       .text('PAID', margin + col1Width + col2Width, currentY + 20, { width: col3Width });
+    doc.font('Courier')
+      .text(order.razorpayOrderId, margin + 10, currentY + 22)
+      .text(order.razorpayPaymentId.slice(-16), margin + colW, currentY + 22)
+      .text('PAID', margin + (colW * 2), currentY + 22);
 
-    // Items table
+    // --- Items Table ---
     currentY += 60;
-    
-    // Table header
-    doc.rect(margin, currentY, pageWidth - 2 * margin, 35)
-       .fill(colors.secondary);
+    const tableW = pageWidth - (margin * 2);
+    const headerH = 30;
 
-    const itemColWidth = 280;
-    const qtyColWidth = 60;
-    const priceColWidth = 80;
-    const totalColWidth = 90;
+    // Header
+    doc.rect(margin, currentY, tableW, headerH).fill(colors.black);
+
+    const qtyW = 60;
+    const priceW = 80;
+    const totalW = 90;
+    const itemW = tableW - qtyW - priceW - totalW;
 
     doc.fillColor(colors.white)
-       .fontSize(11)
-       .font('Helvetica-Bold')
-       .text('ITEM', margin + 10, currentY + 12)
-       .text('QTY', margin + itemColWidth, currentY + 12, { width: qtyColWidth, align: 'center' })
-       .text('PRICE', margin + itemColWidth + qtyColWidth, currentY + 12, { width: priceColWidth, align: 'center' })
-       .text('TOTAL', margin + itemColWidth + qtyColWidth + priceColWidth, currentY + 12, { width: totalColWidth, align: 'center' });
+      .font('Helvetica-Bold')
+      .fontSize(10)
+      .text('ITEM', margin + 10, currentY + 10)
+      .text('QTY', margin + itemW, currentY + 10, { width: qtyW, align: 'center' })
+      .text('PRICE', margin + itemW + qtyW, currentY + 10, { width: priceW, align: 'center' })
+      .text('TOTAL', margin + itemW + qtyW + priceW, currentY + 10, { width: totalW, align: 'center' });
 
-    currentY += 35;
+    currentY += headerH;
 
-    // Table rows
-    order.items.forEach((item, index) => {
-      const rowColor = index % 2 === 0 ? colors.white : '#F8F9FA';
-      const rowHeight = 35;
-      
-      doc.rect(margin, currentY, pageWidth - 2 * margin, rowHeight)
-         .fill(rowColor);
+    // Rows
+    order.items.forEach((item) => {
+      const rowH = 40;
 
-      doc.fillColor(colors.text)
-         .fontSize(10)
-         .font('Helvetica')
-         .text(item.nameAtPurchase, margin + 10, currentY + 12, { width: itemColWidth - 20, ellipsis: true });
+      // Row Box Outline
+      doc.rect(margin, currentY, tableW, rowH).stroke(colors.black);
 
-      doc.text(item.quantity.toString(), margin + itemColWidth, currentY + 12, { width: qtyColWidth, align: 'center' });
-      
-      doc.text(`₹${item.priceAtPurchase.toFixed(2)}`, margin + itemColWidth + qtyColWidth, currentY + 12, { width: priceColWidth, align: 'center' });
-      
-      doc.text(`₹${(item.quantity * item.priceAtPurchase).toFixed(2)}`, margin + itemColWidth + qtyColWidth + priceColWidth, currentY + 12, { width: totalColWidth, align: 'center' });
+      // Vertical Dividers
+      doc.moveTo(margin + itemW, currentY).lineTo(margin + itemW, currentY + rowH).stroke();
+      doc.moveTo(margin + itemW + qtyW, currentY).lineTo(margin + itemW + qtyW, currentY + rowH).stroke();
+      doc.moveTo(margin + itemW + qtyW + priceW, currentY).lineTo(margin + itemW + qtyW + priceW, currentY + rowH).stroke();
 
-      currentY += rowHeight;
+      doc.fillColor(colors.black)
+        .font('Helvetica-Bold')
+        .fontSize(10)
+        .text(item.nameAtPurchase.toUpperCase(), margin + 10, currentY + 15, { width: itemW - 20, ellipsis: true });
+
+      doc.font('Courier')
+        .text(item.quantity.toString(), margin + itemW, currentY + 15, { width: qtyW, align: 'center' })
+        .text(`Rs.${item.priceAtPurchase.toFixed(2)}`, margin + itemW + qtyW, currentY + 15, { width: priceW, align: 'center' })
+        .text(`Rs.${(item.quantity * item.priceAtPurchase).toFixed(2)}`, margin + itemW + qtyW + priceW, currentY + 15, { width: totalW, align: 'center' });
+
+      currentY += rowH;
     });
 
-    // Totals section
-    currentY += 10;
-    const totalsStartY = currentY;
+    // --- Totals ---
+    currentY += 20;
+    const totalsW = 250;
+    const totalsX = pageWidth - margin - totalsW;
 
-    // Subtotal
+    // Subtotal & Discount
     if (order.couponDiscountAmount > 0) {
-      const subtotal = order.totalAmount + order.couponDiscountAmount;
-      const labelX = pageWidth - margin - 230;
-      const valueX = pageWidth - margin - 100;
-      
-      doc.fontSize(11)
-         .font('Helvetica')
-         .fillColor(colors.text)
-         .text('Subtotal:', labelX, currentY, { width: 130, align: 'right' })
-         .text(`₹${subtotal.toFixed(2)}`, valueX, currentY, { width: 100, align: 'right' });
+      doc.font('Helvetica-Bold')
+        .fontSize(10)
+        .text('SUBTOTAL:', totalsX, currentY, { width: 100, align: 'right' });
+      doc.font('Courier')
+        .text(`Rs.${(order.totalAmount + order.couponDiscountAmount).toFixed(2)}`, totalsX + 110, currentY, { width: 130, align: 'right' });
 
       currentY += 20;
 
-      // Coupon discount
-      doc.fillColor(colors.secondary)
-         .text('Coupon Discount:', labelX, currentY, { width: 130, align: 'right' })
-         .text(`-₹${order.couponDiscountAmount.toFixed(2)}`, valueX, currentY, { width: 100, align: 'right' });
+      doc.fillColor(colors.red)
+        .font('Helvetica-Bold')
+        .text('DISCOUNT:', totalsX, currentY, { width: 100, align: 'right' });
+      doc.fillColor(colors.black)
+        .font('Courier')
+        .text(`-Rs.${order.couponDiscountAmount.toFixed(2)}`, totalsX + 110, currentY, { width: 130, align: 'right' });
 
-      currentY += 25;
-    } else {
-      currentY += 5;
+      currentY += 30;
     }
 
-    // Total amount box - properly centered and aligned
-    const totalBoxWidth = 250;
-    const totalBoxX = pageWidth - margin - totalBoxWidth;
-    doc.rect(totalBoxX, currentY, totalBoxWidth, 40)
-       .fill(colors.primary);
+    // Grand Total
+    drawBox(totalsX, currentY, totalsW, 50, colors.yellow, colors.black, true);
+
+    doc.fillColor(colors.black)
+      .font('Helvetica-Bold')
+      .fontSize(14)
+      .text('TOTAL AMOUNT', totalsX + 15, currentY + 18)
+      .fontSize(18)
+      .text(`Rs.${order.totalAmount.toFixed(2)}`, totalsX + 15, currentY + 15, { width: totalsW - 30, align: 'right' });
+
+    // --- Footer ---
+    const footerY = pageHeight - 80;
+
+    doc.rect(0, footerY, pageWidth, 80).fill(colors.black);
 
     doc.fillColor(colors.white)
-       .fontSize(14)
-       .font('Helvetica-Bold')
-       .text('TOTAL AMOUNT', totalBoxX + 15, currentY + 10, { width: totalBoxWidth - 130, align: 'left' })
-       .fontSize(18)
-       .text(`₹${order.totalAmount.toFixed(2)}`, totalBoxX + 15, currentY + 10, { width: totalBoxWidth - 30, align: 'right' });
+      .font('Helvetica-Bold')
+      .fontSize(12)
+      .text('THANK YOU FOR YOUR ORDER', 0, footerY + 25, { align: 'center' });
 
-    // Thank you section - only if space available
-    if (currentY < pageHeight - 150) {
-      const footerY = Math.max(currentY + 30, pageHeight - 120);
-      
-      doc.rect(0, footerY, pageWidth, 120)
-         .fill(colors.lightGray);
+    doc.fontSize(10)
+      .font('Courier')
+      .text('scatchotp@gmail.com', 0, footerY + 45, { align: 'center' });
 
-      doc.fillColor(colors.primary)
-         .fontSize(14)
-         .font('Helvetica-Bold')
-         .text('Thank you for your business!', 0, footerY + 25, { width: pageWidth, align: 'center' });
-
-      doc.fontSize(9)
-         .font('Helvetica')
-         .text('For any queries, contact us at scatchotp@gmail.com', 0, footerY + 50, { width: pageWidth, align: 'center' })
-         .text('Visit us at https://scatch-livid.vercel.app', 0, footerY + 65, { width: pageWidth, align: 'center' });
-    }
+    doc.fillColor(colors.blue)
+      .text('https://scatch-livid.vercel.app', 0, footerY + 60, {
+        align: 'center',
+        link: 'https://scatch-livid.vercel.app',
+        underline: true
+      });
 
     doc.end();
   });
 }
 
-
-
-// Replace the old functions in your existing code
 export const createRazorpayOrder = async (req, res) => {
   try {
     const { amount, currency = 'INR', receipt, notes, items, appliedCouponCode, couponDiscount: frontendCalculatedCouponDiscount } = req.body;
-    
+
     const orderAmount = Math.round(parseFloat(amount) * 100);
 
     if (!orderAmount || orderAmount <= 0) {
-        return res.status(400).json({ success: false, message: "Invalid amount provided." });
+      return res.status(400).json({ success: false, message: "Invalid amount provided." });
     }
     if (!items || items.length === 0) {
-        return res.status(400).json({ success: false, message: "No items in order." });
+      return res.status(400).json({ success: false, message: "No items in order." });
     }
 
     const options = {
@@ -383,16 +424,16 @@ export const verifyPaymentAndPlaceOrder = async (req, res) => {
     const savedOrder = await newOrder.save();
 
     if (actualAppliedCouponCode && backendCalculatedCouponDiscount > 0) {
-        try {
-            await Coupon.updateOne(
-                { code: actualAppliedCouponCode },
-                { $inc: { timesUsed: 1 } }
-            );
-        } catch (couponUpdateError) {
-            console.error(`Failed to increment usage for coupon ${actualAppliedCouponCode} for order ${savedOrder._id}:`, couponUpdateError);
-        }
+      try {
+        await Coupon.updateOne(
+          { code: actualAppliedCouponCode },
+          { $inc: { timesUsed: 1 } }
+        );
+      } catch (couponUpdateError) {
+        console.error(`Failed to increment usage for coupon ${actualAppliedCouponCode} for order ${savedOrder._id}:`, couponUpdateError);
+      }
     }
-    
+
     // Update product stock and purchase count
     for (const item of savedOrder.items) {
       const product = await Product.findById(item.product);
@@ -457,7 +498,7 @@ export const getUserOrders = async (req, res) => {
   try {
     const userId = req.user._id;
     if (!userId) {
-        return res.status(401).json({ success: false, message: 'User not authenticated.' });
+      return res.status(401).json({ success: false, message: 'User not authenticated.' });
     }
 
     const orders = await Order.find({ user: userId })

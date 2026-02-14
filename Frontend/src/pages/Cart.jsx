@@ -2,14 +2,13 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { useUser } from '../context/UserContext'; // Import useUser
 import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
 import { validateCoupon } from '../services/couponService.js'; // Import coupon validation service, added .js
 import { CartSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 const MAX_QUANTITY = 10; // Define a maximum quantity for an item
 
 const ShoppingCart = () => {
-  const { theme } = useTheme(); // Consume theme
+  // Consume theme
   const { currentUser, isAuthenticated } = useUser();
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
@@ -86,7 +85,7 @@ const ShoppingCart = () => {
 
         let data;
         if (response.headers.get("content-type")?.includes("application/json")) {
-            data = await response.json();
+          data = await response.json();
         }
 
         if (!response.ok) {
@@ -149,9 +148,9 @@ const ShoppingCart = () => {
       });
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          data = await response.json();
+        data = await response.json();
       }
-      
+
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
@@ -192,7 +191,7 @@ const ShoppingCart = () => {
       setCouponError(null);
     }, 1500);
   };
-  
+
   const handleRemoveFromCart = async (productId) => {
     setIsLoading(true);
     setError(null);
@@ -206,7 +205,7 @@ const ShoppingCart = () => {
       });
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          data = await response.json();
+        data = await response.json();
       }
 
       if (!response.ok) {
@@ -227,7 +226,7 @@ const ShoppingCart = () => {
     }
   };
 
-const handleClearCart = async () => {
+  const handleClearCart = async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -240,7 +239,7 @@ const handleClearCart = async () => {
       });
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          data = await response.json();
+        data = await response.json();
       }
 
       if (!response.ok) {
@@ -276,7 +275,7 @@ const handleClearCart = async () => {
       totalDiscount += fixedDiscountAmount * quantity; // Sum of (Fixed Discount Amount * Quantity)
     });
   }
-  
+
   let couponDiscountAmount = 0;
   if (appliedCoupon) {
     const subtotalForCoupon = totalMRP - totalDiscount; // Coupon applies to this
@@ -318,22 +317,22 @@ const handleClearCart = async () => {
       });
 
       const stockData = await stockCheckResponse.json();
-      
+
       if (!stockCheckResponse.ok) {
         if (stockData.outOfStock && stockData.outOfStock.length > 0) {
           const outOfStockItems = stockData.outOfStock.map(item => item.name).join(', ');
           setPaymentError(`Sorry, these items are out of stock: ${outOfStockItems}`);
           return;
         }
-        
+
         if (stockData.insufficientStock && stockData.insufficientStock.length > 0) {
-          const insufficientItems = stockData.insufficientStock.map(item => 
+          const insufficientItems = stockData.insufficientStock.map(item =>
             `${item.name} (only ${item.available} available)`
           ).join(', ');
           setPaymentError(`Insufficient stock for: ${insufficientItems}`);
           return;
         }
-        
+
         setPaymentError(stockData.message || 'Stock validation failed.');
         return;
       }
@@ -463,7 +462,7 @@ const handleClearCart = async () => {
       setPaymentLoading(false);
     }
   };
-  
+
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       setCouponError("Please enter a coupon code.");
@@ -509,37 +508,42 @@ const handleClearCart = async () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100">
-        <p className="text-xl mb-4">Please log in to view your cart.</p>
-        <Link to="/login" className="px-4 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded shadow-lg dark:shadow-purple-500/20 hover:shadow-purple-500/30">
-          Go to Login
-        </Link>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 bg-background text-foreground">
+        <div className="p-8 border-4 border-black shadow-neo bg-white text-center">
+          <p className="text-xl font-bold mb-4 uppercase">Please log in to view your cart.</p>
+          <Link to="/login" className="px-6 py-3 bg-primary text-primary-foreground font-black uppercase text-sm border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all inline-block">
+            Go to Login
+          </Link>
+        </div>
       </div>
     );
   }
-  
+
   if (error) {
-    return <div className="w-full min-h-screen flex items-center justify-center py-20 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-red-400"><p>Error loading cart: {error}</p></div>;
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center py-20 bg-background">
+        <div className="p-8 border-4 border-red-500 shadow-neo bg-red-50 text-red-600 font-bold uppercase text-center border-dashed">
+          <p>Error loading cart: {error}</p>
+        </div>
+      </div>
+    );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100">
-        <div className="text-center max-w-md">
-          <div className="mb-6">
-            <svg className="mx-auto h-24 w-24 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0h15M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
+      <div className="w-full min-h-screen flex flex-col items-center justify-center py-20 px-4 bg-background text-foreground">
+        <div className="text-center max-w-md p-8 border-4 border-black shadow-neo bg-white">
+          <div className="mb-6 flex justify-center">
+            <div className="w-24 h-24 bg-gray-100 border-2 border-black rounded-full flex items-center justify-center">
+              <i className="ri-shopping-cart-line text-4xl text-gray-400"></i>
+            </div>
           </div>
-          <h2 className="text-2xl md:text-3xl font-semibold mb-4">Your Shopping Cart is Empty</h2>
-          <p className="text-purple-200 mb-8 text-sm md:text-base">Looks like you haven't added anything to your cart yet. Start shopping to fill it up!</p>
-          <Link 
-            to="/shop" 
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg transition-all font-medium shadow-lg dark:shadow-purple-500/20 hover:shadow-purple-500/30 transform hover:scale-105 duration-200"
+          <h2 className="text-3xl font-black mb-4 uppercase">Your Cart is Empty</h2>
+          <p className="text-gray-600 font-bold mb-8 text-sm uppercase">Looks like you haven't added anything to your cart yet.</p>
+          <Link
+            to="/shop"
+            className="inline-flex items-center px-8 py-4 bg-secondary text-secondary-foreground font-black uppercase tracking-wider border-2 border-black shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
             Start Shopping
           </Link>
         </div>
@@ -548,55 +552,54 @@ const handleClearCart = async () => {
   }
 
   return (
-    <div className="w-full min-h-screen flex items-start py-10 md:py-20 gap-6 md:gap-10 flex-col lg:flex-row bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100 transition-colors duration-300 px-4 md:px-6 lg:px-8">
+    <div className="w-full min-h-screen flex items-start py-10 md:py-20 gap-6 md:gap-10 flex-col lg:flex-row bg-background px-4 md:px-6 lg:px-8">
       {/* Left Section - Cart Items */}
-      <div className="w-full lg:w-[60%] flex flex-col gap-5">
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-purple-100">Shopping Cart ({cartItems.length} items)</h2>
+      <div className="w-full lg:w-[60%] flex flex-col gap-6">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-3xl font-black uppercase text-foreground">Shopping Cart ({cartItems.length})</h2>
           {cartItems.length > 0 && (
             <button
               onClick={handleClearCart}
               disabled={isLoading}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 bg-red-500 text-white font-bold uppercase text-xs border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              <Trash2 size={18} /> Clear Cart
+              <Trash2 size={16} /> Clear Cart
             </button>
           )}
         </div>
-        
+
         {cartItems.map((item, index) => (
-          <div key={item._id || index} className="flex flex-col sm:flex-row gap-4 p-4 border border-purple-500/20 rounded-md bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10 transition-colors duration-300">
+          <div key={item._id || index} className="flex flex-col sm:flex-row gap-6 p-6 border-4 border-black bg-white shadow-neo transition-all">
             {/* Product Image */}
             <div
-              className="w-full sm:w-32 h-32 flex justify-center items-center rounded-md overflow-hidden self-center sm:self-start"
-              style={{ backgroundColor: item.bgcolor || (theme === 'dark' ? '#374151' : '#f0f0f0') }} // Theme-aware fallback bgcolor
+              className="w-full sm:w-32 h-32 flex justify-center items-center border-2 border-black bg-white p-2 flex-shrink-0"
             >
               <img
-                className="h-28 object-contain"
+                className="h-full w-full object-contain"
                 src={item.imageSrc || item.image}
                 alt={item.name || 'Product Image'}
               />
             </div>
-            
+
             {/* Product Details */}
             <div className="flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-purple-100">{item.name || 'Unnamed Product'}</h3>
+                <h3 className="text-xl font-black uppercase text-foreground mb-2">{item.name || 'Unnamed Product'}</h3>
                 {(() => {
                   const originalPrice = Number(item.price) || 0;
                   const fixedDiscountAmount = Number(item.discount) || 0; // Treat as fixed amount
                   const finalPricePerUnit = originalPrice - fixedDiscountAmount;
 
                   return (
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-lg font-semibold text-gray-900 dark:text-purple-100">₹{finalPricePerUnit.toFixed(2)}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl font-black text-foreground">₹{finalPricePerUnit.toFixed(2)}</span>
                       {fixedDiscountAmount > 0 && ( // Show if there's any discount
                         <>
-                          <span className="text-sm text-purple-300 line-through">
+                          <span className="text-sm text-gray-400 font-bold line-through decoration-2 decoration-red-500">
                             ₹{originalPrice.toFixed(2)}
                           </span>
-                          <span className="text-sm text-green-600 dark:text-green-400">
-                            (₹{fixedDiscountAmount.toFixed(2)} off)
+                          <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-black uppercase border border-black transform -rotate-2">
+                            ₹{fixedDiscountAmount.toFixed(0)} OFF
                           </span>
                         </>
                       )}
@@ -604,32 +607,32 @@ const handleClearCart = async () => {
                   );
                 })()}
               </div>
-              
+
               {/* Quantity Controls & Remove */}
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-between mt-4 gap-4">
+                <div className="flex items-center border-2 border-black shadow-neo-sm">
                   <button
                     onClick={() => handleQuantityChange(item._id, (item.quantity || 0) - 1)}
                     disabled={(item.quantity || 0) <= 1 || isLoading}
-                    className="w-8 h-8 bg-gray-200 dark:bg-gray-700 flex rounded-full items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-purple-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-10 h-10 bg-gray-100 flex items-center justify-center hover:bg-gray-200 text-black border-r-2 border-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    <Minus size={16} />
+                    <Minus size={18} strokeWidth={3} />
                   </button>
-                  <div className="px-3 py-1 bg-gray-100 dark:bg-gray-600 rounded-md text-gray-900 dark:text-purple-100">{item.quantity || 0}</div>
+                  <div className="w-12 h-10 flex items-center justify-center bg-white text-black font-black text-lg">{item.quantity || 0}</div>
                   <button
                     onClick={() => handleQuantityChange(item._id, (item.quantity || 0) + 1)}
                     disabled={(item.quantity || 0) >= MAX_QUANTITY || isLoading}
-                    className="w-8 h-8 bg-gray-200 dark:bg-gray-700 flex rounded-full items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-purple-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-10 h-10 bg-gray-100 flex items-center justify-center hover:bg-gray-200 text-black border-l-2 border-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    <Plus size={16} />
+                    <Plus size={18} strokeWidth={3} />
                   </button>
                 </div>
                 <button
                   onClick={() => handleRemoveFromCart(item._id)}
                   disabled={isLoading}
-                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-red-500 font-black uppercase text-sm hover:text-red-700 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed hover:underline decoration-2 underline-offset-4"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={16} strokeWidth={2.5} />
                   Remove
                 </button>
               </div>
@@ -637,121 +640,130 @@ const handleClearCart = async () => {
           </div>
         ))}
       </div>
-      
+
       {/* Right Section - Price Breakdown */}
-      <div className="w-full lg:w-[40%] bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-6 rounded-md h-fit sticky top-10 md:top-28 shadow-sm transition-colors duration-300"> {/* Adjusted top, theme bg */}
-        <h3 className="text-xl font-semibold mb-5 text-gray-900 dark:text-purple-100">Price Breakdown</h3>
+      <div className="w-full lg:w-[40%] bg-white border-4 border-black p-6 shadow-neo h-fit sticky top-24">
+        <h3 className="text-2xl font-black mb-6 uppercase border-b-4 border-black pb-2">Order Summary</h3>
 
         {/* Shipping Address Form */}
-        <div className="mb-6">
-          <h4 className="text-lg font-medium mb-3 text-gray-900 dark:text-purple-100">Shipping Address</h4>
+        <div className="mb-8">
+          <h4 className="text-sm font-black uppercase mb-3 flex items-center gap-2">
+            <i className="ri-map-pin-line text-lg"></i> Shipping Address
+          </h4>
           <div className="space-y-3">
             <div>
-              <label htmlFor="street" className="block text-sm font-medium text-gray-700 dark:text-purple-200">Street Address</label>
-              <input type="text" name="street" id="street" value={shippingAddress.street} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
+              <input type="text" name="street" placeholder="STREET ADDRESS" value={shippingAddress.street} onChange={handleShippingChange} required className="w-full px-3 py-2 border-2 border-black bg-gray-50 text-foreground text-sm font-bold uppercase placeholder-gray-400 focus:outline-none focus:shadow-neo-sm transition-all rounded-none" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <input type="text" name="city" placeholder="CITY" value={shippingAddress.city} onChange={handleShippingChange} required className="w-full px-3 py-2 border-2 border-black bg-gray-50 text-foreground text-sm font-bold uppercase placeholder-gray-400 focus:outline-none focus:shadow-neo-sm transition-all rounded-none" />
+              <input type="text" name="postalCode" placeholder="ZIP CODE" value={shippingAddress.postalCode} onChange={handleShippingChange} required className="w-full px-3 py-2 border-2 border-black bg-gray-50 text-foreground text-sm font-bold uppercase placeholder-gray-400 focus:outline-none focus:shadow-neo-sm transition-all rounded-none" />
             </div>
             <div>
-              <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-purple-200">City</label>
-              <input type="text" name="city" id="city" value={shippingAddress.city} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
-            </div>
-            <div>
-              <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 dark:text-purple-200">Postal Code</label>
-              <input type="text" name="postalCode" id="postalCode" value={shippingAddress.postalCode} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
-            </div>
-            <div>
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-purple-200">Country</label>
-              <input type="text" name="country" id="country" value={shippingAddress.country} onChange={handleShippingChange} required className="mt-1 block w-full px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50" />
+              <input type="text" name="country" placeholder="COUNTRY" value={shippingAddress.country} onChange={handleShippingChange} required className="w-full px-3 py-2 border-2 border-black bg-gray-50 text-foreground text-sm font-bold uppercase placeholder-gray-400 focus:outline-none focus:shadow-neo-sm transition-all rounded-none" />
             </div>
           </div>
         </div>
-        
-        <div className="space-y-3 text-gray-700 dark:text-purple-200">
+
+        <div className="space-y-3 text-sm font-bold uppercase">
           <div className="flex justify-between">
-            <span>Total MRP ({cartItems.length} items)</span>
+            <span className="text-gray-600">Total MRP ({cartItems.length} items)</span>
             <span>₹{totalMRP.toFixed(2)}</span>
           </div>
-          
-          <div className="flex justify-between text-green-600 dark:text-green-400">
+
+          <div className="flex justify-between text-green-600">
             <span>Discount on MRP</span>
             <span>-₹{totalDiscount.toFixed(2)}</span>
           </div>
-          
+
           <div className="flex justify-between">
-            <span>Platform Fee</span>
+            <span className="text-gray-600">Platform Fee</span>
             <span>₹{platformFee.toFixed(2)}</span>
           </div>
-          
+
           <div className="flex justify-between">
-            <span>Shipping Fee</span>
-            <span className="text-green-600 dark:text-green-400">FREE</span>
+            <span className="text-gray-600">Shipping Fee</span>
+            <span className="text-green-600">FREE</span>
           </div>
         </div>
 
         {/* Coupon Code Section */}
-        <div className="my-4 pt-4 border-t border-purple-500/20">
-          <label htmlFor="couponCode" className="block text-sm font-medium text-purple-200 mb-1">
+        <div className="my-6 pt-6 border-t-4 border-black border-dashed">
+          <label htmlFor="couponCode" className="block text-xs font-black uppercase text-gray-500 mb-2">
             Have a Coupon Code?
           </label>
-          <div className="flex gap-2">
+          <div className="flex gap-0">
             <input
               type="text"
               id="couponCode"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              placeholder="Enter Coupon Code"
-              className="flex-grow w-[85px] px-3 py-2 border border-purple-500/30 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent sm:text-sm bg-white dark:bg-[#2A1F47] text-gray-100 placeholder-gray-400 dark:placeholder-purple-300/50"
+              placeholder="CODE"
+              className="flex-grow min-w-0 px-3 py-2 border-2 border-black border-r-0 bg-white text-foreground font-black uppercase placeholder-gray-400 focus:outline-none"
               disabled={isApplyingCoupon}
             />
             <button
               onClick={handleApplyCoupon}
               disabled={isApplyingCoupon || !couponCode.trim()}
-              className="px-4 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-md shadow-sm hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-secondary text-secondary-foreground font-black uppercase border-2 border-black hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isApplyingCoupon ? 'Applying...' : 'Apply'}
+              {isApplyingCoupon ? '...' : 'Apply'}
             </button>
           </div>
-          {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
+          {couponError && <p className="text-red-500 text-xs font-bold mt-2 uppercase bg-red-100 p-1 border border-red-500 inline-block">{couponError}</p>}
           {appliedCoupon && (
-            <div className="mt-2 p-2 bg-green-900/30 border border-green-500/30 rounded-md">
-              <p className="text-sm text-green-300">
-                Coupon "<strong>{appliedCoupon.code}</strong>" applied! ({appliedCoupon.description || (appliedCoupon.discountType === 'percentage' ? `${appliedCoupon.discountValue}% off` : `₹${appliedCoupon.discountValue} off`)})
+            <div className="mt-3 p-3 bg-green-100 border-2 border-green-600">
+              <p className="text-xs font-bold text-green-800 uppercase flex items-center gap-1">
+                <i className="ri-checkbox-circle-fill"></i> Coupon "{appliedCoupon.code}" applied!
               </p>
-              <p className="text-sm text-green-300">
-                Discount: -₹{couponDiscountAmount.toFixed(2)}
+              <p className="text-xs font-bold text-green-800 uppercase pl-5">
+                {appliedCoupon.description}
+              </p>
+              <p className="text-sm font-black text-green-800 uppercase mt-1 pl-5">
+                Saved: ₹{couponDiscountAmount.toFixed(2)}
               </p>
             </div>
           )}
         </div>
-        
+
         {appliedCoupon && (
-          <div className="flex justify-between text-green-600 dark:text-green-400">
-            <span>Coupon Discount ({appliedCoupon.code})</span>
+          <div className="flex justify-between text-sm font-bold uppercase text-green-600 border-t-2 border-dashed border-gray-300 pt-2 mb-2">
+            <span>Coupon Discount</span>
             <span>-₹{couponDiscountAmount.toFixed(2)}</span>
           </div>
         )}
 
-        <div className="border-t border-purple-500/20 my-4"></div>
-        
-        <div className="flex justify-between text-lg font-semibold text-gray-900 dark:text-purple-100">
+        <div className="border-t-4 border-black my-4"></div>
+
+        <div className="flex justify-between text-xl font-black uppercase text-foreground mb-6">
           <span>Total Amount</span>
-          <span className="text-green-400">₹{finalBill.toFixed(2)}</span>
+          <span className="text-primary">₹{finalBill.toFixed(2)}</span>
         </div>
-        
+
         {paymentError && (
-          <p className="text-red-500 dark:text-red-400 text-sm mt-3">{paymentError}</p>
+          <div className="bg-red-100 border-2 border-red-500 p-3 mb-4">
+            <p className="text-red-600 text-xs font-bold uppercase flex gap-2 items-start"><i className="ri-error-warning-fill text-lg"></i> {paymentError}</p>
+          </div>
         )}
 
         <button
           onClick={handlePlaceOrder}
           disabled={isLoading || paymentLoading || cartItems.length === 0}
-          className="w-full bg-green-600 text-white py-3 rounded-md mt-5 hover:bg-green-700 transition-colors shadow-lg dark:shadow-purple-500/20 hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-green-500 text-white font-black uppercase tracking-wider py-4 border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 text-lg"
         >
-          {paymentLoading ? 'Processing Payment...' : 'Place Order & Pay'}
+          {paymentLoading ? (
+            <>
+              <i className="ri-loader-4-line animate-spin"></i> Processing...
+            </>
+          ) : (
+            <>
+              Place Order & Pay <i className="ri-arrow-right-line"></i>
+            </>
+          )}
         </button>
-        
-        <div className="mt-4 space-y-2">
-          <Link to="/shop" className="block w-full text-center border border-purple-500/30 py-2 rounded-md hover:bg-purple-900/30 text-purple-200 transition-colors">
-            Continue Shopping
+
+        <div className="mt-4">
+          <Link to="/shop" className="block w-full text-center font-bold uppercase text-xs text-gray-500 hover:text-black hover:underline decoration-2 underline-offset-4 transition-all">
+            <i className="ri-arrow-left-line"></i> Continue Shopping
           </Link>
         </div>
       </div>

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext'; // Import useUser
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
-import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
+// Import useTheme
+
 import { toast } from '../utils/toast';
 import PasswordInput from '../components/PasswordInput';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 
 
 const LoginPage = () => {
-  const { theme } = useTheme(); // Consume theme
+  // Consume theme
   const { setCurrentUser, isAuthenticated } = useUser(); // Get setCurrentUser from context
   const [formData, setFormData] = useState({
     email: '',
@@ -83,9 +83,9 @@ const LoginPage = () => {
     setForgotPasswordSuccess(null);
 
     if (otpResendTimer > 0 && e) { // e check to ensure it's not a programmatic resend
-        setForgotPasswordError(`Please wait ${formatTime(otpResendTimer)} before resending OTP.`);
-        setForgotPasswordLoading(false);
-        return;
+      setForgotPasswordError(`Please wait ${formatTime(otpResendTimer)} before resending OTP.`);
+      setForgotPasswordLoading(false);
+      return;
     }
 
     try {
@@ -96,7 +96,7 @@ const LoginPage = () => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to send OTP.');
-      
+
       setForgotPasswordSuccess(data.message || 'OTP sent successfully. Please check your email.');
       setForgotPasswordStep(2); // Move to OTP entry step
       setOtpAttempts(0); // Reset attempts for new OTP
@@ -110,8 +110,8 @@ const LoginPage = () => {
 
   const handleResendOtp = async () => {
     if (otpResendTimer > 0) {
-        setForgotPasswordError(`Please wait ${formatTime(otpResendTimer)} before resending OTP.`);
-        return;
+      setForgotPasswordError(`Please wait ${formatTime(otpResendTimer)} before resending OTP.`);
+      return;
     }
     // Reuse handleSendOtp logic for resending
     // No event object 'e' is passed, so it won't show the "wait" error from user click
@@ -156,7 +156,7 @@ const LoginPage = () => {
         // For attempts 1 and 2, the backend message "Invalid OTP. X attempts remaining." is sufficient.
         throw new Error(errorMessage);
       }
-      
+
       setForgotPasswordSuccess(data.message || 'Password reset successfully! You can now login with your new password.');
       setOtp('');
       setNewPassword('');
@@ -200,7 +200,7 @@ const LoginPage = () => {
       if (!response.ok) {
         throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       }
-      
+
       toast.success(data.message || 'Login successful! Redirecting...');
       if (data.user) {
         setCurrentUser(data.user);
@@ -220,102 +220,92 @@ const LoginPage = () => {
     <>
 
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
-        <CardContainer containerClassName="py-0" className="w-full max-w-md">
-          <CardBody className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto for content fit */}
-            <CardItem
-              as="h3"
-              translateZ="50"
-              className="text-3xl md:text-4xl text-center mb-2 font-light text-gray-900 dark:text-gray-100 w-full"
-            >
-              Welcome back to <span className="text-blue-500 dark:text-blue-400 font-semibold">Scatch</span>
-            </CardItem>
-            <CardItem
-              as="h4"
-              translateZ="40"
-              className="text-xl md:text-2xl capitalize mb-6 text-center text-purple-300 w-full"
-            >
-              Login to your account
-            </CardItem>
-            
-            <form autoComplete="off" onSubmit={handleSubmit} className="w-full">
-              <CardItem translateZ="30" className="mb-4 w-full">
-                <label htmlFor="email" className="block text-sm font-medium text-purple-200 mb-1">Email Address</label>
-                <input
-                  id="email"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  type="email"
-                  placeholder="you@example.com"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                />
-              </CardItem>
-              <CardItem translateZ="20" className="mb-6 w-full">
-                <label htmlFor="password" className="block text-sm font-medium text-purple-200 mb-1">Password</label>
-                <PasswordInput
-                  id="password"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                />
-                <div className="text-right mt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForgotPassword(true);
-                      setForgotPasswordStep(1);
-                      setForgotPasswordError(null);
-                      setForgotPasswordSuccess(null);
-                      setForgotPasswordEmail(formData.email); // Pre-fill email if available
-                    }}
-                    className="text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-              </CardItem>
-              <CardItem translateZ="10" className="w-full">
-                <button
-                  type="submit"
-                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Logging In...' : 'Login'}
-                </button>
-              </CardItem>
-            </form>
+      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-background pt-28 pb-12">
+        <div className="w-full max-w-md bg-white border-4 border-black shadow-neo p-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-black"></div>
+          <h3 className="text-4xl font-black text-center mb-2 uppercase tracking-tighter">
+            Welcome back
+          </h3>
+          <h4 className="text-xl font-bold mb-8 text-center text-gray-500 uppercase">
+            Login to your account
+          </h4>
 
-            {/* Divider */}
-            <CardItem translateZ="5" className="flex items-center justify-center my-4 w-full">
-              <div className="flex-grow border-t border-purple-500/30"></div>
-              <span className="px-4 text-sm text-gray-600 dark:text-purple-300">OR</span>
-              <div className="flex-grow border-t border-purple-500/30"></div>
-            </CardItem>
-
-            {/* Google Login Button */}
-            <div className="w-full relative" style={{ transform: 'translateZ(0)', zIndex: 10 }}>
-              <GoogleLoginButton />
+          <form autoComplete="off" onSubmit={handleSubmit} className="w-full space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-black uppercase mb-2">Email Address</label>
+              <input
+                id="email"
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold"
+                type="email"
+                placeholder="YOU@EXAMPLE.COM"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                disabled={isLoading}
+              />
             </div>
-            
-            <CardItem translateZ="5" className="text-center mt-6 w-full">
-              <p className="text-sm text-gray-600 dark:text-purple-300">
-                Don't have an account?
-                <Link
-                  to="/register"
-                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium ml-1"
+            <div>
+              <label htmlFor="password" className="block text-sm font-black uppercase mb-2">Password</label>
+              <PasswordInput
+                id="password"
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                disabled={isLoading}
+              />
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotPassword(true);
+                    setForgotPasswordStep(1);
+                    setForgotPasswordError(null);
+                    setForgotPasswordSuccess(null);
+                    setForgotPasswordEmail(formData.email);
+                  }}
+                  className="text-xs font-black uppercase text-blue-600 hover:text-blue-800 hover:underline decoration-2 underline-offset-2"
                 >
-                  Register here
-                </Link>
-              </p>
-            </CardItem>
-          </CardBody>
-        </CardContainer>
+                  Forgot Password?
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Wait...' : 'Login'}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center justify-center my-8 w-full">
+            <div className="flex-grow border-t-2 border-black"></div>
+            <span className="px-4 text-sm font-black uppercase bg-white">OR</span>
+            <div className="flex-grow border-t-2 border-black"></div>
+          </div>
+
+          {/* Google Login Button */}
+          <div className="w-full">
+            <GoogleLoginButton />
+          </div>
+
+          <div className="text-center mt-8 pt-4 border-t-2 border-black border-dashed">
+            <p className="text-sm font-bold uppercase text-gray-600">
+              New here?
+              <Link
+                to="/register"
+                className="text-black hover:text-primary ml-2 underline decoration-2 underline-offset-2"
+              >
+                Create an account
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
 
       <ForgotPasswordModal
@@ -344,7 +334,7 @@ const LoginPage = () => {
         otpResendTimer={otpResendTimer}
         handleResendOtp={handleResendOtp}
         otpAttempts={otpAttempts}
-        theme={theme}
+      // theme prop removed
       />
     </>
   );
@@ -380,41 +370,54 @@ const ForgotPasswordModal = ({
   otpResendTimer,
   handleResendOtp,
   otpAttempts,
-  theme
+  // theme - REMOVED
 }) => {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className={`p-6 rounded-lg shadow-xl w-full max-w-md ${theme === 'dark' ? 'bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl text-gray-100' : 'bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100'}`}>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="w-full max-w-md bg-white border-4 border-black shadow-neo p-8 relative">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-black uppercase tracking-tighter">
             {step === 1 ? 'Forgot Password' : 'Reset Password'}
           </h2>
-          <button onClick={onClose} className={`text-2xl ${theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900 dark:text-purple-100'}`}>&times;</button>
+          <button
+            onClick={onClose}
+            className="text-2xl font-bold text-black hover:text-red-600 transition-colors"
+          >
+            &times;
+          </button>
         </div>
 
-        {error && <p className="text-red-500 dark:text-red-400 text-sm mb-3 p-2 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded text-center">{error}</p>}
-        {success && <p className="text-green-500 dark:text-green-400 text-sm mb-3 p-2 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded text-center">{success}</p>}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border-2 border-black text-red-600 font-bold text-sm uppercase">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 p-3 bg-green-100 border-2 border-black text-green-800 font-bold text-sm uppercase">
+            {success}
+          </div>
+        )}
 
         {step === 1 && (
-          <form onSubmit={handleSendOtp}>
-            <div className="mb-4">
-              <label htmlFor="forgot-email" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Enter your email address</label>
+          <form onSubmit={handleSendOtp} className="space-y-4">
+            <div>
+              <label htmlFor="forgot-email" className="block text-sm font-black uppercase mb-2">Enter your email address</label>
               <input
                 id="forgot-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="YOU@EXAMPLE.COM"
                 required
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold placeholder:uppercase"
                 disabled={isLoading}
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold py-2 px-4 rounded-md transition duration-150 disabled:opacity-50"
+              className="w-full py-3 bg-primary text-primary-foreground font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading || otpResendTimer > 0}
             >
               {isLoading ? 'Sending OTP...' : (otpResendTimer > 0 ? `Resend OTP in ${formatTime(otpResendTimer)}` : 'Send OTP')}
@@ -423,67 +426,67 @@ const ForgotPasswordModal = ({
         )}
 
         {step === 2 && (
-          <form onSubmit={handleVerifyOtpAndReset}>
-            <div className="mb-4">
-              <label htmlFor="otp" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Enter OTP</label>
+          <form onSubmit={handleVerifyOtpAndReset} className="space-y-4">
+            <div>
+              <label htmlFor="otp" className="block text-sm font-black uppercase mb-2">Enter OTP</label>
               <input
                 id="otp"
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="6-digit OTP"
+                placeholder="6-DIGIT OTP"
                 required
                 maxLength="6"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold placeholder:uppercase"
                 disabled={isLoading}
               />
-               <div className="text-right mt-1">
-                 <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    className="text-sm text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isLoading || otpResendTimer > 0}
-                  >
-                    {otpResendTimer > 0 ? `Resend OTP in ${formatTime(otpResendTimer)}` : 'Resend OTP'}
-                  </button>
-               </div>
-               {otpAttempts > 0 && otpAttempts < 3 && ( // Show only if attempts made and less than 3
-                 <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                   {3 - otpAttempts} attempts remaining for this OTP.
-                 </p>
-               )}
+              <div className="text-right mt-2">
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  className="text-xs font-black uppercase text-blue-600 hover:text-blue-800 hover:underline decoration-2 underline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading || otpResendTimer > 0}
+                >
+                  {otpResendTimer > 0 ? `Resend OTP in ${formatTime(otpResendTimer)}` : 'Resend OTP'}
+                </button>
+              </div>
+              {otpAttempts > 0 && otpAttempts < 3 && (
+                <p className="text-xs font-bold text-yellow-600 mt-1 uppercase">
+                  {3 - otpAttempts} attempts remaining.
+                </p>
+              )}
             </div>
-            <div className="mb-4">
-              <label htmlFor="new-password" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>New Password</label>
+            <div>
+              <label htmlFor="new-password" className="block text-sm font-black uppercase mb-2">New Password</label>
               <PasswordInput
                 id="new-password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold placeholder:uppercase"
                 disabled={isLoading}
               />
             </div>
-            <div className="mb-6">
-              <label htmlFor="confirm-new-password" className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Confirm New Password</label>
+            <div>
+              <label htmlFor="confirm-new-password" className="block text-sm font-black uppercase mb-2">Confirm New Password</label>
               <PasswordInput
                 id="confirm-new-password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 required
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500' : 'bg-gray-50 border-gray-300 dark:border-purple-500/30 text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500'}`}
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold placeholder:uppercase"
                 disabled={isLoading}
               />
               {newPassword && confirmNewPassword && newPassword !== confirmNewPassword && (
-                <p className="text-red-500 text-xs mt-1">Passwords do not match.</p>
+                <p className="text-red-600 font-bold text-xs mt-1 uppercase">Passwords do not match.</p>
               )}
             </div>
             <button
               type="submit"
-              className="w-full bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md transition duration-150 disabled:opacity-50"
+              className="w-full py-3 bg-green-500 text-white font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading || (newPassword !== confirmNewPassword) || !newPassword}
             >
-              {isLoading ? 'Resetting Password...' : 'Reset Password'}
+              {isLoading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
         )}

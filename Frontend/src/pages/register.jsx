@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
+// Import useTheme
 import { useUser } from '../context/UserContext'; // Import useUser
-import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
+
 import { toast } from '../utils/toast';
 import PasswordInput from '../components/PasswordInput';
 import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -10,7 +10,7 @@ import GoogleLoginButton from '../components/GoogleLoginButton';
 
 // Renamed component to RegisterPage to match App.jsx import
 const RegisterPage = () => {
-  const { theme } = useTheme(); // Consume theme
+  // Consume theme
   const { setCurrentUser } = useUser(); // Get setCurrentUser from context
   const [formData, setFormData] = useState({
     fullname: '',
@@ -54,7 +54,7 @@ const RegisterPage = () => {
 
   const handleOtpDigitChange = (index, value) => {
     if (value.length > 1) { // Handle paste case or fast typing
-        value = value.slice(-1); // Take only the last character
+      value = value.slice(-1); // Take only the last character
     }
     if (!/^\d*$/.test(value)) return; // Only allow digits
 
@@ -83,17 +83,17 @@ const RegisterPage = () => {
       setOtpDigits(newOtpDigits);
       setFormData(prev => ({ ...prev, otp: newOtpDigits.join('') }));
     } else if (e.key >= '0' && e.key <= '9') {
-        // Allow default behavior for number input, which is handled by onChange
+      // Allow default behavior for number input, which is handled by onChange
     } else if (e.key === 'ArrowLeft' && index > 0) {
-        otpInputRefs[index - 1].current?.focus();
+      otpInputRefs[index - 1].current?.focus();
     } else if (e.key === 'ArrowRight' && index < 5) {
-        otpInputRefs[index + 1].current?.focus();
+      otpInputRefs[index + 1].current?.focus();
     } else if (e.key.length === 1 && !/^\d$/.test(e.key) && e.key !== 'Tab' && !e.metaKey && !e.ctrlKey) {
-        // Prevent non-numeric characters unless it's a control key or Tab
-        e.preventDefault();
+      // Prevent non-numeric characters unless it's a control key or Tab
+      e.preventDefault();
     }
   };
-  
+
   const handleOtpPaste = (e) => {
     e.preventDefault();
     const pasteData = e.clipboardData.getData('text').replace(/\D/g, ''); // Get only digits
@@ -189,7 +189,7 @@ const RegisterPage = () => {
       if (!response.ok) {
         throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       }
-      
+
       // Success!
       setShowOtpModal(false); // Close modal on success
       toast.success(data.message || 'Registration successful! Redirecting...');
@@ -238,7 +238,7 @@ const RegisterPage = () => {
         throw new Error(data.error || data.message || 'Failed to resend OTP');
       }
       setApiSuccess(data.message || 'New OTP sent successfully. Please check your email.');
-      
+
       // Start cooldown timer
       setResendOtpDisabled(true);
       setResendOtpTimer(120); // 120 seconds (2 minutes) cooldown
@@ -264,143 +264,146 @@ const RegisterPage = () => {
     <>
 
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
-        <CardContainer containerClassName="py-0" className="w-full max-w-md"> {/* Reverted to max-w-md */}
-          <CardBody className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
-            <CardItem
-              as="h3"
-              translateZ="60"
-              className="text-3xl md:text-4xl text-center mb-2 font-light text-gray-900 dark:text-gray-100 w-full"
-            >
-              Welcome to <span className="text-blue-500 dark:text-blue-400 font-semibold">Scatch</span>
-            </CardItem>
-            <CardItem
-              as="h4"
-              translateZ="50"
-              className="text-xl md:text-2xl mb-6 text-center text-purple-300 w-full"
-            >
-              Create your account
-            </CardItem>
-            
-            {/* Main Registration Form */}
-            <form onSubmit={handleInitialRegisterSubmit} className="w-full">
-              <CardItem translateZ="40" className="mb-4 w-full">
-                <label htmlFor="fullname" className="block text-sm font-medium text-purple-200 mb-1">Full Name</label>
-                <input
-                  id="fullname"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  type="text"
-                  placeholder="John Doe"
-                  name="fullname"
-                  value={formData.fullname}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isOtpSending || showOtpModal} // Disable if OTP is being sent or modal is shown
-                />
-              </CardItem>
-              <CardItem translateZ="30" className="mb-4 w-full">
-                <label htmlFor="email" className="block text-sm font-medium text-purple-200 mb-1">Email Address</label>
-                <input
-                  id="email"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  type="email"
-                  placeholder="you@example.com"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isOtpSending || showOtpModal}
-                />
-              </CardItem>
-              <CardItem translateZ="20" className="mb-6 w-full">
-                <label htmlFor="password" className="block text-sm font-medium text-purple-200 mb-1">Password</label>
-                <PasswordInput
-                  id="password"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isOtpSending || showOtpModal}
-                />
-              </CardItem>
-              <CardItem translateZ="10" className="w-full">
-                <button
-                  type="submit" // This button now triggers OTP sending
-                  className="px-5 rounded-md py-3 bg-blue-500 text-white w-full cursor-pointer hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
-                  disabled={isOtpSending || showOtpModal || !formData.email || !formData.fullname || !formData.password}
-                >
-                  {isOtpSending ? 'Sending OTP...' : 'Register'}
-                </button>
-              </CardItem>
-            </form>
+      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-background pt-28 pb-12">
+        <div className="w-full max-w-md bg-white border-4 border-black shadow-neo p-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-black"></div>
+          <h3 className="text-4xl font-black text-center mb-2 uppercase tracking-tighter">
+            Welcome
+          </h3>
+          <h4 className="text-xl font-bold mb-8 text-center text-gray-500 uppercase">
+            Create your account
+          </h4>
 
-            {/* Divider */}
-            <CardItem translateZ="5" className="flex items-center justify-center my-4 w-full">
-              <div className="flex-grow border-t border-purple-500/30"></div>
-              <span className="px-4 text-sm text-gray-600 dark:text-purple-300">OR</span>
-              <div className="flex-grow border-t border-purple-500/30"></div>
-            </CardItem>
-
-            {/* Google Login Button */}
-            <div className="w-full relative" style={{ transform: 'translateZ(0)', zIndex: 10 }}>
-              <GoogleLoginButton />
+          {apiError && !showOtpModal && (
+            <div className="mb-6 p-3 bg-red-500 text-white font-black uppercase text-xs text-center border-2 border-black shadow-neo-sm">
+              <i className="ri-error-warning-fill mr-2"></i>
+              {apiError}
             </div>
-            
-            <CardItem translateZ="5" className="text-center mt-6 w-full">
-              <p className="text-sm text-gray-600 dark:text-purple-300">
-                Already have an account?
-                <Link
-                  to="/login"
-                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium ml-1"
-                >
-                  Login here
-                </Link>
-              </p>
-            </CardItem>
-          </CardBody>
-        </CardContainer>
+          )}
+
+          {apiSuccess && !showOtpModal && (
+            <div className="mb-6 p-3 bg-green-500 text-white font-black uppercase text-xs text-center border-2 border-black shadow-neo-sm">
+              <i className="ri-checkbox-circle-fill mr-2"></i>
+              {apiSuccess}
+            </div>
+          )}
+
+          {/* Main Registration Form */}
+          <form onSubmit={handleInitialRegisterSubmit} className="w-full space-y-4">
+            <div>
+              <label htmlFor="fullname" className="block text-sm font-black uppercase mb-2">Full Name</label>
+              <input
+                id="fullname"
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold uppercase"
+                type="text"
+                placeholder="JOHN DOE"
+                name="fullname"
+                value={formData.fullname}
+                onChange={handleInputChange}
+                required
+                disabled={isOtpSending || showOtpModal}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-black uppercase mb-2">Email Address</label>
+              <input
+                id="email"
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold"
+                type="email"
+                placeholder="YOU@EXAMPLE.COM"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                disabled={isOtpSending || showOtpModal}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-black uppercase mb-2">Password</label>
+              <PasswordInput
+                id="password"
+                className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                disabled={isOtpSending || showOtpModal}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+              disabled={isOtpSending || showOtpModal || !formData.email || !formData.fullname || !formData.password}
+            >
+              {isOtpSending ? 'Sending OTP...' : 'Register'}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center justify-center my-8 w-full">
+            <div className="flex-grow border-t-2 border-black"></div>
+            <span className="px-4 text-sm font-black uppercase bg-white">OR</span>
+            <div className="flex-grow border-t-2 border-black"></div>
+          </div>
+
+          {/* Google Login Button */}
+          <div className="w-full">
+            <GoogleLoginButton />
+          </div>
+
+          <div className="text-center mt-8 pt-4 border-t-2 border-black border-dashed">
+            <p className="text-sm font-bold uppercase text-gray-600">
+              Already have an account?
+              <Link
+                to="/login"
+                className="text-black hover:text-primary ml-2 underline decoration-2 underline-offset-2"
+              >
+                Login here
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* OTP Verification Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-          <div className={`relative p-8 border w-full max-w-md shadow-lg dark:shadow-purple-500/20 rounded-md ${theme === 'dark' ? 'bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border-gray-700' : 'bg-white dark:bg-[#2A1F47] border-gray-300 dark:border-purple-500/30'}`}>
-            {/* Removed the explicit close button */}
-            <h3 className={`text-2xl text-center mb-6 font-light ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900 dark:text-purple-100'}`}>Verify Your Email</h3>
-            <p className={`mb-2 text-center text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-              An OTP has been sent to {formData.email}.
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-md bg-white border-4 border-black shadow-neo p-8 relative">
+            <h3 className="text-3xl font-black text-center mb-6 uppercase">Verify Your Email</h3>
+            <p className="mb-2 text-center text-sm font-bold text-gray-700">
+              An OTP has been sent to <span className="underline">{formData.email}</span>
             </p>
-            <p className={`mb-4 text-center text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className="mb-6 text-center text-xs font-bold uppercase text-gray-500">
               Please enter the 6-digit code below.
             </p>
-            
+
             {(apiError && showOtpModal) && (
-                <div className="my-3 p-2 text-center text-sm text-white bg-red-500 dark:bg-red-600 rounded-md">
-                    {apiError}
-                </div>
+              <div className="my-3 p-3 text-center text-xs font-black uppercase text-white bg-red-500 border-2 border-black shadow-neo-sm">
+                {apiError}
+              </div>
             )}
-             {(apiSuccess && showOtpModal && otpSent && !apiError) && (
-                <div className="my-3 p-2 text-center text-sm text-white bg-green-500 dark:bg-green-600 rounded-md">
-                    {apiSuccess}
-                </div>
+            {(apiSuccess && showOtpModal && otpSent && !apiError) && (
+              <div className="my-3 p-3 text-center text-xs font-black uppercase text-white bg-green-500 border-2 border-black shadow-neo-sm">
+                {apiSuccess}
+              </div>
             )}
 
-            <form onSubmit={handleOtpVerificationAndAccountCreation}>
-              <div className="flex justify-center space-x-2 mb-6" onPaste={handleOtpPaste}>
+            <form onSubmit={handleOtpVerificationAndAccountCreation} className="mt-6">
+              <div className="flex justify-center gap-2 mb-8" onPaste={handleOtpPaste}>
                 {otpDigits.map((digit, index) => (
                   <input
                     key={index}
                     ref={otpInputRefs[index]}
                     id={`otp-digit-${index}`}
                     name={`otp-digit-${index}`}
-                    type="text" // Use text to allow easier control, validation handles digits
+                    type="text"
                     maxLength="1"
                     value={digit}
                     onChange={(e) => handleOtpDigitChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                     onFocus={(e) => e.target.select()}
-                    className={`w-10 h-12 text-center text-xl font-semibold border rounded-md focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : 'bg-gray-100 dark:bg-[#2A1F47] text-purple-100 border-gray-300 dark:border-purple-500/30'} transition-colors`}
+                    className="w-12 h-14 text-center text-2xl font-black border-2 border-black bg-gray-50 focus:shadow-neo-sm focus:outline-none transition-all"
                     disabled={isLoading}
                     autoComplete="off"
                   />
@@ -408,21 +411,28 @@ const RegisterPage = () => {
               </div>
               <button
                 type="submit"
-                className="px-5 rounded-md py-3 bg-green-500 dark:bg-green-600 text-white w-full cursor-pointer hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50"
+                className="w-full py-4 bg-green-500 text-white font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading || otpDigits.join('').length !== 6}
               >
-                {isLoading ? 'Verifying & Registering...' : 'Verify & Create Account'}
+                {isLoading ? 'Verifying...' : 'Verify & Create Account'}
               </button>
             </form>
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center">
               <button
                 onClick={handleResendOtp}
                 disabled={resendOtpDisabled || isOtpSending}
-                className={`text-sm ${theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} disabled:opacity-50 disabled:cursor-not-allowed`}
+                className="text-xs font-black uppercase text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed underline decoration-2 underline-offset-2"
               >
                 {resendOtpDisabled ? `Resend OTP in ${resendOtpTimer}s` : 'Resend OTP'}
               </button>
             </div>
+
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-red-500 text-white border-2 border-black shadow-neo-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]"
+            >
+              <i className="ri-close-line font-bold"></i>
+            </button>
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom'; // Import Link
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
+// Import useTheme
 import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
 
 
@@ -8,7 +8,7 @@ import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
 // and can be removed if not used elsewhere for other buffer-to-image conversions.
 
 const AllProductsPage = () => {
-  const { theme } = useTheme(); // Consume theme
+  // Consume theme
   // const navigate = useNavigate(); // Remove useNavigate initialization
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const AllProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(''); // Category filter
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
-  
+
   // Infinite scroll state
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -36,7 +36,7 @@ const AllProductsPage = () => {
       setProducts([]);
     }
     setError(null);
-    
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/products?page=${page}&limit=${PRODUCTS_PER_PAGE}`,
@@ -44,20 +44,20 @@ const AllProductsPage = () => {
       );
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          data = await response.json();
+        data = await response.json();
       }
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
-      
+
       const newProducts = data?.products || [];
-      
+
       if (append) {
         setProducts(prev => [...prev, ...newProducts]);
       } else {
         setProducts(newProducts);
       }
-      
+
       setHasMore(data?.pagination?.hasNextPage || false);
       setTotalProducts(data?.pagination?.totalProducts || newProducts.length);
     } catch (err) {
@@ -77,11 +77,11 @@ const AllProductsPage = () => {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, {
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
-      
+
       const data = await response.json();
       setCategories(data.categories || []);
     } catch (err) {
@@ -137,7 +137,7 @@ const AllProductsPage = () => {
         });
         let responseData;
         if (response.headers.get("content-type")?.includes("application/json")) {
-            responseData = await response.json();
+          responseData = await response.json();
         }
         if (response.ok) {
           alert(responseData?.message || "All products deleted successfully.");
@@ -168,7 +168,7 @@ const AllProductsPage = () => {
       });
       let responseData;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          responseData = await response.json();
+        responseData = await response.json();
       }
       if (response.ok) {
         alert(responseData?.message || "Product deleted successfully.");
@@ -197,13 +197,13 @@ const AllProductsPage = () => {
       <div className="w-full">
         <div className="w-full flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-8 w-64 rounded"></div>
+            <div className="bg-gray-200 animate-pulse h-8 w-64 border-2 border-black shadow-neo"></div>
             <div className="flex gap-3 items-center">
-              <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-10 w-48 rounded"></div>
-              <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-10 w-32 rounded"></div>
+              <div className="bg-gray-200 animate-pulse h-10 w-48 border-2 border-black shadow-neo-sm"></div>
+              <div className="bg-gray-200 animate-pulse h-10 w-32 border-2 border-black shadow-neo-sm"></div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
               <CardSkeleton key={i} showImage={true} lines={2} />
@@ -221,65 +221,62 @@ const AllProductsPage = () => {
   return (
     // The parent div with padding and margin for sidebar is now in OwnerProtectedRoute.jsx
     // This div should just be a fragment or a simple container for its own content.
-    <div className="w-full"> {/* Removed min-h-screen, py, pt, px, bg colors - handled by parent */}
-      {/* Admin Navigation REMOVED - Now handled by AdminSidebar */}
-
+    <div className="w-full">
       {/* Main content for Product Management */}
-      <div className="w-full flex flex-col gap-6">
-        {/* Action Bar - Specific to Product Management */}
-        <div className="bg-[#2A1F47] rounded-2xl shadow-lg shadow-purple-500/20 p-6 mb-8 border border-purple-500/20">
+      <div className="w-full flex flex-col gap-8">
+        {/* Action Bar */}
+        <div className="bg-white border-4 border-black shadow-neo p-6 md:p-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-purple-100 mb-2">Product Management</h1>
-              <p className="text-purple-300">Manage your product inventory and settings</p>
+              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-2">Product Management</h1>
+              <p className="text-lg font-bold text-gray-600 uppercase">Manage your inventory</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full lg:w-auto">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-3 bg-[#1E1538] border border-purple-500/30 rounded-xl text-sm font-medium text-purple-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="px-4 py-3 bg-white border-4 border-black shadow-neo-sm font-bold uppercase focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all w-full sm:w-auto"
                 disabled={categoriesLoading}
               >
                 <option value="">
-                  {categoriesLoading ? 'Loading categories...' : 'All Categories'}
+                  {categoriesLoading ? 'LOADING...' : 'ALL CATEGORIES'}
                 </option>
                 {categories.map((category) => (
                   <option key={category._id} value={category.name}>
-                    {category.name}
+                    {category.name.toUpperCase()}
                   </option>
                 ))}
-                {!categoriesLoading && categories.length === 0 && (
-                  <option value="" disabled>No categories available</option>
-                )}
               </select>
-              <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer bg-[#1E1538] px-4 py-3 rounded-xl hover:bg-[#2A1F47] transition-all duration-200">
+              <label htmlFor="outOfStockFilter" className="flex items-center cursor-pointer bg-white px-4 py-3 border-4 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all w-full sm:w-auto">
                 <input
                   id="outOfStockFilter"
                   type="checkbox"
                   checked={showOutOfStockOnly}
                   onChange={(e) => setShowOutOfStockOnly(e.target.checked)}
-                  className="h-5 w-5 text-purple-600 border-purple-500/30 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  className="h-5 w-5 border-2 border-black rounded-none focus:ring-0 text-black"
                 />
-                <span className="ml-3 text-sm font-medium text-purple-200">
-                  Show Out of Stock Only
+                <span className="ml-3 font-bold uppercase text-sm">
+                  Out of Stock Only
                 </span>
               </label>
               <button
                 onClick={handleDeleteAll}
-                className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 text-sm font-semibold w-full sm:w-auto"
+                className="px-6 py-3 bg-red-600 text-white border-4 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all font-black uppercase w-full sm:w-auto"
               >
-                Delete All Products
+                Delete All
               </button>
             </div>
           </div>
         </div>
 
         {products.length === 0 && !loading && (
-          <p className="text-gray-600 dark:text-purple-300">No products found.</p>
+          <div className="p-12 text-center border-4 border-black border-dashed bg-gray-50">
+            <p className="text-2xl font-black uppercase text-gray-400">No products found.</p>
+          </div>
         )}
 
         {/* Product List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {products
             .filter(product => {
               const stockFilter = !showOutOfStockOnly || product.quantity === 0;
@@ -287,113 +284,114 @@ const AllProductsPage = () => {
               return stockFilter && categoryFilter;
             })
             .map((product) => {
-            const originalPrice = parseFloat(product.price) || 0;
-            const discountAmount = parseFloat(product.discount) || 0;
-            const finalPrice = originalPrice - discountAmount;
-            const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
+              const originalPrice = parseFloat(product.price) || 0;
+              const discountAmount = parseFloat(product.discount) || 0;
+              const finalPrice = originalPrice - discountAmount;
+              const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
 
-            return (
-            <div
-              key={product._id}
-              className="w-full border border-purple-500/20 rounded-2xl shadow-lg shadow-purple-500/20 overflow-hidden bg-[#2A1F47] transition-all duration-300 hover:shadow-2xl md:hover:scale-105 flex flex-col group relative"
-            >
-              <div
-                className="w-full h-52 flex items-center justify-center relative" // Added relative for discount badge positioning
-                style={{ backgroundColor: product.bgcolor || '#1E1538' }} // Default BG based on theme or product.bgcolor
-              >
-                {product.image && typeof product.image === 'string' ? (
-                  <img
-                    src={product.image} // Directly use the Cloudinary URL
-                    alt={product.name || "Product Image"}
-                    className="h-[12rem] w-full object-contain" // Matched Shop page image style, added w-full
-                  />
-                ) : (
-                  <span className="text-purple-300">No Image</span>
-                )}
-                 {/* Discount Badge - Show only if discount > 0 */}
-                {discountPercentage > 0 && (
-                  <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
-                    {`${discountPercentage}% OFF`}
-                  </div>
-                )}
-              </div>
-              <div
-                className="flex flex-col justify-between items-start px-4 py-4 flex-grow"
-                style={{
-                  backgroundColor: product.panelcolor || '#2A1F47', // product.panelcolor or theme default
-                  color: product.textcolor || '#E9D5FF', // product.textcolor or theme default
-                }}
-              >
-                <div className="mb-10">
-                  <h3 className="font-semibold text-lg">{product.name}</h3>
-                  <div className="flex items-baseline gap-2"> {/* items-baseline for better alignment */}
-                    <h4 className="text-md font-bold">₹ {finalPrice.toFixed(2)}</h4>
-                    {discountAmount > 0 && (
-                      <h4 className="text-sm text-purple-300 line-through">
-                        {originalPrice.toFixed(2)}
-                      </h4>
+              return (
+                <div
+                  key={product._id}
+                  className="w-full border-4 border-black bg-white shadow-neo transition-all duration-300 hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none flex flex-col group relative"
+                >
+                  <div
+                    className="w-full h-52 flex items-center justify-center relative border-b-4 border-black bg-gray-100 p-4"
+                  >
+                    {product.image && typeof product.image === 'string' ? (
+                      <img
+                        src={product.image}
+                        alt={product.name || "Product Image"}
+                        className="h-full w-full object-contain filter drop-shadow-md"
+                      />
+                    ) : (
+                      <span className="text-gray-400 font-bold uppercase">No Image</span>
+                    )}
+                    {/* Discount Badge */}
+                    {discountPercentage > 0 && (
+                      <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-black uppercase px-2 py-1 border-2 border-black">
+                        {`${discountPercentage}% OFF`}
+                      </div>
+                    )}
+                    {product.quantity === 0 && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <span className="bg-red-600 text-white border-4 border-white px-4 py-2 font-black uppercase -rotate-12 shadow-lg">Out of Stock</span>
+                      </div>
                     )}
                   </div>
-                  <p className="text-sm text-purple-300 mt-1">
-                    Quantity Left: {product.quantity !== undefined ? product.quantity : 'N/A'}
-                  </p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">
-                    {product.category?.name || 'No Category'}
-                  </p>
-                </div>
-                {/* Buttons container - always visible on mobile, hover on desktop */}
-                <div className="absolute bottom-4 right-4 mt-auto pt-2 flex justify-end gap-2 opacity-100 visible md:opacity-0 md:invisible md:group-hover:opacity-100 md:group-hover:visible transition-all duration-300">
-                    <Link
+                  <div
+                    className="flex flex-col justify-between items-start px-4 py-4 flex-grow bg-white"
+                  >
+                    <div className="mb-4 w-full">
+                      <h3 className="font-black text-lg uppercase truncate mb-1" title={product.name}>{product.name}</h3>
+                      <div className="flex items-baseline gap-2 mb-2">
+                        <h4 className="text-xl font-black">₹{finalPrice.toFixed(2)}</h4>
+                        {discountAmount > 0 && (
+                          <h4 className="text-sm text-gray-500 font-bold line-through decoration-2">
+                            {originalPrice.toFixed(2)}
+                          </h4>
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center text-sm font-bold uppercase border-t-2 border-black pt-2">
+                        <span className={product.quantity < 5 ? 'text-red-600' : 'text-gray-600'}>
+                          Qty: {product.quantity !== undefined ? product.quantity : 'N/A'}
+                        </span>
+                        <span className="text-blue-600 truncate max-w-[50%]">
+                          {product.category?.name || 'No Cat'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="w-full flex gap-2 mt-auto">
+                      <Link
                         to={`/admin/edit-product/${product._id}`}
-                        className="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 md:hover:scale-105 font-medium"
-                    >
+                        className="flex-1 text-center text-xs bg-blue-600 text-white py-2 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all font-black uppercase"
+                      >
                         Edit
-                    </Link>
-                    <button
+                      </Link>
+                      <button
                         onClick={() => initiateDeleteProduct(product._id)}
-                        className="text-xs bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 md:hover:scale-105 font-medium"
-                    >
+                        className="flex-1 text-center text-xs bg-red-600 text-white py-2 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all font-black uppercase"
+                      >
                         Delete
-                    </button>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            );
-          })}
+              );
+            })}
         </div>
-        
+
         {/* Infinite Scroll Trigger & Loading Indicator */}
         {loadingMore && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5 mt-5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <CardSkeleton key={`loading-${i}`} showImage={true} lines={2} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-80 border-4 border-black bg-gray-100 animate-pulse"></div>
             ))}
           </div>
         )}
         <div ref={observerTarget} className="h-4" />
       </div>
 
-      {/* Sales Data Section REMOVED */}
-
       {showConfirmDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1E1538]/90 backdrop-blur-xl border border-purple-500/20 p-6 rounded-lg shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-4 text-purple-100">Confirm Deletion</h3>
-            <p className="mb-6 text-purple-200">
-              Are you sure you want to delete this product? This action cannot be undone.
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white border-4 border-black shadow-neo p-8 max-w-sm w-full relative">
+            <div className="absolute top-0 left-0 w-full h-2 bg-red-600 border-b-2 border-black"></div>
+            <h3 className="text-2xl font-black uppercase mb-4">Confirm Delete</h3>
+            <p className="mb-8 text-lg font-bold text-gray-600 uppercase leading-tight">
+              Are you sure? This cannot be undone.
             </p>
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-4">
               <button
                 onClick={cancelDeleteProduct}
-                className="px-4 py-2 rounded text-purple-200 bg-[#2A1F47] hover:bg-[#3A2F57] transition-colors"
+                className="px-6 py-3 border-2 border-black font-black uppercase hover:bg-gray-100 transition-colors"
               >
-                No, Cancel
+                Cancel
               </button>
               <button
                 onClick={confirmDeleteProduct}
-                className="px-4 py-2 rounded text-white bg-red-500 hover:bg-red-600 transition-colors"
+                className="px-6 py-3 bg-red-600 text-white border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all font-black uppercase"
               >
-                Yes, Delete
+                Delete
               </button>
             </div>
           </div>

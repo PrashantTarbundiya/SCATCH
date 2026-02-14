@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
+// Import useTheme
 import { toast } from '../utils/toast';
 
 
 const CreateProductPage = () => {
-  const { theme } = useTheme(); // Consume theme
+  // Consume theme
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -36,11 +36,11 @@ const CreateProductPage = () => {
         if (response.headers.get("content-type")?.includes("application/json")) {
           data = await response.json();
         }
-        
+
         if (!response.ok) {
           throw new Error(data?.error || 'Failed to load categories');
         }
-        
+
         if (data.success && data.categories) {
           setCategories(data.categories);
         }
@@ -51,7 +51,7 @@ const CreateProductPage = () => {
         setCategoriesLoading(false);
       }
     };
-    
+
     fetchCategories();
   }, []);
 
@@ -71,14 +71,14 @@ const CreateProductPage = () => {
             const errorText = data?.error || data?.message || `HTTP error! status: ${response.status} ${response.statusText}`;
             throw new Error(errorText);
           }
-          
+
           if (data.product) {
             const { name, price, discount, image, quantity, category } = data.product;
             // Convert absolute discount amount back to percentage for display
             const discountPercentage = price > 0 && discount > 0
               ? Math.round((discount / price) * 100)
               : 0;
-            
+
             setFormData({
               name: name || '',
               price: price || '',
@@ -87,12 +87,12 @@ const CreateProductPage = () => {
               category: category?._id || category || ''
             });
             if (image && image.data) {
-                let binary = '';
-                const bytes = new Uint8Array(image.data);
-                bytes.forEach((byte) => binary += String.fromCharCode(byte));
-                setImagePreview(`data:image/jpeg;base64,${window.btoa(binary)}`);
+              let binary = '';
+              const bytes = new Uint8Array(image.data);
+              bytes.forEach((byte) => binary += String.fromCharCode(byte));
+              setImagePreview(`data:image/jpeg;base64,${window.btoa(binary)}`);
             } else if (typeof image === 'string') {
-                setImagePreview(image);
+              setImagePreview(image);
             }
           } else {
             throw new Error('Product data not found in response.');
@@ -154,10 +154,10 @@ const CreateProductPage = () => {
         body: productPayload,
         credentials: 'include',
       });
-      
+
       let result;
       if (response.headers.get("content-type")?.includes("application/json")) {
-          result = await response.json();
+        result = await response.json();
       }
 
       if (!response.ok) {
@@ -165,13 +165,13 @@ const CreateProductPage = () => {
       }
 
       toast.success(result.message || (isEditMode ? 'Product updated successfully!' : 'Product created successfully!'));
-      
+
       if (!isEditMode) {
         setFormData({ name: '', price: '', discount: '', quantity: '', category: '' });
         setImageFile(null);
         setImagePreview(null);
         if (document.getElementById('image')) {
-            document.getElementById('image').value = '';
+          document.getElementById('image').value = '';
         }
       }
       setTimeout(() => navigate('/admin'), 2000);
@@ -190,135 +190,159 @@ const CreateProductPage = () => {
 
       {/* Removed the outer flex container and the internal aside (sidebar) */}
       {/* The main content area will now take full width within the space provided by OwnerProtectedRoute */}
-      <main className="w-full bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-6 sm:p-8 shadow rounded-lg transition-colors duration-300">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-purple-100">
-            {isEditMode ? 'Edit Product' : 'Create New Product'}
-          </h2>
-          <form autoComplete="off" onSubmit={handleSubmit}>
-            {/* Product Details Section */}
-            <div className="mb-8 p-4 border border-purple-500/20 rounded-md">
-              <h3 className="text-xl font-semibold mb-4 text-gray-700 dark:text-purple-200">Product Details</h3>
-
-              <div className="mb-4">
-                <label htmlFor="image" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">
-                  Product Image{isEditMode ? '' : '*'}
-                </label>
-                {imagePreview && (
-                  <div className="my-2">
-                    <img src={imagePreview} alt="Product Preview" className="h-32 w-auto object-contain rounded border dark:border-gray-600" />
-                  </div>
-                )}
+      <main className="w-full bg-white border-4 border-black shadow-neo p-6 md:p-8">
+        <h2 className="text-3xl font-black uppercase mb-8 border-b-4 border-black pb-4 text-black flex items-center gap-3">
+          {isEditMode ? (
+            <>
+              <i className="ri-edit-2-line"></i>
+              <span>Edit Product</span>
+            </>
+          ) : (
+            <>
+              <i className="ri-add-line"></i>
+              <span>Create New Product</span>
+            </>
+          )}
+        </h2>
+        <form autoComplete="off" onSubmit={handleSubmit} className="space-y-8">
+          {/* Product Details Section */}
+          <div>
+            <div className="mb-6">
+              <label htmlFor="image" className="block mb-2 font-black uppercase text-sm text-gray-700">
+                Product Image{isEditMode ? '' : '*'}
+              </label>
+              {imagePreview && (
+                <div className="mb-4 p-2 border-4 border-black bg-gray-50 w-fit">
+                  <img src={imagePreview} alt="Product Preview" className="h-48 w-auto object-contain" />
+                </div>
+              )}
+              <div className="relative">
                 <input
                   id="image"
                   name="image"
                   type="file"
                   onChange={handleFileChange}
-                  className="block w-full text-sm text-purple-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-800"
-                  required={!isEditMode} // Required only if not in edit mode (or if no image was previously set, backend should handle)
+                  className="block w-full text-sm font-bold text-black
+                        file:mr-4 file:py-3 file:px-6
+                        file:border-2 file:border-black file:text-sm file:font-black file:uppercase
+                        file:bg-black file:text-white
+                        hover:file:bg-gray-800 cursor-pointer border-2 border-black p-2 bg-white"
+                  required={!isEditMode}
                   disabled={isLoading}
                 />
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label htmlFor="name" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Product Name*</label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="e.g., Cool T-Shirt"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="price" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Product Price (₹)*</label>
-                  <input
-                    id="price"
-                    name="price"
-                    type="number"
-                    placeholder="e.g., 999"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label htmlFor="name" className="block mb-2 font-black uppercase text-sm text-gray-700">Product Name*</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="E.G., COOL T-SHIRT"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border-2 border-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-white"
+                  required
+                  disabled={isLoading}
+                />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <label htmlFor="discount" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Discount (%)</label>
-                  <input
-                    id="discount"
-                    name="discount"
-                    type="number"
-                    placeholder="e.g., 10 for 10%"
-                    value={formData.discount}
-                    onChange={handleInputChange}
-                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
-                    disabled={isLoading}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="quantity" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Quantity*</label>
-                  <input
-                    id="quantity"
-                    name="quantity"
-                    type="number"
-                    placeholder="e.g., 100"
-                    value={formData.quantity}
-                    onChange={handleInputChange}
-                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50"
-                    required
-                    min="0"
-                    disabled={isLoading}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="category" className="block mb-1 font-medium text-gray-700 dark:text-purple-200">Category*</label>
+              <div>
+                <label htmlFor="price" className="block mb-2 font-black uppercase text-sm text-gray-700">Product Price (₹)*</label>
+                <input
+                  id="price"
+                  name="price"
+                  type="number"
+                  placeholder="E.G., 999"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border-2 border-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-white"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label htmlFor="discount" className="block mb-2 font-black uppercase text-sm text-gray-700">Discount (%)</label>
+                <input
+                  id="discount"
+                  name="discount"
+                  type="number"
+                  placeholder="E.G., 10"
+                  value={formData.discount}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border-2 border-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-white"
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label htmlFor="quantity" className="block mb-2 font-black uppercase text-sm text-gray-700">Quantity*</label>
+                <input
+                  id="quantity"
+                  name="quantity"
+                  type="number"
+                  placeholder="E.G., 100"
+                  value={formData.quantity}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border-2 border-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-white"
+                  required
+                  min="0"
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label htmlFor="category" className="block mb-2 font-black uppercase text-sm text-gray-700">Category*</label>
+                <div className="relative">
                   <select
                     id="category"
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="border border-purple-500/30 p-2 rounded w-full focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-purple-100 text-gray-900 dark:text-purple-100"
+                    className="w-full p-3 border-2 border-black font-bold focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all bg-white appearance-none uppercase"
                     required
                     disabled={isLoading || categoriesLoading}
                   >
                     <option value="">
-                      {categoriesLoading ? 'Loading categories...' : 'Select Category'}
+                      {categoriesLoading ? 'LOADING...' : 'SELECT CATEGORY'}
                     </option>
                     {categories.map((cat) => (
                       <option key={cat._id} value={cat._id}>
-                        {cat.name}
+                        {cat.name.toUpperCase()}
                       </option>
                     ))}
                   </select>
-                  {categories.length === 0 && !categoriesLoading && (
-                    <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
-                      No categories available. Please create categories first.
-                    </p>
-                  )}
+                  <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                    <i className="ri-arrow-down-s-line text-xl font-bold"></i>
+                  </div>
                 </div>
+                {categories.length === 0 && !categoriesLoading && (
+                  <p className="text-sm font-bold text-red-600 mt-2 uppercase">
+                    No categories available. Please create categories first.
+                  </p>
+                )}
               </div>
             </div>
+          </div>
 
-
-
+          <div className="flex justify-end pt-6 border-t-4 border-black border-dashed">
             <button
-              className="px-6 py-2.5 rounded-md bg-blue-600 dark:bg-purple-600 text-white font-semibold hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
+              className="px-8 py-4 bg-purple-600 text-white font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? (isEditMode ? 'Updating Product...' : 'Creating Product...') : (isEditMode ? 'Update Product' : 'Create New Product')}
+              {isLoading ? 'Processing...' : (
+                <>
+                  <i className={isEditMode ? "ri-save-line" : "ri-add-circle-line"}></i>
+                  <span>{isEditMode ? 'Update Product' : 'Create Product'}</span>
+                </>
+              )}
             </button>
-          </form>
-        </main>
-        {/* Orphaned div removed here, main closes, then the top-level div from line 150 closes */}
+          </div>
+        </form>
+      </main>
+      {/* Orphaned div removed here, main closes, then the top-level div from line 150 closes */}
     </div>
   );
 };

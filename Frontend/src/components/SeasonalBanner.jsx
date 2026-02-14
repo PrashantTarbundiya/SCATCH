@@ -61,46 +61,28 @@ const SeasonalBanner = () => {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -50 }}
-        className={`${currentEvent.bgColor} ${currentEvent.textColor} py-3 px-4 relative overflow-hidden`}
+        className="bg-accent text-accent-foreground py-3 px-4 relative overflow-hidden border-b-2 border-black"
       >
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <span className="text-2xl">{currentEvent.title.split(' ')[0]}</span>
+            <span className="text-2xl border-2 border-black bg-white p-1 shadow-neo-sm">{currentEvent.title.split(' ')[0]}</span>
             <div>
-              <h3 className="font-bold text-lg">{currentEvent.title.substring(2)}</h3>
-              <p className="text-sm opacity-90">{currentEvent.message}</p>
+              <h3 className="font-black text-lg uppercase tracking-wide">{currentEvent.title.substring(2)}</h3>
+              <p className="text-sm font-bold">{currentEvent.message}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
-            <button className="bg-white dark:bg-white dark:bg-[#2A1F47]/20 hover:bg-white dark:bg-white dark:bg-[#2A1F47]/30 px-4 py-2 rounded-full text-sm font-medium transition-colors">
+            <button className="bg-white text-black border-2 border-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] px-6 py-2 rounded-none text-sm font-bold uppercase transition-all">
               Shop Now
             </button>
             <button
               onClick={() => setIsVisible(false)}
-              className="text-white/80 hover:text-white text-xl"
+              className="text-accent-foreground hover:bg-black/10 w-8 h-8 flex items-center justify-center border-2 border-transparent hover:border-black transition-all"
             >
-              ×
+              <i className="ri-close-line text-xl"></i>
             </button>
           </div>
-        </div>
-        
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{ x: [-100, window.innerWidth + 100] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 transform -translate-y-1/2 text-6xl opacity-10"
-          >
-            ✨
-          </motion.div>
-          <motion.div
-            animate={{ x: [window.innerWidth + 100, -100] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 5 }}
-            className="absolute top-1/4 text-4xl opacity-10"
-          >
-            🎁
-          </motion.div>
         </div>
       </motion.div>
     </AnimatePresence>

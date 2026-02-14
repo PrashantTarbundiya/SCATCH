@@ -4,6 +4,7 @@ import { HoverEffect } from '../components/ui/HoverEffect';
 import { useWishlist } from '../context/WishlistContext';
 import { useUser } from '../context/UserContext';
 import { CardSkeleton } from '../components/ui/SkeletonLoader.jsx';
+import SEO from '../components/SEO';
 import { toast } from '../utils/toast';
 import axios from 'axios';
 
@@ -25,7 +26,7 @@ const ShopPage = () => {
   const [minRating, setMinRating] = useState('');
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const filterMenuRef = useRef(null);
-  
+
   // Infinite scroll state
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -79,7 +80,7 @@ const ShopPage = () => {
       setProducts([]);
     }
     setError(null);
-    
+
     const params = new URLSearchParams(location.search);
     const sortBy = params.get('sortBy') || 'recommended';
     const filterBy = params.get('filter') || 'all';
@@ -91,7 +92,7 @@ const ShopPage = () => {
 
     let apiUrl;
     const isSearchMode = query || minPrice || maxPrice || category || rating;
-    
+
     if (isSearchMode) {
       const searchParams = new URLSearchParams();
       if (query) searchParams.append('query', query);
@@ -102,7 +103,7 @@ const ShopPage = () => {
       if (sortBy) searchParams.append('sortBy', sortBy);
       searchParams.append('page', page);
       searchParams.append('limit', PRODUCTS_PER_PAGE);
-      
+
       apiUrl = `${import.meta.env.VITE_API_BASE_URL}/products/search?${searchParams.toString()}`;
     } else if (sortBy === 'recommended' || filterBy === 'recommended') {
       // Use personalized recommendations
@@ -128,9 +129,9 @@ const ShopPage = () => {
         }
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
-      
+
       const newProducts = data?.products || [];
-      
+
       if (append) {
         setProducts(prev => {
           const existingIds = new Set(prev.map(p => p._id));
@@ -140,10 +141,10 @@ const ShopPage = () => {
       } else {
         setProducts(newProducts);
       }
-      
+
       setHasMore(data?.pagination?.hasNextPage || false);
       setTotalProducts(data?.pagination?.totalProducts || newProducts.length);
-      
+
       if (data?.message && !data?.products) {
         setSuccessMessage(data.message);
       } else if (data?.products?.length > 0 && data?.success?.[0]) {
@@ -178,7 +179,7 @@ const ShopPage = () => {
     setMinRating(rating);
     setCurrentPage(1);
     setHasMore(true);
-    
+
     fetchProducts(1, false);
   }, [location.search, fetchProducts]);
 
@@ -272,7 +273,7 @@ const ShopPage = () => {
         method: 'GET',
         credentials: 'include',
       });
-      
+
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
         data = await response.json();
@@ -281,7 +282,7 @@ const ShopPage = () => {
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
-      
+
       toast.success(data?.message || 'Product added to cart!');
 
     } catch (err) {
@@ -339,7 +340,7 @@ const ShopPage = () => {
         method: 'GET',
         credentials: 'include',
       });
-      
+
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
         data = await response.json();
@@ -348,7 +349,7 @@ const ShopPage = () => {
       if (!response.ok) {
         throw new Error(data?.error || data?.message || response.statusText || `HTTP error! status: ${response.status}`);
       }
-      
+
       toast.success(data?.message || 'Product added to cart!');
 
     } catch (err) {
@@ -358,7 +359,7 @@ const ShopPage = () => {
 
   // Prepare products for HoverEffect component
   let displayProducts = products;
-  
+
   // If filter is wishlist, show wishlist items instead
   if (currentFilter === 'wishlist') {
     displayProducts = wishlistItems
@@ -368,8 +369,8 @@ const ShopPage = () => {
         quantity: item.product.quantity || 1,
       }));
   }
-  
-  const productsForHoverEffect = useMemo(() => 
+
+  const productsForHoverEffect = useMemo(() =>
     displayProducts.map(product => ({
       ...product,
       onAddToCart: currentFilter === 'wishlist' ? handleAddToCartFromWishlist : handleAddToCart,
@@ -379,17 +380,18 @@ const ShopPage = () => {
     })), [displayProducts, currentFilter, handleAddToCartFromWishlist, handleAddToCart, handleToggleWishlist, isProductInWishlist, wishlistLoading]
   );
 
+
   if (isLoading) {
     return (
-      <div className="w-full min-h-screen flex flex-col py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 px-4 md:px-6 lg:px-8">
+      <div className="w-full min-h-screen flex flex-col py-10 pt-24 md:pt-28 bg-background transition-colors duration-300 px-4 md:px-6 lg:px-8">
         {/* Search Bar Skeleton */}
-        <div className="w-full mb-5 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4 rounded-xl shadow-sm">
+        <div className="w-full mb-5 bg-card border-2 border-black p-4 shadow-neo-sm">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="flex-1 flex gap-2">
-              <div className="flex-1 h-12 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
-              <div className="w-24 md:w-32 h-12 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+              <div className="flex-1 h-12 bg-gray-200 animate-pulse"></div>
+              <div className="w-24 md:w-32 h-12 bg-gray-200 animate-pulse"></div>
             </div>
-            <div className="w-full md:w-32 h-12 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+            <div className="w-full md:w-32 h-12 bg-gray-200 animate-pulse"></div>
           </div>
         </div>
 
@@ -405,48 +407,49 @@ const ShopPage = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen flex flex-col items-start py-10 pt-24 md:pt-28 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 px-4 md:px-6 lg:px-8">
-        
+      <SEO
+        title={searchQuery ? `Search: ${searchQuery}` : selectedCategory ? `Category: ${categories.find(c => c.slug === selectedCategory)?.name || selectedCategory}` : "Shop"}
+        description="Browse our exclusive collection of urban streetwear and premium fashion."
+      />
+      <div className="w-full min-h-screen flex flex-col items-start py-10 pt-24 md:pt-28 bg-background transition-colors duration-300 px-4 md:px-6 lg:px-8">
+
         {/* Overlay */}
         {isFilterMenuOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300" />
+          <div className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300" onClick={() => setIsFilterMenuOpen(false)} />
         )}
 
         {/* Slide-in Filter Menu (Unified for Mobile and Desktop) */}
         <div
           ref={filterMenuRef}
-          className={`fixed top-0 right-0 h-full w-[85%] max-w-sm md:max-w-md bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto overflow-x-hidden ${
-            isFilterMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+          className={`fixed top-0 right-0 h-full w-[85%] max-w-sm md:max-w-md bg-white border-l-4 border-black shadow-none z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto overflow-x-hidden ${isFilterMenuOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
         >
           {/* Filter Menu Header */}
-          <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-purple-600 dark:to-fuchsia-600 p-5 flex items-center justify-between shadow-md dark:shadow-purple-500/20 z-10">
+          <div className="sticky top-0 bg-secondary text-secondary-foreground p-5 flex items-center justify-between border-b-2 border-black z-10">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Filters & Search</h3>
-              <p className="text-xs text-blue-100 mt-0.5">Refine your results</p>
+              <h3 className="text-xl font-black uppercase tracking-wide">Filters & Search</h3>
+              <p className="text-xs font-bold mt-0.5">Refine your results</p>
             </div>
             <button
               onClick={() => setIsFilterMenuOpen(false)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 dark:bg-[#2A1F47]/20 hover:bg-white/30 dark:hover:bg-[#2A1F47]/30 text-white transition-colors"
+              className="w-8 h-8 flex items-center justify-center border-2 border-black bg-white hover:bg-black hover:text-white transition-colors shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
               aria-label="Close menu"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <i className="ri-close-line text-lg"></i>
             </button>
           </div>
 
           {/* Menu Content */}
-          <div className="p-5 space-y-5">
+          <div className="p-5 space-y-6">
             {/* Sort By */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
                 Sort By
               </label>
               <select
                 value={currentSort}
                 onChange={handleSortChange}
-                className="w-full border border-purple-500/30 px-3 py-2.5 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
+                className="w-full border-2 border-black px-3 py-2.5 bg-white text-foreground focus:outline-none focus:shadow-neo-sm font-bold text-sm transition-all rounded-none"
               >
                 <option value="recommended">✨ Recommended for You</option>
                 <option value="newest">🆕 Newest First</option>
@@ -459,7 +462,7 @@ const ShopPage = () => {
 
             {/* Price Range */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
                 Price Range
               </label>
               <div className="flex gap-2">
@@ -468,27 +471,27 @@ const ShopPage = () => {
                   placeholder="Min"
                   value={priceRange.min}
                   onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-                  className="w-1/2 px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
+                  className="w-1/2 px-3 py-2.5 border-2 border-black bg-white text-foreground placeholder-gray-500 focus:outline-none focus:shadow-neo-sm font-bold text-sm transition-all rounded-none"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={priceRange.max}
                   onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-                  className="w-1/2 px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
+                  className="w-1/2 px-3 py-2.5 border-2 border-black bg-white text-foreground placeholder-gray-500 focus:outline-none focus:shadow-neo-sm font-bold text-sm transition-all rounded-none"
                 />
               </div>
             </div>
 
             {/* Category */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
                 Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
+                className="w-full px-3 py-2.5 border-2 border-black bg-white text-foreground focus:outline-none focus:shadow-neo-sm font-bold text-sm transition-all rounded-none"
               >
                 <option value="">All Categories</option>
                 {categories.map((cat) => (
@@ -501,13 +504,13 @@ const ShopPage = () => {
 
             {/* Rating */}
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-700 dark:text-purple-200 mb-2 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-foreground mb-2 uppercase tracking-wide">
                 Minimum Rating
               </label>
               <select
                 value={minRating}
                 onChange={(e) => setMinRating(e.target.value)}
-                className="w-full border border-purple-500/30 px-3 py-2.5 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm transition-all"
+                className="w-full border-2 border-black px-3 py-2.5 bg-white text-foreground focus:outline-none focus:shadow-neo-sm font-bold text-sm transition-all rounded-none"
               >
                 <option value="">Any Rating</option>
                 <option value="4">⭐⭐⭐⭐ 4+ Stars</option>
@@ -521,123 +524,118 @@ const ShopPage = () => {
             <div className="w-full flex gap-2 pt-2">
               <button
                 onClick={() => { handlePriceFilterApply(); setIsFilterMenuOpen(false); }}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold text-sm transition-all shadow-sm hover:shadow-md dark:shadow-purple-500/20"
+                className="flex-1 px-4 py-3 bg-green-500 hover:bg-green-600 text-white font-black text-sm uppercase border-2 border-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all rounded-none"
               >
                 Apply Filters
               </button>
               <button
                 onClick={() => { handleClearFilters(); setIsFilterMenuOpen(false); }}
-                className="px-4 py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium text-sm transition-colors shadow-sm"
+                className="px-4 py-3 bg-gray-200 hover:bg-gray-300 text-black font-bold text-sm uppercase border-2 border-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all rounded-none"
               >
                 Clear
               </button>
             </div>
 
             {/* Quick Links */}
-            <div className="w-full pt-5 border-t border-purple-500/20">
-              <h4 className="text-xs font-semibold text-gray-700 dark:text-purple-200 mb-3 uppercase tracking-wide">
+            <div className="w-full pt-6 border-t-2 border-black">
+              <h4 className="text-xs font-bold text-foreground mb-3 uppercase tracking-wide">
                 Quick Links
               </h4>
               <div className="space-y-2">
                 <Link
                   onClick={() => setIsFilterMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    currentFilter === 'recommended'
-                      ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 font-bold text-sm border-2 transition-all rounded-none ${currentFilter === 'recommended'
+                    ? 'bg-blue-500 text-white border-black shadow-neo-sm'
+                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:border-black'
+                    }`}
                   to="/shop?sortBy=recommended&filter=all"
                 >
-                  <span>✨</span> For You
+                  <span className="text-lg">✨</span> For You
                 </Link>
                 <Link
                   onClick={() => setIsFilterMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    currentFilter === 'newCollection'
-                      ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 font-bold text-sm border-2 transition-all rounded-none ${currentFilter === 'newCollection'
+                    ? 'bg-blue-500 text-white border-black shadow-neo-sm'
+                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:border-black'
+                    }`}
                   to="/shop?filter=newCollection&sortBy=newest"
                 >
-                  <span>🆕</span> New Collection
+                  <span className="text-lg">🆕</span> New Collection
                 </Link>
                 <Link
                   onClick={() => setIsFilterMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    currentFilter === 'discounted'
-                      ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 font-bold text-sm border-2 transition-all rounded-none ${currentFilter === 'discounted'
+                    ? 'bg-blue-500 text-white border-black shadow-neo-sm'
+                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:border-black'
+                    }`}
                   to="/shop?filter=discounted&sortBy=popular"
                 >
-                  <span>🏷️</span> Discounted
+                  <span className="text-lg">🏷️</span> Discounted
                 </Link>
                 <Link
                   onClick={() => setIsFilterMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    currentFilter === 'wishlist'
-                      ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 font-bold text-sm border-2 transition-all rounded-none ${currentFilter === 'wishlist'
+                    ? 'bg-blue-500 text-white border-black shadow-neo-sm'
+                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:border-black'
+                    }`}
                   to="/shop?filter=wishlist&sortBy=newest"
                 >
-                  <span>❤️</span> Wishlist
+                  <span className="text-lg">❤️</span> Wishlist
                 </Link>
                 <Link
                   onClick={() => setIsFilterMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    currentFilter === 'availability'
-                      ? 'bg-blue-500 text-white shadow-sm'
-                      : 'text-gray-700 dark:text-purple-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 font-bold text-sm border-2 transition-all rounded-none ${currentFilter === 'availability'
+                    ? 'bg-blue-500 text-white border-black shadow-neo-sm'
+                    : 'border-transparent text-gray-700 hover:bg-gray-100 hover:border-black'
+                    }`}
                   to="/shop?filter=availability&sortBy=newest"
                 >
-                  <span>✅</span> In Stock
+                  <span className="text-lg">✅</span> In Stock
                 </Link>
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* Main Content Area */}
         <div className="w-full flex flex-col gap-5">
           {/* Search Bar, Categories and Filter Button (Combined) */}
-          <div className="w-full bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4 rounded-xl shadow-sm">
+          <div className="w-full bg-white border-4 border-black p-4 shadow-neo mb-6">
             {/* Search and Filter Row */}
-            <div className="flex items-stretch gap-2 mb-4">
-              <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2 min-w-0">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="flex-1 min-w-0 px-3 py-2.5 border border-purple-500/30 rounded-lg bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-sm"
-                />
+            <div className="flex flex-col md:flex-row items-stretch gap-4 mb-6">
+              <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-0 min-w-0 shadow-neo-sm">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="ri-search-line text-lg font-bold"></i>
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="SEARCH PRODUCTS..."
+                    className="w-full pl-10 pr-4 py-3 border-2 border-black border-r-0 bg-white text-black placeholder-gray-500 focus:outline-none font-bold text-sm h-full uppercase"
+                  />
+                </div>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md dark:shadow-purple-500/20 flex items-center gap-1.5 flex-shrink-0"
+                  className="px-6 py-3 bg-black text-white font-black uppercase text-sm border-2 border-black hover:bg-gray-800 transition-colors flex items-center gap-2"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/>
-                  </svg>
-                  <span className="hidden sm:inline text-sm">Search</span>
+                  Search
                 </button>
               </form>
-              
+
               <button
                 onClick={() => setIsFilterMenuOpen(true)}
-                className="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-purple-600 dark:to-fuchsia-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md dark:shadow-purple-500/20 flex items-center justify-center gap-1.5 whitespace-nowrap flex-shrink-0"
+                className="px-6 py-3 bg-white text-black font-black uppercase text-sm border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-2"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                <span className="text-sm">Filter</span>
+                <i className="ri-filter-3-line text-lg"></i>
+                <span className="">Filter & Sort</span>
               </button>
             </div>
 
             {/* Categories Row */}
             {categories.length > 0 && (
-              <div className="flex gap-3 overflow-x-auto pb-2 pt-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+              <div className="flex gap-3 overflow-x-auto pb-2 pt-2 scrollbar-none">
                 {/* All Category */}
                 <button
                   onClick={() => {
@@ -646,20 +644,18 @@ const ShopPage = () => {
                     params.delete('category');
                     navigate(`?${params.toString()}`);
                   }}
-                  className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0"
+                  className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0 group"
                 >
-                  <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
-                    !selectedCategory ? 'border-blue-500 shadow-lg dark:shadow-purple-500/20' : 'border-purple-500/30 hover:border-gray-400 dark:hover:border-gray-500'
-                  }`}>
-                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                      <span className="text-xl font-bold text-gray-900 dark:text-white">All</span>
+                  <div className={`w-14 h-14 overflow-hidden border-2 transition-all ${!selectedCategory ? 'border-black bg-blue-500 shadow-neo-sm' : 'border-black bg-white group-hover:bg-gray-100'
+                    }`}>
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className={`text-xl font-black ${!selectedCategory ? 'text-white' : 'text-black'}`}>ALL</span>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium text-center line-clamp-2 transition-colors ${
-                    !selectedCategory ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-purple-200'
-                  }`}>All</span>
+                  <span className={`text-xs font-bold uppercase text-center line-clamp-2 ${!selectedCategory ? 'text-blue-600' : 'text-foreground'
+                    }`}>All</span>
                 </button>
-                
+
                 {categories.map((category) => {
                   const isActive = selectedCategory === category.slug;
                   return (
@@ -676,26 +672,24 @@ const ShopPage = () => {
                         }
                         navigate(`?${params.toString()}`);
                       }}
-                      className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0"
+                      className="flex flex-col items-center gap-2 min-w-[70px] flex-shrink-0 group"
                     >
-                      <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
-                        isActive ? 'border-blue-500 shadow-lg dark:shadow-purple-500/20' : 'border-purple-500/30 hover:border-gray-400 dark:hover:border-gray-500'
-                      }`}>
+                      <div className={`w-14 h-14 overflow-hidden border-2 transition-all ${isActive ? 'border-black bg-blue-500 shadow-neo-sm' : 'border-black bg-white group-hover:bg-gray-100'
+                        }`}>
                         {category.image ? (
                           <img
                             src={category.image}
                             alt={category.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                            <span className="text-xl font-bold text-gray-600 dark:text-gray-600 dark:text-purple-300">{category.name.charAt(0)}</span>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className={`text-xl font-black ${isActive ? 'text-white' : 'text-black'}`}>{category.name.charAt(0)}</span>
                           </div>
                         )}
                       </div>
-                      <span className={`text-xs font-medium text-center line-clamp-2 transition-colors ${
-                        isActive ? 'text-blue-500 dark:text-blue-400' : 'text-gray-700 dark:text-purple-200'
-                      }`}>{category.name}</span>
+                      <span className={`text-xs font-bold uppercase text-center line-clamp-2 ${isActive ? 'text-blue-600' : 'text-foreground'
+                        }`}>{category.name}</span>
                     </button>
                   );
                 })}
@@ -733,7 +727,7 @@ const ShopPage = () => {
           ) : displayProducts.length > 0 ? (
             <>
               <HoverEffect items={productsForHoverEffect} className="py-0" />
-              
+
               {/* Infinite Scroll Trigger & Loading Indicator */}
               {currentFilter !== 'wishlist' && (
                 <>

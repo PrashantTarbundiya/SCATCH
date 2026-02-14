@@ -1,13 +1,14 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useOwner } from '../context/OwnerContext';
 
 const AdminSidebar = () => {
     const { logoutOwnerContext } = useOwner();
     const navigate = useNavigate();
-    
-    const linkStyle = 'flex items-center px-3 py-2 mx-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white rounded-md transition-colors';
-    const activeLinkStyle = 'bg-blue-600 dark:bg-purple-600 text-gray-900 dark:text-white';
+
+    // Neo-brutalist Link Styles
+    const linkStyle = 'flex items-center px-4 py-3 mx-2 mb-2 font-black uppercase text-sm border-2 border-transparent transition-all hover:border-black hover:bg-yellow-300 hover:shadow-neo-sm hover:-translate-y-[2px] hover:-translate-x-[2px] text-gray-800';
+    const activeLinkStyle = 'bg-black text-white border-black shadow-neo-sm -translate-y-[2px] -translate-x-[2px] hover:bg-black hover:text-white hover:shadow-neo-sm hover:-translate-y-[2px] hover:-translate-x-[2px]';
 
     const handleMobileNavClick = () => {
         if (window.innerWidth < 768) {
@@ -28,73 +29,76 @@ const AdminSidebar = () => {
     };
 
     return (
-        <aside className="w-64 min-h-screen bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl text-gray-100 shadow-xl fixed top-0 left-0 transition-all duration-300 z-50 border-r border-gray-700 translate-x-0">
+        <aside className="w-64 min-h-full bg-white text-black flex flex-col border-r-4 border-black">
             {/* Header with logo */}
-            <div className="flex items-center p-4 border-b border-gray-700">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">SCATCH Admin</h2>
+            <div className="h-20 flex items-center justify-center border-b-4 border-black bg-yellow-300">
+                <Link to="/admin" className="text-2xl font-black uppercase tracking-tighter italic">
+                    SCATCH <span className="text-sm not-italic ml-1 bg-black text-white px-1">ADMIN</span>
+                </Link>
             </div>
 
             {/* Navigation Menu */}
-            <nav className="p-4">
-                <ul className="space-y-2">
+            <nav className="p-4 flex-grow overflow-y-auto">
+                <ul className="space-y-1">
                     <li>
-                        <NavLink 
-                            to="/admin" 
+                        <NavLink
+                            to="/admin"
                             end
                             className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
                         >
-                            <i className="ri-dashboard-line text-lg mr-3"></i>
-                            <span>All Products</span>
+                            <i className="ri-dashboard-line text-xl mr-3"></i>
+                            <span>Products</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink 
-                            to="/admin/sales" 
+                        <NavLink
+                            to="/admin/sales"
                             className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
                         >
-                            <i className="ri-bar-chart-line text-lg mr-3"></i>
-                            <span>Sales Analytics</span>
+                            <i className="ri-bar-chart-line text-xl mr-3"></i>
+                            <span>Analytics</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink 
-                            to="/admin/coupons" 
+                        <NavLink
+                            to="/create-product"
                             className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
                         >
-                            <i className="ri-coupon-line text-lg mr-3"></i>
-                            <span>Manage Coupons</span>
+                            <i className="ri-add-box-line text-xl mr-3"></i>
+                            <span>Create Product</span>
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink 
-                            to="/admin/orders" 
+                        <NavLink
+                            to="/admin/orders"
                             className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
                         >
-                            <i className="ri-truck-line text-lg mr-3"></i>
-                            <span>Manage Orders</span>
+                            <i className="ri-truck-line text-xl mr-3"></i>
+                            <span>Orders</span>
                         </NavLink>
                     </li>
-
-
                     <li>
-                        <NavLink 
-                            to="/create-product" 
+                        <NavLink
+                            to="/admin/coupons"
                             className={({ isActive }) => isActive ? `${linkStyle} ${activeLinkStyle}` : linkStyle}
                         >
-                            <i className="ri-add-box-line text-lg mr-3"></i>
-                            <span>Create New Product</span>
+                            <i className="ri-coupon-line text-xl mr-3"></i>
+                            <span>Coupons</span>
                         </NavLink>
                     </li>
                 </ul>
             </nav>
 
             {/* Logout Button at Bottom */}
-            <div className="absolute bottom-4 left-0 right-0 px-4">
+            <div className="p-4 border-t-4 border-black bg-gray-50">
+                <div className="mb-4 px-2">
+                    <p className="text-xs font-bold uppercase text-gray-500">Logged in as Owner</p>
+                </div>
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-center py-3 px-4 text-sm text-gray-300 hover:bg-red-600 hover:text-white rounded-md transition-colors"
+                    className="w-full flex items-center justify-center py-3 px-4 font-black uppercase text-sm text-white bg-red-600 border-2 border-black shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
-                    <i className="ri-logout-box-line text-lg mr-3"></i>
+                    <i className="ri-logout-box-line text-lg mr-2"></i>
                     <span>Logout</span>
                 </button>
             </div>

@@ -2,35 +2,39 @@ import { getCookie } from '../utils/cookies';
 
 
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 class ApiClient {
   constructor() {
     this.baseUrl = API_BASE_URL;
+    this.onUnauthorized = null;
   }
 
-  
+  setUnauthorizedHandler(handler) {
+    this.onUnauthorized = handler;
+  }
+
   getCsrfToken() {
     return getCookie('XSRF-TOKEN');
   }
 
-  
+
   async request(endpoint, options = {}) {
     const csrfToken = this.getCsrfToken();
-    
+
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
-    
+
     // Add CSRF token for state-changing requests
     const method = (options.method || 'GET').toUpperCase();
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method) && csrfToken) {
       headers['X-CSRF-Token'] = csrfToken;
     }
-    
+
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
-    
+
     try {
       const response = await fetch(url, {
         ...options,
@@ -38,32 +42,40 @@ class ApiClient {
         headers,
         credentials: 'include', // Important: includes cookies
       });
-      
+
       // Handle non-JSON responses
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
-      
+
       let data;
       if (isJson) {
         data = await response.json();
       } else {
         data = await response.text();
       }
-      
+
       if (!response.ok) {
+        // Handle 401 Unauthorized - Session Expired
+        if (response.status === 401) {
+          if (this.onUnauthorized) {
+            this.onUnauthorized();
+          }
+          throw new Error('Session expired. Please login again.');
+        }
+
         // Handle CSRF token errors specifically
         if (response.status === 403 && isJson && data.error?.includes('CSRF')) {
           console.error('CSRF token error:', data.error);
           throw new Error('Security token expired. Please refresh the page and try again.');
         }
-        
+
         // Handle other errors
-        const errorMessage = isJson 
+        const errorMessage = isJson
           ? (data.error || data.message || 'Request failed')
           : `HTTP error! status: ${response.status}`;
         throw new Error(errorMessage);
       }
-      
+
       return data;
     } catch (error) {
       console.error('API request failed:', error);
@@ -92,7 +104,7 @@ class ApiClient {
     });
   }
 
-  
+
   patch(endpoint, data, options = {}) {
     return this.request(endpoint, {
       ...options,

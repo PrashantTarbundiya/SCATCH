@@ -26,11 +26,11 @@ const removeToast = (toastId) => {
   if (toastElement) {
     toastElement.style.opacity = '0';
     toastElement.style.transform = 'translateX(-100%)';
-    
+
     setTimeout(() => {
       toastElement.remove();
       toasts = toasts.filter(t => t.id !== toastId);
-      
+
       if (toasts.length === 0 && toastContainer) {
         toastContainer.remove();
         toastContainer = null;
@@ -42,125 +42,117 @@ const removeToast = (toastId) => {
 const getToastConfig = (type) => {
   const configs = {
     success: {
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      icon: '✓',
-      iconBg: 'rgba(255, 255, 255, 0.2)'
+      bg: '#4ade80', // green-400
+      color: '#000000',
+      borderColor: '#000000',
+      icon: '<i class="ri-checkbox-circle-fill" style="font-size: 24px;"></i>',
     },
     error: {
-      gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-      icon: '✕',
-      iconBg: 'rgba(255, 255, 255, 0.2)'
+      bg: '#f87171', // red-400
+      color: '#000000',
+      borderColor: '#000000',
+      icon: '<i class="ri-error-warning-fill" style="font-size: 24px;"></i>',
     },
     info: {
-      gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-      icon: 'ℹ',
-      iconBg: 'rgba(255, 255, 255, 0.2)'
+      bg: '#60a5fa', // blue-400
+      color: '#000000',
+      borderColor: '#000000',
+      icon: '<i class="ri-information-fill" style="font-size: 24px;"></i>',
     },
     warning: {
-      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-      icon: '⚠',
-      iconBg: 'rgba(255, 255, 255, 0.2)'
+      bg: '#fbbf24', // yellow-400
+      color: '#000000',
+      borderColor: '#000000',
+      icon: '<i class="ri-alert-fill" style="font-size: 24px;"></i>',
     }
   };
   return configs[type] || configs.info;
 };
 
 const showToast = (message, type = 'success', duration = 4000) => {
-  // Remove all existing toasts before showing new one
   removeAllToasts();
-  
   const container = createToastContainer();
   const toastId = toastIdCounter++;
   const config = getToastConfig(type);
-  
+
   const toast = document.createElement('div');
   toast.id = `toast-${toastId}`;
   toast.style.cssText = `
     pointer-events: auto;
-    min-width: 280px;
-    max-width: 350px;
-    min-height: 60px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    background: ${config.gradient};
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    color: white;
+    min-width: 300px;
+    max-width: 400px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: ${config.bg};
+    color: ${config.color};
+    border: 3px solid ${config.borderColor};
+    box-shadow: 4px 4px 0 0 #000;
     opacity: 0;
     transform: translateX(-100%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 16px;
   `;
-  
+
   toast.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 12px; height: 100%;">
-      <div style="
+    <div style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+      ${config.icon}
+    </div>
+    <div style="flex: 1; min-width: 0;">
+      <p style="
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 900;
+        text-transform: uppercase;
+        line-height: 1.4;
+        word-wrap: break-word;
+        letter-spacing: 0.05em;
+      ">${message}</p>
+    </div>
+    <button 
+      onclick="document.getElementById('toast-${toastId}').dispatchEvent(new CustomEvent('closeToast', { bubbles: true }))"
+      style="
         flex-shrink: 0;
-        width: 32px;
-        height: 32px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        color: inherit;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: ${config.iconBg};
-        border-radius: 50%;
-      ">
-        <span style="font-size: 18px; font-weight: bold;">${config.icon}</span>
-      </div>
-      <div style="flex: 1; min-width: 0; text-align: left;">
-        <p style="
-          margin: 0;
-          font-size: 14px;
-          font-weight: 500;
-          line-height: 1.5;
-          word-wrap: break-word;
-          text-align: left;
-        ">${message}</p>
-      </div>
-      <button 
-        onclick="document.getElementById('toast-${toastId}').dispatchEvent(new CustomEvent('closeToast', { bubbles: true }))"
-        style="
-          flex-shrink: 0;
-          width: 24px;
-          height: 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: transparent;
-          border: none;
-          border-radius: 50%;
-          cursor: pointer;
-          transition: background 0.2s;
-          padding: 0;
-          color: white;
-        "
-        onmouseover="this.style.background='rgba(255,255,255,0.2)'"
-        onmouseout="this.style.background='transparent'"
-        aria-label="Close"
-      >
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      "
+      onmouseover="this.style.opacity='1'"
+      onmouseout="this.style.opacity='0.7'"
+      aria-label="Close"
+    >
+      <i class="ri-close-line" style="font-size: 24px; font-weight: bold;"></i>
+    </button>
   `;
-  
+
   toast.addEventListener('closeToast', () => {
     removeToast(toastId);
   });
-  
+
   container.appendChild(toast);
   toasts.push({ id: toastId, element: toast });
-  
+
   // Trigger animation
   requestAnimationFrame(() => {
     toast.style.opacity = '1';
     toast.style.transform = 'translateX(0)';
   });
-  
+
   if (duration > 0) {
     setTimeout(() => {
       removeToast(toastId);
     }, duration);
   }
-  
+
   return toastId;
 };
 

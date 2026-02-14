@@ -86,156 +86,146 @@ function ProfilePage() {
 
   }, [user, isAuthenticated, authLoading]);
 
-  if (authLoading || pageLoading) { // Check authLoading as well
+  if (authLoading || pageLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100 transition-colors duration-300 pt-20 pb-12">
+      <div className="min-h-screen bg-background pt-28 pb-12">
         <ProfileSkeleton />
       </div>
     );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4 pt-20 text-center text-red-500 dark:text-red-400">Error: {error}</div>;
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center pt-28 bg-background">
+        <div className="p-8 border-4 border-black shadow-neo bg-white text-center">
+          <p className="text-red-600 text-xl font-bold mb-4 uppercase">Error: {error}</p>
+        </div>
+      </div>
+    );
   }
 
   if (!profileData) {
-    return <div className="container mx-auto p-4 pt-20 text-center text-gray-700 dark:text-gray-700 dark:text-purple-200">No profile data found.</div>;
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center pt-28 bg-background">
+        <div className="p-8 border-4 border-black shadow-neo bg-white text-center">
+          <p className="text-xl font-black uppercase">No profile data found.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] text-gray-900 dark:text-purple-100 transition-colors duration-300 pt-20 md:pt-24 pb-8 md:pb-12">
-      <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 pt-28 pb-12">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
         {/* Profile Header */}
-        <div className="relative bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 p-4 sm:p-6 md:p-8 rounded-lg shadow-xl shadow-purple-500/20 mb-6 md:mb-10 text-gray-900 dark:text-white">
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-0">
+        <div className="relative bg-white border-4 border-black shadow-neo p-6 md:p-8 mb-10">
+          <div className="flex flex-col md:flex-row items-center gap-6">
             <img
-              className="h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 rounded-full object-cover border-4 border-white dark:border-gray-300 dark:border-purple-500/30 shadow-md dark:shadow-purple-500/20 md:mr-8"
+              className="h-32 w-32 md:h-40 md:w-40 rounded-none border-4 border-black shadow-neo-sm object-cover"
               src={profileData.profilePhoto}
               alt="Profile"
             />
             <div className="text-center md:text-left flex-1">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold break-words">{profileData.name}</h1>
-              <p className="text-sm sm:text-base md:text-lg opacity-90 break-all mt-1">{profileData.email}</p>
+              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-2">{profileData.name}</h1>
+              <p className="text-lg font-bold text-gray-600 uppercase tracking-widest">{profileData.email}</p>
             </div>
             <Link
               to="/profile/edit"
-              className="w-full md:w-auto md:ml-auto bg-white/20 dark:bg-[#2A1F47]/20 backdrop-blur-sm text-white hover:bg-white/30 dark:hover:bg-[#2A1F47]/30 font-semibold py-2 px-4 sm:px-5 rounded-lg shadow transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+              className="w-full md:w-auto bg-white text-black font-black uppercase tracking-wider py-3 px-6 border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-2"
             >
-              <i className="ri-edit-2-line"></i>
+              <i className="ri-edit-2-line text-xl"></i>
               <span>Edit Profile</span>
             </Link>
           </div>
         </div>
 
-        {/* Adjusted grid for wider Personal Info on larger screens */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 md:gap-8">
-          {/* Personal Information Card - now takes up 2/5 on large screens */}
-          <div className="lg:col-span-2 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4 sm:p-5 md:p-6 rounded-lg shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-purple-100 border-b pb-2 sm:pb-3 border-purple-500/20 flex items-center gap-2">
-              <i className="ri-user-line text-purple-400"></i>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Personal Information Card */}
+          <div className="lg:col-span-2 bg-white border-4 border-black shadow-neo p-6 md:p-8 h-fit">
+            <h2 className="text-2xl font-black uppercase mb-6 border-b-4 border-black pb-2 flex items-center gap-3">
+              <i className="ri-user-line"></i>
               <span>Personal Info</span>
             </h2>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-6">
               <div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-purple-300 mb-1">Full Name</p>
-                <p className="text-base sm:text-lg break-words">{profileData.name}</p>
+                <p className="text-sm font-black text-gray-500 uppercase mb-1">Full Name</p>
+                <p className="text-lg font-bold border-2 border-black p-2 bg-gray-50">{profileData.name}</p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-purple-300 mb-1">Email Address</p>
-                <p className="text-base sm:text-lg flex items-center gap-2 break-all">
-                  <i className="ri-mail-line opacity-70 flex-shrink-0"></i>
-                  <span>{profileData.email}</span>
-                </p>
+                <p className="text-sm font-black text-gray-500 uppercase mb-1">Email Address</p>
+                <p className="text-lg font-bold border-2 border-black p-2 bg-gray-50 break-all">{profileData.email}</p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-purple-300 mb-1">Phone Number</p>
-                <p className="text-base sm:text-lg flex items-center gap-2">
-                  <i className="ri-phone-line opacity-70 flex-shrink-0"></i>
-                  <span>{profileData.phone}</span>
-                </p>
+                <p className="text-sm font-black text-gray-500 uppercase mb-1">Phone Number</p>
+                <p className="text-lg font-bold border-2 border-black p-2 bg-gray-50">{profileData.phone}</p>
               </div>
               <div>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-purple-300 mb-1">Address</p>
-                <p className="text-base sm:text-lg flex items-start gap-2">
-                  <i className="ri-map-pin-line mt-1 opacity-70 flex-shrink-0"></i>
-                  <span className="whitespace-pre-line break-words">{profileData.address || 'Not provided'}</span>
-                </p>
+                <p className="text-sm font-black text-gray-500 uppercase mb-1">Address</p>
+                <p className="text-lg font-bold border-2 border-black p-2 bg-gray-50 whitespace-pre-line">{profileData.address || 'Not provided'}</p>
               </div>
             </div>
           </div>
 
-          {/* Orders Card - now takes up 3/5 on large screens */}
-          <div className="lg:col-span-3 bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 p-4 sm:p-5 md:p-6 rounded-lg shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-purple-100 border-b pb-2 sm:pb-3 border-purple-500/20 flex items-center gap-2">
-              <i className="ri-shopping-bag-3-line text-cyan-400"></i>
+          {/* Orders Card */}
+          <div className="lg:col-span-3 bg-white border-4 border-black shadow-neo p-6 md:p-8">
+            <h2 className="text-2xl font-black uppercase mb-6 border-b-4 border-black pb-2 flex items-center gap-3">
+              <i className="ri-shopping-bag-3-line"></i>
               <span>My Orders</span>
             </h2>
             {ordersLoading ? (
               <div className="space-y-4">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="p-4 border border-purple-500/20 rounded-lg">
-                    <div className="flex justify-between items-center mb-3">
-                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-5 w-32 rounded"></div>
-                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-6 w-16 rounded-full"></div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-full rounded"></div>
-                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-4 w-3/4 rounded"></div>
-                    </div>
-                    <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2 text-right">
-                      <div className="bg-gray-200 dark:bg-gray-700 animate-pulse h-5 w-20 rounded ml-auto"></div>
-                    </div>
-                  </div>
+                  <div key={i} className="p-4 border-2 border-black bg-gray-100 animate-pulse h-32"></div>
                 ))}
               </div>
             ) : ordersError ? (
-              <p className="text-center text-red-500 dark:text-red-400">{ordersError}</p>
+              <p className="text-center text-red-600 font-bold uppercase">{ordersError}</p>
             ) : orders.length > 0 ? (
               <div>
                 {(() => {
                   const order = orders[currentOrderIndex];
-                  if (!order) return <p className="text-center text-gray-600 dark:text-gray-600 dark:text-purple-300">Order not found.</p>;
+                  if (!order) return <p className="text-center font-bold">Order not found.</p>;
                   return (
-                    <div className="space-y-4 sm:space-y-6">
-                      <div className="p-3 sm:p-4 border border-purple-500/20 rounded-lg bg-white dark:bg-[#2A1F47] shadow-md dark:shadow-purple-500/20">
-                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-3 gap-2">
+                    <div className="space-y-6">
+                      <div className="p-4 border-2 border-black bg-white shadow-neo-sm">
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-2 border-b-2 border-black pb-2 border-dashed">
                           <div className="flex-1">
-                            <span className="font-semibold text-base sm:text-lg text-gray-900 dark:text-purple-100 block break-words">
-                              Order ID: {order.razorpayOrderId || order._id}
+                            <span className="font-black text-lg uppercase block break-all">
+                              Order ID: <span className="font-mono text-base">{order.razorpayOrderId || order._id}</span>
                             </span>
-                            <p className="text-xs sm:text-sm text-gray-600 dark:text-purple-300 mt-1">
+                            <p className="text-sm font-bold text-gray-500 mt-1 uppercase">
                               Placed on: {new Date(order.orderDate).toLocaleDateString()}
                             </p>
                           </div>
-                          <span className={`self-start sm:self-center px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${
-                            order.paymentStatus === 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100' :
-                            order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700 dark:text-yellow-100' :
-                            'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100'
-                          }`}>
-                            {order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1)}
+                          <span className={`self-start sm:self-center px-4 py-1 text-xs font-black uppercase border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${order.paymentStatus === 'paid' ? 'bg-green-400 text-black' :
+                              order.paymentStatus === 'pending' ? 'bg-yellow-400 text-black' :
+                                'bg-red-400 text-white'
+                            }`}>
+                            {order.paymentStatus}
                           </span>
                         </div>
-                        
-                        <div className="mb-3">
-                          <h4 className="font-medium text-sm sm:text-base text-gray-700 dark:text-purple-200 mb-2">Items:</h4>
-                          <ul className="list-disc list-inside pl-1 space-y-1.5 text-xs sm:text-sm text-gray-600 dark:text-purple-300 max-h-32 sm:max-h-40 overflow-y-auto custom-scrollbar pr-1">
+
+                        <div className="mb-4">
+                          <h4 className="font-black text-sm uppercase mb-2">Items:</h4>
+                          <ul className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-2">
                             {order.items.map(item => (
-                              <li key={item._id || item.product?._id} className="break-words">
-                                {item.nameAtPurchase || item.product?.name || 'N/A'} - {item.quantity} x ₹{item.priceAtPurchase.toFixed(2)}
+                              <li key={item._id || item.product?._id} className="text-sm font-bold border-l-4 border-black pl-2 py-1 bg-gray-50 flex justify-between items-center">
+                                <span>{item.nameAtPurchase || item.product?.name || 'N/A'} (x{item.quantity})</span>
+                                <span>₹{item.priceAtPurchase.toFixed(2)}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
-                        <div className="border-t border-purple-500/20 pt-2 mt-2 text-right">
-                          <p className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 dark:text-purple-100">
+                        <div className="border-t-2 border-black pt-4 text-right">
+                          <p className="text-xl font-black uppercase">
                             Total: ₹{order.totalAmount.toFixed(2)}
                           </p>
                         </div>
                       </div>
-                      
+
                       {/* Order Status Tracker */}
-                      <OrderStatusTracker 
+                      <OrderStatusTracker
                         currentStatus={order.orderStatus || 'Processing'}
                         estimatedDeliveryDate={order.estimatedDeliveryDate}
                         statusHistory={order.statusHistory}
@@ -244,22 +234,22 @@ function ProfilePage() {
                   );
                 })()}
                 {orders.length > 1 && (
-                  <div className="flex justify-between items-center mt-4 gap-2">
+                  <div className="flex justify-between items-center mt-6 gap-4">
                     <button
                       onClick={() => setCurrentOrderIndex(prev => Math.max(0, prev - 1))}
                       disabled={currentOrderIndex === 0}
-                      className="px-3 sm:px-4 py-2 bg-purple-900/50 text-gray-900 dark:text-purple-100 rounded-md hover:bg-purple-900/70 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                      className="px-4 py-2 bg-white text-black font-black uppercase border-2 border-black shadow-neo-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     >
                       <span className="hidden sm:inline">Previous</span>
                       <i className="sm:hidden ri-arrow-left-line"></i>
                     </button>
-                    <span className="text-xs sm:text-sm text-gray-600 dark:text-purple-300 text-center px-2">
-                      Order {currentOrderIndex + 1} of {orders.length}
+                    <span className="text-sm font-bold uppercase border-2 border-black px-3 py-1 bg-gray-100">
+                      Order {currentOrderIndex + 1} / {orders.length}
                     </span>
                     <button
                       onClick={() => setCurrentOrderIndex(prev => Math.min(orders.length - 1, prev + 1))}
                       disabled={currentOrderIndex === orders.length - 1}
-                      className="px-3 sm:px-4 py-2 bg-purple-900/50 text-gray-900 dark:text-purple-100 rounded-md hover:bg-purple-900/70 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                      className="px-4 py-2 bg-white text-black font-black uppercase border-2 border-black shadow-neo-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     >
                       <span className="hidden sm:inline">Next</span>
                       <i className="sm:hidden ri-arrow-right-line"></i>
@@ -268,12 +258,12 @@ function ProfilePage() {
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 sm:py-12">
-                <i className="ri-dropbox-line text-4xl sm:text-5xl text-purple-400 mb-3"></i>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-purple-300 mb-4">You have no orders yet.</p>
+              <div className="text-center py-12 border-2 border-black border-dashed bg-gray-50">
+                <i className="ri-dropbox-line text-5xl text-gray-400 mb-3 block"></i>
+                <p className="text-lg font-bold text-gray-600 uppercase mb-6">You have no orders yet.</p>
                 <Link
                   to="/shop"
-                  className="inline-block bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition-all shadow-lg dark:shadow-purple-500/20 hover:shadow-purple-500/30 text-sm sm:text-base"
+                  className="inline-block bg-primary text-white font-black uppercase py-3 px-6 border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
                 >
                   Start Shopping
                 </Link>

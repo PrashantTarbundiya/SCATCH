@@ -24,12 +24,12 @@ export const UserProvider = ({ children }) => {
         credentials: 'include',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       });
-      
+
       // Clear all auth data immediately
       setCurrentUser(null);
       localStorage.clear(); // Clear all localStorage data
       sessionStorage.clear(); // Clear all sessionStorage data
-      
+
       if (response.ok) {
         const data = await response.json().catch(() => ({}));
         toast.success(data?.message || "Logout successful");
@@ -107,6 +107,38 @@ export const UserProvider = ({ children }) => {
 
     fetchCurrentUser();
   }, [loginUser]);
+
+  // Set up interceptor for 401s
+  useEffect(() => {
+    // We import apiClient here to avoid circular dependencies if possible, 
+    // but since it's an ES module import at top level, it should be fine.
+    // However, we need to ensure this effect runs once.
+
+    const handleUnauthorized = () => {
+      // Only redirect if we currently think we are logged in
+      if (localStorage.getItem('currentUser')) {
+        setCurrentUser(null);
+        localStorage.clear();
+        sessionStorage.clear();
+        toast.error("Session expired. Please login again.");
+        // We can't use navigate here easily because UserProvider is inside Router in App.jsx?
+        // Wait, AppContent handles routing. UserProvider wraps AppContent? 
+        // Actually usually Router wraps everything. 
+        // If we can't use navigate, window.location is a fallback.
+        window.location.href = '/login';
+      }
+    };
+
+    import('../services/apiClient').then(module => {
+      module.default.setUnauthorizedHandler(handleUnauthorized);
+    });
+
+    return () => {
+      import('../services/apiClient').then(module => {
+        module.default.setUnauthorizedHandler(null);
+      });
+    };
+  }, []);
 
   return (
     <UserContext.Provider value={value}>

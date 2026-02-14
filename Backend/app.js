@@ -65,10 +65,10 @@ const corsOptions = {
       'https://scatch-livid.vercel.app',
       'https://scatch-22kx.onrender.com'
     ];
-    
+
     // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -102,18 +102,18 @@ app.use(preventInjection);
 
 app.use(cookieParser());
 app.use(
-   expressSession({
-      resave: false,
-      saveUninitialized: false,
-      secret: process.env.EXPRESS_SESSION_SECRET,
-      cookie: { 
-         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-         httpOnly: false, // Allow client-side access for debugging
-         secure: process.env.NODE_ENV === 'production',
-         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-         domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
-      }
-   })
+  expressSession({
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.EXPRESS_SESSION_SECRET,
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: false, // Allow client-side access for debugging
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+    }
+  })
 );
 app.use(flash());
 
@@ -173,5 +173,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-   console.log(`Scatch App is running on port ${process.env.PORT || 3000}`)
+  console.log(`Scatch App is running on port ${process.env.PORT || 3000}`)
 })

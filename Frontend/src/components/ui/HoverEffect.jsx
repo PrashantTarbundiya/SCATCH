@@ -1,105 +1,101 @@
-import React, { useState, memo, useCallback } from 'react';
-import { useTheme } from '../../context/ThemeContext';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { memo, useCallback } from 'react';
+
 import { cn } from '../../utils/cn';
 import { useNavigate } from 'react-router-dom';
 import OptimizedImage from './OptimizedImage';
 
 // ProductCard Component
 export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInWishlist, wishlistLoading }) => {
-  const { theme } = useTheme();
+
   const navigate = useNavigate();
-  
+
   const originalPrice = parseFloat(product.price) || 0;
   const discountAmount = parseFloat(product.discount) || 0;
   const finalPrice = originalPrice - discountAmount;
   const discountPercentage = originalPrice > 0 ? Math.round((discountAmount / originalPrice) * 100) : 0;
 
   return (
-    <div className="rounded-2xl h-full overflow-hidden bg-white dark:bg-[#2A1F47] border border-purple-500/20 group-hover:border-purple-500/50 relative z-20 transition-all duration-300 shadow-lg dark:shadow-purple-500/20 shadow-purple-500/10 hover:shadow-purple-500/30" style={{ width: 'calc(100% + 2px)' }}>
-      <div className="relative z-50 group"> {/* Added group class here for the overlay */}
-          <div
-            className="w-full h-44 sm:h-52 flex items-center justify-center relative cursor-pointer bg-gray-100 dark:bg-[#2A1F47]/50"
-          >
-            {/* Wishlist button moved here, positioned absolutely */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent card click when clicking wishlist
-                onToggleWishlist && (product.quantity > 0 || product.quantity === undefined) && onToggleWishlist();
-              }}
-              title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              className={`absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-30 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full transition-all duration-200 ease-in-out
-                          ${(product.quantity > 0 || product.quantity === undefined)
-                            ? isInWishlist
-                              ? 'hover:bg-red-100 dark:hover:bg-red-900/30' // In wishlist: light red background on hover
-                              : 'hover:bg-gray-200 dark:bg-[#2A1F47]/70 dark:hover:bg-gray-700/70' // Default (not in wishlist): gray background on hover
-                            : 'bg-gray-100 dark:bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl text-gray-400 dark:text-gray-500 cursor-not-allowed' // Disabled state
-                          }`}
-              disabled={(product.quantity === 0 && product.quantity !== undefined) || wishlistLoading}
-            >
-              <i className={`text-lg sm:text-xl transition-all duration-200 ease-in-out ${
-                (product.quantity > 0 || product.quantity === undefined)
-                  ? isInWishlist
-                    ? 'ri-heart-fill text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:scale-110' // In wishlist: filled heart with hover effects
-                    : 'ri-heart-line text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:scale-110' // Default: outline heart that turns red on hover
-                  : 'ri-heart-line text-gray-400 dark:text-gray-500' // Disabled state
-                }`}></i>
-            </button>
-            {product.image && typeof product.image === 'string' ? (
-              <OptimizedImage
-                onClick={useCallback(() => product.quantity > 0 && navigate(`/product/${product._id}`), [product._id, product.quantity, navigate])}
-                className={`h-[10rem] sm:h-[12rem] w-full object-contain transition-all duration-300 cursor-pointer ${product.quantity === 0 ? 'group-hover:filter group-hover:blur-sm' : ''}`}
-                src={product.image}
-                alt={product.name || "Product Image"}
-              />
-            ) : (
-              <span className="text-gray-400 dark:text-gray-500">No Image</span>
-            )}
-            {discountPercentage > 0 && (
-              <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-red-500 text-white text-[10px] sm:text-xs font-semibold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md z-10">
-                {`${discountPercentage}% OFF`}
-              </div>
-            )}
-            {product.quantity === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                <span className="text-white text-xl font-bold bg-red-700 px-4 py-2 rounded-lg shadow-xl">Out of Stock</span>
-              </div>
-            )}
-          </div>
+    <div className="flex flex-col h-full bg-card border-2 border-black shadow-neo hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-200 relative z-20" style={{ width: '100%' }}>
+      <div className="relative group flex flex-col flex-grow"> {/* Added flex flex-col to ensure children stack properly */}
         <div
-          className="flex justify-between items-start px-2.5 py-2.5 sm:px-4 sm:py-4 bg-white dark:bg-[#2A1F47] text-gray-900 dark:text-purple-100"
+          className="w-full h-44 sm:h-52 flex-none flex items-center justify-center relative cursor-pointer bg-white border-b-2 border-black overflow-hidden"
         >
-          <div className="flex-1 min-w-0 pr-1.5 sm:pr-2">
-              <h3
-                className="font-semibold text-sm sm:text-base lg:text-lg truncate cursor-pointer hover:text-purple-400 transition-colors"
-                onClick={useCallback(() => navigate(`/product/${product._id}`), [product._id, navigate])}
-              >
-                {product.name}
-              </h3>
-            <div className="flex items-center gap-1 sm:gap-2 whitespace-nowrap mt-0.5 sm:mt-1"> {/* Added mt-1 for slight spacing */}
-              <h4 className="text-sm sm:text-base font-bold">₹ {finalPrice.toFixed(2)}</h4>
+          {/* Wishlist button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleWishlist && (product.quantity > 0 || product.quantity === undefined) && onToggleWishlist();
+            }}
+            title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+            className={`absolute top-2 left-2 z-30 w-8 h-8 flex items-center justify-center border-2 border-black transition-all duration-200 ease-in-out
+                          ${(product.quantity > 0 || product.quantity === undefined)
+                ? isInWishlist
+                  ? 'bg-red-500 text-white shadow-neo-sm' // In wishlist
+                  : 'bg-white text-black hover:bg-gray-100 shadow-neo-sm' // Default
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-400' // Disabled
+              }`}
+            disabled={(product.quantity === 0 && product.quantity !== undefined) || wishlistLoading}
+          >
+            <i className={`text-lg transition-transform ${isInWishlist ? 'ri-heart-fill' : 'ri-heart-line'}`}></i>
+          </button>
+
+          {product.image && typeof product.image === 'string' ? (
+            <OptimizedImage
+              onClick={useCallback(() => product.quantity > 0 && navigate(`/product/${product._id}`), [product._id, product.quantity, navigate])}
+              className={`h-[90%] w-[90%] object-contain transition-transform duration-300 group-hover:scale-110 ${product.quantity === 0 ? 'filter grayscale blur-sm' : ''}`}
+              src={product.image}
+              alt={product.name || "Product Image"}
+            />
+          ) : (
+            <span className="text-gray-400 font-bold uppercase">No Image</span>
+          )}
+
+          {discountPercentage > 0 && (
+            <div className="absolute top-2 right-2 bg-accent text-white font-bold text-xs px-2 py-1 border-2 border-black shadow-neo-sm z-10">
+              {`${discountPercentage}% OFF`}
+            </div>
+          )}
+
+          {product.quantity === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
+              <span className="text-white text-xl font-black bg-destructive px-4 py-2 border-2 border-white shadow-neo transform -rotate-12 uppercase">Out of Stock</span>
+            </div>
+          )}
+        </div>
+
+        <div
+          className="flex flex-col justify-between p-4 bg-card text-card-foreground flex-grow"
+        >
+          <div className="w-full">
+            <h3
+              className="font-bold text-sm sm:text-base lg:text-lg truncate cursor-pointer hover:underline decoration-2 underline-offset-2 transition-all"
+              onClick={useCallback(() => navigate(`/product/${product._id}`), [product._id, navigate])}
+            >
+              {product.name}
+            </h3>
+            <div className="flex items-center gap-2 mt-2">
+              <h4 className="text-base sm:text-lg font-black">₹ {finalPrice.toFixed(2)}</h4>
               {discountAmount > 0 && (
-                <h4 className="text-xs sm:text-sm text-purple-300 line-through">
+                <h4 className="text-xs sm:text-sm text-gray-500 line-through font-medium">
                   {originalPrice.toFixed(2)}
                 </h4>
               )}
             </div>
-            {/* Removed the text "Out of Stock" message from here */}
           </div>
-          {/* Add to Cart button remains here */}
+
           <button
             onClick={(e) => {
-                e.stopPropagation(); // Prevent card click
-                (product.quantity > 0 || product.quantity === undefined) && onAddToCart(product._id);
+              e.stopPropagation();
+              (product.quantity > 0 || product.quantity === undefined) && onAddToCart(product._id);
             }}
             title={(product.quantity > 0 || product.quantity === undefined) ? "Add to cart" : "Out of stock"}
-            className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full transition-colors flex-shrink-0
+            className={`w-full mt-3 py-2 flex items-center justify-center font-bold border-2 border-black shadow-neo-sm transition-all text-sm uppercase tracking-wide
                         ${(product.quantity > 0 || product.quantity === undefined)
-                          ? 'bg-blue-600 dark:bg-purple-600 text-gray-900 dark:text-white hover:bg-blue-700 dark:hover:bg-purple-700'
-                          : 'bg-gray-300 dark:bg-purple-900/30 text-gray-500 dark:text-purple-400 cursor-not-allowed'}`}
+                ? 'bg-primary text-white hover:bg-white hover:text-black hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-400 shadow-none'}`}
             disabled={product.quantity === 0 && product.quantity !== undefined}
           >
-            <i className="ri-add-line text-lg sm:text-xl"></i>
+            {(product.quantity > 0 || product.quantity === undefined) ? 'Add to Cart' : 'Sold Out'}
           </button>
         </div>
       </div>
@@ -109,42 +105,13 @@ export const ProductCard = memo(({ product, onAddToCart, onToggleWishlist, isInW
 
 // HoverEffect Component
 export const HoverEffect = memo(({ items, className }) => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  
-  const handleMouseEnter = useCallback((idx) => setHoveredIndex(idx), []);
-  const handleMouseLeave = useCallback(() => setHoveredIndex(null), []);
   return (
     <div className={cn("grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5", className)}>
-      {items.map((item, idx) => (
+      {items.map((item) => (
         <div
-          key={item._id} // Assuming item has _id from your ShopPage structure
-          className="relative group block p-2 h-full w-full" // p-2 allows background to show
-          onMouseEnter={() => handleMouseEnter(idx)}
-          onMouseLeave={handleMouseLeave}
+          key={item._id}
+          className="relative group block h-full w-full"
         >
-          <AnimatePresence>
-            {hoveredIndex === idx && (
-              <motion.span
-                className="absolute inset-0 h-full w-full bg-purple-500/10 block rounded-3xl"
-                layoutId="hoverBackground" // This layoutId should ideally be unique if multiple HoverEffects are on one page.
-                                          // For now, assuming one instance or careful usage.
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: 1,
-                  transition: { duration: 0.15 },
-                }}
-                exit={{
-                  opacity: 0,
-                  transition: { duration: 0.15, delay: 0.2 },
-                }}
-                style={{
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                }}
-              />
-            )}
-          </AnimatePresence>
-          {/* Pass only necessary props to ProductCard */}
           <ProductCard
             product={item}
             onAddToCart={item.onAddToCart}

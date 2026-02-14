@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useOwner } from '../context/OwnerContext'; // Import useOwner
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
-import { CardContainer, CardBody, CardItem } from '../components/ui/Card3D'; // Import 3D Card components
+import { useOwner } from '../context/OwnerContext';
+
 import { toast } from '../utils/toast';
 import PasswordInput from '../components/PasswordInput';
 
-
 const OwnerLoginPage = () => {
-  const { theme } = useTheme(); // Consume theme
-  const { loginOwnerContext, isOwnerAuthenticated } = useOwner(); // Get loginOwnerContext
+
+  const { loginOwnerContext, isOwnerAuthenticated } = useOwner();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -73,12 +71,12 @@ const OwnerLoginPage = () => {
       if (!response.ok) {
         throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       }
-      
+
       if (data.owner) {
         loginOwnerContext(data.owner);
       }
       toast.success(data.message || 'Owner login successful! Redirecting...');
-      
+
       setTimeout(() => {
         navigate('/admin');
       }, 1000);
@@ -91,88 +89,67 @@ const OwnerLoginPage = () => {
   };
 
   return (
-    <>
+    <div className="w-full min-h-screen flex items-center justify-center px-4 bg-background pt-28 pb-12">
+      <div className="w-full max-w-md bg-white border-4 border-black shadow-neo p-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-purple-600 border-b-2 border-black"></div>
+        <h3 className="text-3xl font-black text-center mb-2 uppercase tracking-tighter">
+          Admin Access
+        </h3>
+        <h4 className="text-lg font-bold mb-8 text-center text-purple-600 uppercase">
+          Owner Login
+        </h4>
 
+        <form autoComplete="off" onSubmit={handleSubmit} className="w-full space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-black uppercase mb-2">Email Address</label>
+            <input
+              id="email"
+              className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold"
+              type="email"
+              placeholder="OWNER@EXAMPLE.COM"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-black uppercase mb-2">Password</label>
+            <PasswordInput
+              id="password"
+              className="block w-full px-4 py-3 border-2 border-black bg-gray-50 focus:outline-none focus:shadow-neo-sm transition-all font-bold"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+              disabled={isLoading}
+            />
+          </div>
 
-      <div className="w-full min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300 pt-28 pb-12"> {/* Added pt-28 for fixed header, theme bg, pb-12 for bottom space */}
-        <CardContainer containerClassName="py-0" className="w-full max-w-md">
-          <CardBody className="bg-white/80 dark:bg-[#1E1538]/60 backdrop-blur-xl border border-purple-500/20 shadow-xl rounded-lg p-8 w-full h-auto"> {/* Adjusted h-auto */}
-            <CardItem
-              as="h3"
-              translateZ="50"
-              className="text-3xl md:text-4xl text-center mb-2 font-light text-gray-900 dark:text-gray-100 w-full"
+          <button
+            type="submit"
+            className="w-full py-4 bg-purple-600 text-white font-black uppercase tracking-widest border-2 border-black shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Confirming...' : 'Enter Admin Panel'}
+          </button>
+        </form>
+
+        <div className="text-center mt-8 pt-4 border-t-2 border-black border-dashed">
+          <p className="text-sm font-bold uppercase text-gray-600">
+            Not an owner?
+            <Link
+              to="/login"
+              className="text-black hover:text-purple-600 ml-2 underline decoration-2 underline-offset-2"
             >
-              Owner Access to <span className="text-purple-500 dark:text-purple-400 font-semibold">Scatch Admin</span>
-            </CardItem>
-            <CardItem
-              as="h4"
-              translateZ="40"
-              className="text-xl md:text-2xl capitalize mb-6 text-center text-purple-300 w-full"
-            >
-              Login to your owner account
-            </CardItem>
-            
-            <form autoComplete="off" onSubmit={handleSubmit} className="w-full">
-              <CardItem translateZ="30" className="mb-4 w-full">
-                <label htmlFor="email" className="block text-sm font-medium text-purple-200 mb-1">Email Address</label>
-                <input
-                  id="email"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  type="email"
-                  placeholder="owner@example.com"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                />
-              </CardItem>
-              <CardItem translateZ="20" className="mb-6 w-full">
-                <label htmlFor="password" className="block text-sm font-medium text-purple-200 mb-1">Password</label>
-                <PasswordInput
-                  id="password"
-                  className="bg-white dark:bg-[#2A1F47] block w-full px-4 py-2.5 border border-purple-500/30 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-900 dark:text-gray-900 dark:text-purple-100 placeholder-gray-400 dark:placeholder-purple-300/50 transition-colors"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isLoading}
-                />
-              </CardItem>
-              <CardItem translateZ="10" className="w-full">
-                <button
-                  type="submit"
-                  className="px-5 rounded-md py-3 bg-purple-500 text-white w-full cursor-pointer hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Logging In...' : 'Owner Login'}
-                </button>
-              </CardItem>
-            </form>
-            
-            <CardItem translateZ="5" className="text-center mt-6 w-full">
-              <p className="text-sm text-gray-600 dark:text-purple-300">
-                Not an owner?
-                <Link
-                  to="/login"
-                  className="text-purple-500 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium ml-1"
-                >
-                  User Login
-                </Link>
-              </p>
-            </CardItem>
-          </CardBody>
-        </CardContainer>
+              User Login
+            </Link>
+          </p>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
 export default OwnerLoginPage;
-
-
-
-
-
-
-

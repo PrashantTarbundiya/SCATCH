@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useOwner } from '../context/OwnerContext';
 import { PageSkeleton } from './ui/SkeletonLoader.jsx';
-import AdminSidebar from './AdminSidebar'; 
+import AdminSidebar from './AdminSidebar';
 
 const OwnerProtectedRoute = () => {
-  const { isOwnerAuthenticated, isLoading } = useOwner(); 
+  const { isOwnerAuthenticated, isLoading } = useOwner();
   const [sidebarVisible, setSidebarVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024); // Changed break point to lg (1024px) for better tablet experience
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) {
+        setSidebarVisible(false); // Reset on desktop
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -20,7 +23,7 @@ const OwnerProtectedRoute = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-6">
+      <div className="w-full min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="w-full max-w-6xl">
           <PageSkeleton title={true} content={5} />
         </div>
@@ -34,40 +37,42 @@ const OwnerProtectedRoute = () => {
 
   // If authenticated, render the sidebar and the child route content
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      {/* Sidebar - show on desktop always, on mobile when toggled */}
-      <div className={`${isMobile && !sidebarVisible ? 'hidden' : 'block'}`}>
+    <div className="h-screen w-full bg-gray-50 font-sans flex flex-col lg:flex-row overflow-hidden">
+      {/* Sidebar - fixed on mobile (overlay), static pinned on desktop */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 transform ${isMobile && !sidebarVisible ? '-translate-x-full' : 'translate-x-0'} transition-transform duration-300 lg:translate-x-0 lg:static lg:h-full shrink-0`}
+      >
         <AdminSidebar />
       </div>
-      
+
       {/* Overlay for mobile when sidebar is open */}
       {isMobile && sidebarVisible && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => setSidebarVisible(false)}
         />
       )}
-      
-      <main className="transition-all duration-300 ml-0 md:ml-64">
-        {/* Mobile menu button - show on mobile when sidebar is hidden */}
-        {!sidebarVisible && isMobile && (
-          <div className="bg-white dark:bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 shadow-sm">
-            <button
-              onClick={() => setSidebarVisible(true)}
-              className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-white dark:bg-slate-700 transition-all duration-200"
-              aria-label="Open sidebar"
-            >
-              <div className="w-6 h-6 flex flex-col justify-center space-y-1.5">
-                <div className="w-full h-0.5 bg-slate-600 dark:bg-slate-300 rounded-full"></div>
-                <div className="w-full h-0.5 bg-slate-600 dark:bg-slate-300 rounded-full"></div>
-                <div className="w-full h-0.5 bg-slate-600 dark:bg-slate-300 rounded-full"></div>
-              </div>
-            </button>
+
+      {/* Main Content Area - Scrollable */}
+      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden transition-all duration-300 flex flex-col relative" id="admin-main-content">
+        {/* Mobile menu button - sticky at top of scrollable area on mobile */}
+        {isMobile && (
+          <div className="bg-white border-b-4 border-black p-4 sticky top-0 z-30 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSidebarVisible(true)}
+                className="p-2 bg-white border-2 border-black shadow-neo active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
+                aria-label="Open sidebar"
+              >
+                <i className="ri-menu-line text-xl font-bold"></i>
+              </button>
+              <h1 className="font-black uppercase text-xl">Admin Panel</h1>
+            </div>
           </div>
         )}
-        
+
         {/* The Outlet will render the specific admin page component */}
-        <div className="p-4 md:p-6 lg:p-8 bg-slate-50 dark:bg-slate-900 min-h-screen">
+        <div className="p-4 md:p-6 lg:p-8 flex-1">
           <Outlet />
         </div>
       </main>

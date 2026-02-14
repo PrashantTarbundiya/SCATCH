@@ -16,7 +16,7 @@ const FeaturedProducts = () => {
     const fetchFeaturedProducts = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/products?sortBy=popular&filter=all&page=1&limit=8`,
@@ -31,7 +31,7 @@ const FeaturedProducts = () => {
         if (!response.ok) {
           throw new Error(data?.error || data?.message || 'Failed to fetch products');
         }
-        
+
         setProducts(data?.products || []);
       } catch (err) {
         setError(err.message);
@@ -53,7 +53,7 @@ const FeaturedProducts = () => {
           credentials: 'include',
         }
       );
-      
+
       let data;
       if (response.headers.get("content-type")?.includes("application/json")) {
         data = await response.json();
@@ -62,7 +62,7 @@ const FeaturedProducts = () => {
       if (!response.ok) {
         throw new Error(data?.error || data?.message || 'Failed to add to cart');
       }
-      
+
       toast.success(data?.message || 'Product added to cart!');
     } catch (err) {
       toast.error(err.message || 'Failed to add product to cart.');
@@ -87,7 +87,7 @@ const FeaturedProducts = () => {
     }
   };
 
-  const productsForDisplay = useMemo(() => 
+  const productsForDisplay = useMemo(() =>
     products.map(product => ({
       ...product,
       onAddToCart: handleAddToCart,
@@ -102,8 +102,8 @@ const FeaturedProducts = () => {
       <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="h-10 w-64 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg mx-auto mb-4"></div>
-            <div className="h-6 w-96 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg mx-auto"></div>
+            <div className="h-10 w-64 bg-gray-200 animate-pulse mx-auto mb-4 border-2 border-black shadow-neo"></div>
+            <div className="h-6 w-96 bg-gray-200 animate-pulse mx-auto border-2 border-black shadow-neo-sm"></div>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -130,14 +130,14 @@ const FeaturedProducts = () => {
   }
 
   return (
-    <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E] transition-colors duration-300">
+    <section className="w-full py-16 px-4 md:px-6 lg:px-8 bg-background border-b-2 border-black">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-purple-100 mb-4">
+          <h2 className="text-3xl md:text-5xl font-black text-foreground uppercase tracking-tighter mb-4">
             Featured Products
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-muted-foreground text-lg font-medium border-2 border-black inline-block px-4 py-1 shadow-neo-sm transform -rotate-1">
             Discover our most popular items
           </p>
         </div>
@@ -149,12 +149,10 @@ const FeaturedProducts = () => {
         <div className="text-center mt-12">
           <Link
             to="/shop?sortBy=popular&filter=all"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg dark:shadow-purple-500/20"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-secondary text-secondary-foreground font-black text-lg border-2 border-black shadow-neo hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all uppercase tracking-wide"
           >
             View All Products
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            <i className="ri-arrow-right-line"></i>
           </Link>
         </div>
       </div>

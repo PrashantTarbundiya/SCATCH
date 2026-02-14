@@ -35,41 +35,48 @@ const AdminOrderStatusUpdate = ({ order, onStatusUpdate }) => {
   };
 
   return (
-    <div className="bg-[#1E1538]/50 p-6 rounded-xl border border-slate-200 dark:border-slate-600">
-      <h3 className="text-lg font-semibold mb-4 text-purple-100">Update Order Status</h3>
-      
-      <div className="space-y-4">
+    <div className="bg-white p-6 border-4 border-black shadow-neo">
+      <h3 className="text-xl font-black uppercase mb-6 flex items-center gap-2">
+        <i className="ri-edit-box-line"></i> Update Order Status
+      </h3>
+
+      <div className="space-y-6">
         <div>
-          <label className="block text-sm font-semibold mb-2 text-purple-200">Status</label>
-          <select 
-            value={status} 
-            onChange={(e) => setStatus(e.target.value)}
-            className="w-full p-3 border border-purple-500/30 rounded-xl bg-[#2A1F47] text-purple-100 focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            {statuses.map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
+          <label className="block text-sm font-bold uppercase mb-2">Status</label>
+          <div className="relative">
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full p-3 border-2 border-black bg-white text-black font-bold uppercase focus:outline-none focus:shadow-neo-sm transition-all appearance-none"
+            >
+              {statuses.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <i className="ri-arrow-down-s-line font-black text-xl"></i>
+            </div>
+          </div>
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2 text-purple-200">Tracking Number (Optional)</label>
+          <label className="block text-sm font-bold uppercase mb-2">Tracking Number (Optional)</label>
           <input
             type="text"
             value={trackingNumber}
             onChange={(e) => setTrackingNumber(e.target.value)}
-            className="w-full p-3 border border-purple-500/30 rounded-xl bg-[#2A1F47] text-purple-100 placeholder-slate-400 dark:placeholder-gray-500 dark:placeholder-slate-500 focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="Enter tracking number"
+            className="w-full p-3 border-2 border-black bg-white text-black font-bold placeholder-gray-500 focus:outline-none focus:shadow-neo-sm transition-all"
+            placeholder="ENTER TRACKING NUMBER"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-semibold mb-2 text-purple-200">Note (Optional)</label>
+          <label className="block text-sm font-bold uppercase mb-2">Note (Optional)</label>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full p-3 border border-purple-500/30 rounded-xl bg-[#2A1F47] text-purple-100 placeholder-slate-400 dark:placeholder-gray-500 dark:placeholder-slate-500 focus:ring-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="Add a note about this status update"
+            className="w-full p-3 border-2 border-black bg-white text-black font-bold placeholder-gray-500 focus:outline-none focus:shadow-neo-sm transition-all"
+            placeholder="ADD A NOTE..."
             rows="2"
           />
         </div>
@@ -77,9 +84,17 @@ const AdminOrderStatusUpdate = ({ order, onStatusUpdate }) => {
         <button
           onClick={handleUpdate}
           disabled={loading}
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-200 hover:scale-105 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-green-500 text-black border-2 border-black py-3 px-6 font-black uppercase shadow-neo-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {loading ? 'Updating...' : 'Update Status'}
+          {loading ? (
+            <>
+              <i className="ri-loader-4-line animate-spin text-xl"></i> Updating...
+            </>
+          ) : (
+            <>
+              <i className="ri-save-line text-xl"></i> Update Status
+            </>
+          )}
         </button>
       </div>
     </div>
