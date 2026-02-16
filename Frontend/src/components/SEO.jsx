@@ -85,7 +85,7 @@ const SEO = ({
         }
 
         // Update OG Title and Type
-        const fullTitle = title ? `${title} | SCATCH` : 'SCATCH | Premium Urban Fashion';
+        const fullTitle = title ? `${title} | SCATCH` : 'SCATCH | Premium Urban Fashion & Streetwear Store';
         updateProperty('og:title', fullTitle);
         updateProperty('twitter:title', fullTitle);
         updateProperty('og:type', type);

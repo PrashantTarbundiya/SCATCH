@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /cart
 Disallow: /profile
 
-Sitemap: https://scatch-livid.vercel.app/sitemap.xml
+Sitemap: https://scatch-neo.vercel.app/sitemap.xml

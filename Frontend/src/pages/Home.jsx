@@ -12,8 +12,8 @@ const Home = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Scatch",
-    "url": "https://scatch-livid.vercel.app",
-    "logo": "https://scatch-livid.vercel.app/logo2.png",
+    "url": "https://scatch-neo.vercel.app",
+    "logo": "https://scatch-neo.vercel.app/logo2.png",
     "sameAs": [
       "https://x.com/prashant130406",
       "http://instagram.com/prashanttarbundiya/"
@@ -29,10 +29,10 @@ const Home = () => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Scatch",
-    "url": "https://scatch-livid.vercel.app",
+    "url": "https://scatch-neo.vercel.app",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://scatch-livid.vercel.app/shop?q={search_term_string}",
+      "target": "https://scatch-neo.vercel.app/shop?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
