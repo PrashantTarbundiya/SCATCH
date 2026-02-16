@@ -1,20 +1,15 @@
-import Wishlist from '../models/wishlist-model.js'; // Added .js extension
-import Product from '../models/product-model.js'; // To populate product details, added .js extension
-import asyncHandler from 'express-async-handler'; // For cleaner async error handling
+import Wishlist from '../models/wishlist-model.js';
+import Product from '../models/product-model.js';
+import asyncHandler from 'express-async-handler';
 
 const getWishlist = asyncHandler(async (req, res) => {
     const wishlistItems = await Wishlist.find({ user: req.user._id }).populate({
         path: 'product',
-        model: 'product', // Corrected to lowercase 'product'
-        select: 'name price image stock category discount bgcolor panelcolor textcolor' // Added color fields
+        model: 'product',
+        select: 'name price image stock category discount bgcolor panelcolor textcolor'
     });
 
-    if (wishlistItems) {
-        res.status(200).json(wishlistItems);
-    } else {
-        res.status(404);
-        throw new Error('Wishlist not found');
-    }
+    res.status(200).json({ success: true, wishlist: wishlistItems });
 });
 
 
@@ -37,9 +32,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
     const wishlistItemExists = await Wishlist.findOne({ user: req.user._id, product: productId });
 
     if (wishlistItemExists) {
-        res.status(400);
-        // throw new Error('Product already in wishlist'); // Or just return success
-        res.status(200).json({ message: 'Product already in wishlist', item: wishlistItemExists });
+        res.status(200).json({ success: true, message: 'Product already in wishlist', wishlistItem: wishlistItemExists });
         return;
     }
 
@@ -51,10 +44,10 @@ const addToWishlist = asyncHandler(async (req, res) => {
     if (wishlistItem) {
         const populatedItem = await wishlistItem.populate({
             path: 'product',
-            model: 'product', // Corrected to lowercase 'product'
-            select: 'name price image stock category discount bgcolor panelcolor textcolor' // Added color fields
+            model: 'product',
+            select: 'name price image stock category discount bgcolor panelcolor textcolor'
         });
-        res.status(201).json(populatedItem);
+        res.status(201).json({ success: true, message: 'Product added to wishlist', wishlistItem: populatedItem });
     } else {
         res.status(400);
         throw new Error('Invalid wishlist item data');
@@ -68,14 +61,14 @@ const removeFromWishlist = asyncHandler(async (req, res) => {
     const wishlistItem = await Wishlist.findOneAndDelete({ user: req.user._id, product: productId });
 
     if (wishlistItem) {
-        res.status(200).json({ message: 'Product removed from wishlist', productId });
+        res.status(200).json({ success: true, message: 'Product removed from wishlist', productId });
     } else {
         res.status(404);
         throw new Error('Product not found in wishlist');
     }
 });
 
-export { // Changed to named export for ES Modules
+export {
     getWishlist,
     addToWishlist,
     removeFromWishlist,

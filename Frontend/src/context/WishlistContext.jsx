@@ -25,7 +25,7 @@ export const WishlistProvider = ({ children }) => {
             // Check if data is array or object with success property, adapt as needed based on backend response structure
             // Based on previous code: setWishlistItems(response.data || [])
             // apiClient returns the parsed JSON body directly
-            setWishlistItems(data.wishlist || data || []);
+            setWishlistItems(data.wishlist || []);
         } catch (err) {
             const errorMessage = err.message || 'Failed to fetch wishlist';
             setError(errorMessage);
@@ -47,9 +47,11 @@ export const WishlistProvider = ({ children }) => {
             if (data.success) {
                 setWishlistItems(prevItems => {
                     // Check if it's already there to avoid duplicates (though backend should handle)
-                    const existingItem = prevItems.find(item => item.product._id === data.product._id);
+                    const existingItem = prevItems.find(item => item.product._id === productId);
                     if (existingItem) return prevItems;
-                    return [...prevItems, data];
+
+                    // IMPORTANT: Add the actual wishlistItem, not the whole data object
+                    return [...prevItems, data.wishlistItem];
                 });
                 toast.success(data.message || "Added to wishlist");
             }
