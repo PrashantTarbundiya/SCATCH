@@ -154,6 +154,13 @@ const Header = () => {
             )}
           </div>
 
+          {/* Mobile Actions - Notification Icon */}
+          <div className="flex lg:hidden items-center gap-2">
+            {isAuthenticated && (
+              <NotificationBell />
+            )}
+          </div>
+
         </div>
       </header>
 
