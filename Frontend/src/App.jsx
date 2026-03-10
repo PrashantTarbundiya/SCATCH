@@ -24,7 +24,6 @@ const EditProfilePage = lazy(() => import('./pages/EditProfile'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const ProductReviewPage = lazy(() => import('./pages/ProductReviewPage'));
-const Sitemap = lazy(() => import('./pages/Sitemap'));
 const OwnerProtectedRoute = lazy(() => import('./components/OwnerProtectedRoute'));
 const UserProtectedRoute = lazy(() => import('./components/UserProtectedRoute'));
 
@@ -88,8 +87,7 @@ function AppContent() {
 
             </Route>
 
-            {/* Catch-all route for Sitemap and 404 Not Found */}
-            <Route path="/sitemap.xml" element={<Sitemap />} />
+            {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
