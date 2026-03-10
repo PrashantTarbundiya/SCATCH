@@ -4,39 +4,85 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/src/assets/logo2.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="apple-touch-icon" href="/src/assets/logo2.png" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
   <meta name="google-site-verification" content="jiH9VZTLETnwSVmJLlWKcn-RWikbwMspiYhiVWhYvGM" />
 
-  <!-- Primary Meta Tags -->
-
+  <!-- SEO Meta Tags -->
   <title>SCATCH | Premium Urban Fashion & Streetwear Store</title>
   <meta name="title" content="SCATCH | Premium Urban Fashion & Streetwear Store" />
   <meta name="description"
-    content="Shop at Scatch - The premier e-commerce destination for urban fashion and neo-brutalist streetwear. Discover exclusive Scatch collections, high-quality apparel, and limited drops online." />
+    content="Shop at SCATCH - The premier e-commerce destination for urban fashion and neo-brutalist streetwear. Discover exclusive SCATCH collections, high-quality apparel, and limited drops online." />
   <meta name="keywords"
-    content="Scatch, scatch, Scatch store, Scatch e-commerce, Scatch fashion, buy Scatch online, urban streetwear, neo-brutalist clothing, premium apparel, limited drops, mens fashion, womens fashion" />
-  <meta name="author" content="Scatch" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://scatch-livid.vercel.app/" />
+    content="SCATCH, SCATCH store, SCATCH brand, SCATCH clothing, SCATCH fashion, SCATCH shop, buy SCATCH, SCATCH online, SCATCH apparel, SCATCH streetwear, urban fashion SCATCH, neo-brutalist clothing, premium SCATCH, limited drops, mens fashion, womens fashion" />
+  <meta name="author" content="SCATCH Team" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="%VITE_FRONTEND_URL%/" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://scatch-livid.vercel.app/" />
+  <meta property="og:url" content="%VITE_FRONTEND_URL%/" />
   <meta property="og:site_name" content="SCATCH" />
-  <meta property="og:locale" content="en_US" />
   <meta property="og:title" content="SCATCH | Premium Urban Fashion & Streetwear Store" />
   <meta property="og:description"
-    content="Shop at Scatch - The premier e-commerce destination for urban fashion and neo-brutalist streetwear. Discover exclusive Scatch collections, high-quality apparel, and limited drops online." />
-  <meta property="og:image" content="/src/assets/logo2.png" />
+    content="Shop at SCATCH - The premier e-commerce destination for urban fashion and neo-brutalist streetwear. Discover exclusive SCATCH collections, high-quality apparel, and limited drops online." />
+  <meta property="og:image" content="%VITE_FRONTEND_URL%/src/assets/logo2.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
 
   <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://scatch-livid.vercel.app/" />
-  <meta property="twitter:title" content="SCATCH | Premium Urban Fashion & Streetwear Store" />
-  <meta property="twitter:description"
-    content="Shop at Scatch - The premier e-commerce destination for urban fashion and neo-brutalist streetwear. Discover exclusive Scatch collections, high-quality apparel, and limited drops online." />
-  <meta property="twitter:image" content="/src/assets/logo2.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="%VITE_FRONTEND_URL%/" />
+  <meta name="twitter:title" content="SCATCH | Premium Urban Fashion & Streetwear Store" />
+  <meta name="twitter:description"
+    content="Shop at SCATCH - The premier e-commerce destination for urban fashion and neo-brutalist streetwear. Discover exclusive SCATCH collections, high-quality apparel, and limited drops online." />
+  <meta name="twitter:image" content="%VITE_FRONTEND_URL%/src/assets/logo2.png" />
+
+  <!-- Schema.org markup -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SCATCH",
+      "alternateName": ["Scatch Clothing", "scatch store"],
+      "url": "%VITE_FRONTEND_URL%/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "%VITE_FRONTEND_URL%/shop?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "SCATCH",
+      "alternateName": "SCATCH Store",
+      "url": "%VITE_FRONTEND_URL%/",
+      "logo": "%VITE_FRONTEND_URL%/src/assets/logo2.png",
+      "description": "SCATCH is a premium e-commerce destination for urban fashion and neo-brutalist streetwear. Shop SCATCH for exclusive collections.",
+      "brand": {
+        "@type": "Brand",
+        "name": "SCATCH"
+      },
+      "sameAs": [
+        "%VITE_FRONTEND_URL%/"
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "SCATCH",
+      "description": "SCATCH - Premium urban fashion and streetwear store",
+      "url": "%VITE_FRONTEND_URL%/"
+    }
+  </script>
 </head>
 
 <body class="bg-gray-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1A1333] dark:to-[#0F0A1E]">
